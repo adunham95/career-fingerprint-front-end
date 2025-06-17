@@ -1,15 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
 @theme {
 	--color-background: #fdfaf9;
-	--color-background-50: #ffffff;
-	--color-background-100: #ffffff;
-	--color-background-200: #ffffff;
-	--color-background-300: #fffefc;
-	--color-background-400: #fcfbfa;
-	--color-background-500: #fdfaf9;
+	--color-surface-50: #ffffff;
+	--color-surface-100: #ffffff;
+	--color-surface-200: #ffffff;
+	--color-surface-300: #fffefc;
+	--color-surface-400: #fcfbfa;
+	--color-surface-500: #fdfaf9;
 	--color-accent: #00bfa6;
 	--color-accent-100: #e1faf8;
 	--color-accent-200: #b4f0eb;
@@ -45,4 +47,79 @@
 	--color-primary-800: #992c37;
 	--color-primary-900: #731921;
 	--color-primary-950: #4a0a10;
+
+	--font-title: 'Libre Baskerville', serif;
+
+	--font-paragraph: 'Josefin Sans', sans-serif;
 }
+
+@layer components {
+	.btn {
+		border-radius: var(--radius-md);
+		padding-inline: --spacing(2);
+		padding-block: --spacing(2);
+		background-color: var(--color-primary-500);
+		border-color: var(--color-primary-500);
+		font-size: var(--text-base); /* 1rem (16px) */
+		line-height: var(--text-base--line-height); /* calc(1.5 / 1) */
+		color: var(--color-white);
+		font-weight: var(--font-weight-medium);
+		cursor: pointer;
+		border: 2px solid;
+		&:hover {
+			@media (hover: hover) {
+				background-color: var(--color-primary-800);
+			}
+		}
+	}
+
+	.btn-outline {
+		background-color: transparent;
+		color: var(--color-primary-500);
+		&:hover {
+			@media (hover: hover) {
+				background-color: var(--color-primary-200);
+			}
+		}
+	}
+
+	.btn-text {
+		background-color: transparent;
+		border-color: transparent;
+		color: var(--color-primary-500);
+		&:hover {
+			@media (hover: hover) {
+				background-color: var(--color-primary-200);
+			}
+		}
+	}
+
+	.btn-small {
+		padding-block: --spacing(1);
+		font-size: var(--text-sm);
+		line-height: var(--text-sm--line-height);
+	}
+	.btn-custom {
+		background-color: var(--color-custom);
+		&:hover {
+			@media (hover: hover) {
+				background-color: var(--color-custom);
+			}
+		}
+	}
+}
+
+body {
+	font-family: var(--font-paragraph);
+	font-optical-sizing: auto;
+	font-weight: 500;
+	font-style: normal;
+	background-color: var(--color-background);
+	color: var(--color-secondary-700);
+}
+
+/* <button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
+<button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
+<button type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
+<button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
+<button type="button" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button> */
