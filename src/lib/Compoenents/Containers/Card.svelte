@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { twMerge } from 'tailwind-merge';
 
 	interface Props {
 		children: Snippet;
@@ -22,7 +23,7 @@
 	}: Props = $props();
 </script>
 
-<div class={`bg-surface-50 shadow-xs ring-1 ring-gray-900/5 sm:rounded-xl ${className}`}>
+<div class={twMerge('bg-surface-50 shadow-xs ring-1 ring-gray-900/5 sm:rounded-xl', className)}>
 	{#if headline}
 		<h4 class={`font-title px-8 pt-8 text-xl font-semibold text-gray-900 ${headlineClassName}`}>
 			{headline}

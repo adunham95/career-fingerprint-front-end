@@ -1,0 +1,282 @@
+@layer components {
+
+.btn--primary {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: var(--color-white);
+}
+.btn--primary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-primary-800);
+    border-color: var(--color-primary-800);
+  }
+}
+
+.btn-outline--primary {
+  background-color: transparent;
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+.btn-outline--primary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-primary-200);
+  }
+}
+
+.btn-text--primary {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-primary-500);
+}
+.btn-text--primary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-primary-200);
+  }
+}
+
+.btn--secondary {
+  background-color: var(--color-secondary-500);
+  border-color: var(--color-secondary-500);
+  color: var(--color-white);
+}
+.btn--secondary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-secondary-800);
+    border-color: var(--color-secondary-800);
+  }
+}
+
+.btn-outline--secondary {
+  background-color: transparent;
+  color: var(--color-secondary-500);
+  border-color: var(--color-secondary-500);
+}
+.btn-outline--secondary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-secondary-200);
+  }
+}
+
+.btn-text--secondary {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-secondary-500);
+}
+.btn-text--secondary:hover {
+  @media (hover: hover) {
+    background-color: var(--color-secondary-200);
+  }
+}
+
+.btn--accent {
+  background-color: var(--color-accent-500);
+  border-color: var(--color-accent-500);
+  color: var(--color-white);
+}
+.btn--accent:hover {
+  @media (hover: hover) {
+    background-color: var(--color-accent-800);
+    border-color: var(--color-accent-800);
+  }
+}
+
+.btn-outline--accent {
+  background-color: transparent;
+  color: var(--color-accent-500);
+  border-color: var(--color-accent-500);
+}
+.btn-outline--accent:hover {
+  @media (hover: hover) {
+    background-color: var(--color-accent-200);
+  }
+}
+
+.btn-text--accent {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-accent-500);
+}
+.btn-text--accent:hover {
+  @media (hover: hover) {
+    background-color: var(--color-accent-200);
+  }
+}
+
+.btn--warning {
+  background-color: var(--color-warning-500);
+  border-color: var(--color-warning-500);
+  color: var(--color-white);
+}
+.btn--warning:hover {
+  @media (hover: hover) {
+    background-color: var(--color-warning-800);
+    border-color: var(--color-warning-800);
+  }
+}
+
+.btn-outline--warning {
+  background-color: transparent;
+  color: var(--color-warning-500);
+  border-color: var(--color-warning-500);
+}
+.btn-outline--warning:hover {
+  @media (hover: hover) {
+    background-color: var(--color-warning-200);
+  }
+}
+
+.btn-text--warning {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-warning-500);
+}
+.btn-text--warning:hover {
+  @media (hover: hover) {
+    background-color: var(--color-warning-200);
+  }
+}
+
+.btn--error {
+  background-color: var(--color-error-500);
+  border-color: var(--color-error-500);
+  color: var(--color-white);
+}
+.btn--error:hover {
+  @media (hover: hover) {
+    background-color: var(--color-error-800);
+    border-color: var(--color-error-800);
+  }
+}
+
+.btn-outline--error {
+  background-color: transparent;
+  color: var(--color-error-500);
+  border-color: var(--color-error-500);
+}
+.btn-outline--error:hover {
+  @media (hover: hover) {
+    background-color: var(--color-error-200);
+  }
+}
+
+.btn-text--error {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-error-500);
+}
+.btn-text--error:hover {
+  @media (hover: hover) {
+    background-color: var(--color-error-200);
+  }
+}
+
+.btn--success {
+  background-color: var(--color-success-500);
+  border-color: var(--color-success-500);
+  color: var(--color-white);
+}
+.btn--success:hover {
+  @media (hover: hover) {
+    background-color: var(--color-success-800);
+    border-color: var(--color-success-800);
+  }
+}
+
+.btn-outline--success {
+  background-color: transparent;
+  color: var(--color-success-500);
+  border-color: var(--color-success-500);
+}
+.btn-outline--success:hover {
+  @media (hover: hover) {
+    background-color: var(--color-success-200);
+  }
+}
+
+.btn-text--success {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-success-500);
+}
+.btn-text--success:hover {
+  @media (hover: hover) {
+    background-color: var(--color-success-200);
+  }
+}
+
+.btn--info {
+  background-color: var(--color-info-500);
+  border-color: var(--color-info-500);
+  color: var(--color-white);
+}
+.btn--info:hover {
+  @media (hover: hover) {
+    background-color: var(--color-info-800);
+    border-color: var(--color-info-800);
+  }
+}
+
+.btn-outline--info {
+  background-color: transparent;
+  color: var(--color-info-500);
+  border-color: var(--color-info-500);
+}
+.btn-outline--info:hover {
+  @media (hover: hover) {
+    background-color: var(--color-info-200);
+  }
+}
+
+.btn-text--info {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-info-500);
+}
+.btn-text--info:hover {
+  @media (hover: hover) {
+    background-color: var(--color-info-200);
+  }
+}
+
+.btn--disabled {
+  background-color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+  color: var(--color-white);
+}
+.btn--disabled:hover {
+  @media (hover: hover) {
+    background-color: var(--color-disabled-800);
+    border-color: var(--color-disabled-800);
+  }
+}
+
+.btn-outline--disabled {
+  background-color: transparent;
+  color: var(--color-disabled-500);
+  border-color: var(--color-disabled-500);
+}
+.btn-outline--disabled:hover {
+  @media (hover: hover) {
+    background-color: var(--color-disabled-200);
+  }
+}
+
+.btn-text--disabled {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-disabled-500);
+}
+.btn-text--disabled:hover {
+  @media (hover: hover) {
+    background-color: var(--color-disabled-200);
+  }
+}
+
+.btn--disabled,
+.btn-outline--disabled,
+.btn-text--disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+}

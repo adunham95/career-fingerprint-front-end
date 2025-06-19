@@ -6,7 +6,11 @@
 
 <AccountHeader
 	appTitle="Career Fingerprint"
-	routes={[{ title: 'Dashboard', path: '/dashboard' }]}
+	routes={[
+		{ title: 'Dashboard', path: '/dashboard' },
+		{ title: 'Profile', path: '/profile' },
+		{ title: 'Resumes', path: '/resumes' }
+	]}
 />
 
 {@render children()}

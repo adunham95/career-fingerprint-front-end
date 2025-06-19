@@ -26,7 +26,7 @@
 						with confidence.
 					</p>
 					<div class="mt-10 flex items-center gap-x-6">
-						<a href="/get-started" class="btn">Build My Fingerprint</a>
+						<a href="/get-started" class="btn btn--primary">Build My Fingerprint</a>
 					</div>
 				</div>
 			</div>

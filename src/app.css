@@ -5,6 +5,7 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
+	/* Surfaces */
 	--color-background: #fdfaf9;
 	--color-surface-50: #ffffff;
 	--color-surface-100: #ffffff;
@@ -12,6 +13,7 @@
 	--color-surface-300: #fffefc;
 	--color-surface-400: #fcfbfa;
 	--color-surface-500: #fdfaf9;
+	/* Accent */
 	--color-accent: #00bfa6;
 	--color-accent-100: #e1faf8;
 	--color-accent-200: #b4f0eb;
@@ -23,6 +25,7 @@
 	--color-accent-800: #007350;
 	--color-accent-900: #005737;
 	--color-accent-950: #003820;
+	/* Secondary */
 	--color-secondary: #113a5d;
 	--color-secondary-50: #edf5f7;
 	--color-secondary-100: #ddebf0;
@@ -35,6 +38,7 @@
 	--color-secondary-800: #061c38;
 	--color-secondary-900: #031229;
 	--color-secondary-950: #010a1a;
+	/* Primary */
 	--color-primary: #ff7a8a;
 	--color-primary-50: #fff7fb;
 	--color-primary-100: #fff2f9;
@@ -48,6 +52,67 @@
 	--color-primary-900: #731921;
 	--color-primary-950: #4a0a10;
 
+	/* Warning */
+	--color-warning-50: #fcfbf0;
+	--color-warning-100: #faf7e1;
+	--color-warning-200: #f2e9b6;
+	--color-warning-300: #ebdb8d;
+	--color-warning-400: #debc43;
+	--color-warning-500: #ce9a00;
+	--color-warning-600: #ba8500;
+	--color-warning-700: #9c6500;
+	--color-warning-800: #7d4b00;
+	--color-warning-900: #5c3200;
+	--color-warning-950: #3b1c00;
+	/* Error */
+	--color-error-50: #fcf2f8;
+	--color-error-100: #f7e4ed;
+	--color-error-200: #edbbd1;
+	--color-error-300: #e398b4;
+	--color-error-400: #cf5773;
+	--color-error-500: #b9202f;
+	--color-error-600: #a81928;
+	--color-error-700: #8c121c;
+	--color-error-800: #700b14;
+	--color-error-900: #54070c;
+	--color-error-950: #360306;
+	/* Success */
+	--color-success-50: #edf7f3;
+	--color-success-100: #dff2ea;
+	--color-success-200: #b4dec9;
+	--color-success-300: #8dc9a9;
+	--color-success-400: #4da36b;
+	--color-success-500: #1d7a32;
+	--color-success-600: #186e2b;
+	--color-success-700: #115c20;
+	--color-success-800: #0a4a16;
+	--color-success-900: #06380e;
+	--color-success-950: #022407;
+	/* Info */
+	--color-info-50: #f0f9fa;
+	--color-info-100: #dcf1f2;
+	--color-info-200: #afdce0;
+	--color-info-300: #86c7cf;
+	--color-info-400: #439fab;
+	--color-info-500: #117686;
+	--color-info-600: #0f677a;
+	--color-info-700: #0a4f66;
+	--color-info-800: #073b52;
+	--color-info-900: #04283d;
+	--color-info-950: #021626;
+	/* Disabled */
+	--color-disabled-50: #f5f7f7;
+	--color-disabled-100: #edeff0;
+	--color-disabled-200: #d0d4d6;
+	--color-disabled-300: #b4bbbf;
+	--color-disabled-400: #81898f;
+	--color-disabled-500: #52595f;
+	--color-disabled-600: #414a54;
+	--color-disabled-700: #2e3a47;
+	--color-disabled-800: #1d2938;
+	--color-disabled-900: #111b2b;
+	--color-disabled-950: #070e1c;
+
 	--font-title: 'Libre Baskerville', serif;
 
 	--font-paragraph: 'Josefin Sans', sans-serif;
@@ -58,40 +123,11 @@
 		border-radius: var(--radius-md);
 		padding-inline: --spacing(2);
 		padding-block: --spacing(2);
-		background-color: var(--color-primary-500);
-		border-color: var(--color-primary-500);
-		font-size: var(--text-base); /* 1rem (16px) */
-		line-height: var(--text-base--line-height); /* calc(1.5 / 1) */
-		color: var(--color-white);
+		font-size: var(--text-base);
+		line-height: var(--text-base--line-height);
 		font-weight: var(--font-weight-medium);
 		cursor: pointer;
 		border: 2px solid;
-		&:hover {
-			@media (hover: hover) {
-				background-color: var(--color-primary-800);
-			}
-		}
-	}
-
-	.btn-outline {
-		background-color: transparent;
-		color: var(--color-primary-500);
-		&:hover {
-			@media (hover: hover) {
-				background-color: var(--color-primary-200);
-			}
-		}
-	}
-
-	.btn-text {
-		background-color: transparent;
-		border-color: transparent;
-		color: var(--color-primary-500);
-		&:hover {
-			@media (hover: hover) {
-				background-color: var(--color-primary-200);
-			}
-		}
 	}
 
 	.btn-small {
@@ -99,6 +135,7 @@
 		font-size: var(--text-sm);
 		line-height: var(--text-sm--line-height);
 	}
+
 	.btn-custom {
 		background-color: var(--color-custom);
 		&:hover {
@@ -117,9 +154,3 @@ body {
 	background-color: var(--color-background);
 	color: var(--color-secondary-700);
 }
-
-/* <button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
-<button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
-<button type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
-<button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button>
-<button type="button" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Button text</button> */

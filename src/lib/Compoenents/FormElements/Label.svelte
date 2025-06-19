@@ -2,7 +2,7 @@
 	export interface LabelProps {
 		label?: string;
 		subLabel?: string;
-		id: string;
+		id?: string;
 		hideLabel?: boolean;
 		labelClassName?: string;
 	}
@@ -14,7 +14,7 @@
 
 <label
 	for={id}
-	class={`block text-sm font-medium leading-6 ${labelClassName} ${hideLabel ? 'sr-only' : ''}`}
+	class={`block text-sm leading-6 font-medium ${labelClassName} ${hideLabel ? 'sr-only' : ''}`}
 >
 	{label}
 	{#if subLabel}
