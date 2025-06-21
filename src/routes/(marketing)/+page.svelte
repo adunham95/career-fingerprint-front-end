@@ -337,7 +337,7 @@
 				your future with Career Fingerprint.
 			</p>
 			<div class="mt-10 flex items-center justify-center gap-x-6">
-				<a href="/get-started" class="btn">Get started with your own fingerprint</a>
+				<a href="/get-started" class="btn btn--primary">Get started with your own fingerprint</a>
 			</div>
 		</div>
 	</div>
