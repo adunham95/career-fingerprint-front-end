@@ -34,8 +34,7 @@
 			</button>
 		</div>
 		<div class="hidden lg:flex lg:gap-x-12">
-			<a href="#" class="text-sm/6 font-semibold text-gray-900">Pricing</a>
-			<a href="#" class="text-sm/6 font-semibold text-gray-900">About</a>
+			<a href="/about" class="text-sm/6 font-semibold text-gray-900">About</a>
 		</div>
 		<div class="hidden lg:flex lg:flex-1 lg:justify-end">
 			<a href="/dashboard" class="text-sm/6 font-semibold text-gray-900"
@@ -222,7 +221,7 @@
 						<h3 class="text-sm/6 font-semibold text-white">Company</h3>
 						<ul role="list" class="mt-6 space-y-4">
 							<li>
-								<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">About</a>
+								<a href="/about" class="text-sm/6 text-gray-400 hover:text-gray-300">About</a>
 							</li>
 							<li>
 								<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Blog</a>

@@ -1,6 +1,51 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Compoenents/Containers/Card.svelte';
 	import TextInput from '$lib/Compoenents/FormElements/TextInput.svelte';
+
+	let email = $state('');
+	let password = $state('');
+	let isLoading = $state(false);
+
+	async function login(e: SubmitEvent) {
+		e.preventDefault();
+
+		console.log({ email, password });
+
+		isLoading = true;
+		const url = `${PUBLIC_API_URL}/auth/login`;
+
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json' // Set content type to JSON
+				},
+				body: JSON.stringify({
+					email,
+					password
+				})
+			});
+			if (res.ok) {
+				// toastStore.show({ message: 'Successfully logged in', type: 'success' });
+				const data = await res.json();
+				console.log(data);
+				await goto('/dashboard');
+				isLoading = false;
+			} else {
+				const data = await res.json();
+				console.log(res, data);
+				// toastStore.show({ message: 'Error logging in', type: 'error' });
+				isLoading = false;
+			}
+		} catch (error) {
+			// toastStore.show({ message: 'Error logging in', type: 'error' });
+			console.error('There was a problem with the fetch operation:', error);
+			isLoading = false;
+		}
+	}
 </script>
 
 <div class="inset-0 flex h-screen w-screen items-center justify-center">
@@ -10,12 +55,20 @@
 				>Create your account</a
 			>
 		</p>
-		<TextInput id="email" label="Email" />
-		<TextInput id="password" label="Password" type="password" />
-		<div class="flex w-full justify-between pt-2">
-			<button class="btn btn-text--primary btn-small">Forgot Password</button>
-			<button class="btn btn-text--primary btn-small">Login</button>
-		</div>
+		<form onsubmit={(e) => login(e)}>
+			<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
+			<TextInput
+				id="password"
+				label="Password"
+				type="password"
+				bind:value={password}
+				autocomplete={'current-password webauthn'}
+			/>
+			<div class="flex w-full justify-between pt-2">
+				<button class="btn btn-text--primary btn-small">Forgot Password</button>
+				<button class="btn btn-text--primary btn-small">Login</button>
+			</div>
+		</form>
 	</Card>
 </div>
 

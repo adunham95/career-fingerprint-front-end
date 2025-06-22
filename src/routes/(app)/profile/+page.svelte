@@ -34,7 +34,7 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="submit" class="btn">Update</button>
+				<button type="submit" class="btn btn--primary">Update</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
@@ -46,8 +46,8 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="button" class="btn btn-text">Delete</button>
-				<button type="submit" class="btn">Save</button>
+				<button type="button" class="btn btn-text--error">Delete</button>
+				<button type="submit" class="btn btn--primary">Save</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
@@ -61,8 +61,8 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="button" class="btn btn-text">Delete</button>
-				<button type="submit" class="btn">Save</button>
+				<button type="button" class="btn btn-text--error">Delete</button>
+				<button type="submit" class="btn btn--primary">Save</button>
 			{/snippet}
 		</Card>
 		<Card className="md:col-span-2">
@@ -74,8 +74,8 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="button" class="btn btn-text">Delete</button>
-				<button type="submit" class="btn">Save</button>
+				<button type="button" class="btn btn-text--error">Delete</button>
+				<button type="submit" class="btn btn--primary">Save</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
