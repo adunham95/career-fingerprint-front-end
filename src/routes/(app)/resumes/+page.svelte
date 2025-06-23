@@ -1,6 +1,6 @@
 <script>
-	import Card from '$lib/Compoenents/Containers/Card.svelte';
-	import PageContainer from '$lib/Compoenents/Containers/PageContainer.svelte';
+	import Card from '$lib/Components/Containers/Card.svelte';
+	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 </script>
 
 <PageContainer className="py-2">

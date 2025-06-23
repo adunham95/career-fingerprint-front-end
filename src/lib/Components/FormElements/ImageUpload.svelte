@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Loader from '$lib/Components/Loader.svelte';
-	import { toastStore } from '$lib/stores/toast';
+	// import { toastStore } from '$lib/stores/toast';
 	import Label, { type LabelProps } from './Label.svelte';
 
 	let isLoading = $state(false);
@@ -27,7 +27,7 @@
 		isLoading = true;
 		let file = e?.currentTarget?.files?.[0];
 		if (!file) {
-			toastStore.show({ type: 'error', message: 'No File Selected' });
+			// toastStore.show({ type: 'error', message: 'No File Selected' });
 			return;
 		}
 
@@ -41,15 +41,15 @@
 			});
 			const data = await res.json();
 			if (data.success) {
-				toastStore.show({ type: 'success', message: 'Upload successful' });
+				// toastStore.show({ type: 'success', message: 'Upload successful' });
 				console.log(data);
 				value = data.result.variants[0];
 			} else {
-				toastStore.show({ type: 'error', message: 'Upload failed' });
+				// toastStore.show({ type: 'error', message: 'Upload failed' });
 				console.error(data.errors);
 			}
 		} catch (err: unknown) {
-			toastStore.show({ type: 'error', message: 'Upload failed' });
+			// toastStore.show({ type: 'error', message: 'Upload failed' });
 			console.log(err);
 		} finally {
 			isLoading = false;
@@ -62,12 +62,12 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<label
 		for={id}
-		class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 relative"
+		class="relative mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
 	>
 		<input class="sr-only" {id} type="file" accept="image/*" onchange={uploadImage} />
 
 		<div>
-			<div class="flex justify-center items-center">
+			<div class="flex items-center justify-center">
 				{#if isLoading}
 					<Loader />
 				{:else if value}

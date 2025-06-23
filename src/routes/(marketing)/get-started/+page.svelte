@@ -1,8 +1,8 @@
 <script>
-	import CheckCards from '$lib/Compoenents/FormElements/CheckCards.svelte';
-	import InlineTextInput from '$lib/Compoenents/FormElements/InlineTextInput.svelte';
-	import TextArea from '$lib/Compoenents/FormElements/TextArea.svelte';
-	import TextInput from '$lib/Compoenents/FormElements/TextInput.svelte';
+	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
+	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
+	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 </script>
 
 <div class="mx-auto max-w-2xl px-3 py-3">

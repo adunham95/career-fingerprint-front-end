@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AccountHeader from '$lib/Compoenents/Header/AccountHeader.svelte';
+	import AccountHeader from '$lib/Components/Header/AccountHeader.svelte';
 
 	let { children, data } = $props();
 

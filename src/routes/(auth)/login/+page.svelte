@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import Card from '$lib/Compoenents/Containers/Card.svelte';
-	import TextInput from '$lib/Compoenents/FormElements/TextInput.svelte';
+	import Card from '$lib/Components/Containers/Card.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 
 	let email = $state('');
 	let password = $state('');

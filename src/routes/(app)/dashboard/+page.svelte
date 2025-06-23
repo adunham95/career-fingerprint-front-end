@@ -1,5 +1,5 @@
 <script>
-	import PageContainer from '$lib/Compoenents/Containers/PageContainer.svelte';
+	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 </script>
 
 <PageContainer className="py-6">

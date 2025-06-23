@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Accordion from '$lib/Compoenents/Accordion.svelte';
-	import Card from '$lib/Compoenents/Containers/Card.svelte';
-	import PageContainer from '$lib/Compoenents/Containers/PageContainer.svelte';
-	import Label from '$lib/Compoenents/FormElements/Label.svelte';
-	import TextArea from '$lib/Compoenents/FormElements/TextArea.svelte';
-	import TextInput from '$lib/Compoenents/FormElements/TextInput.svelte';
-	import Toggle from '$lib/Compoenents/FormElements/Toggle.svelte';
+	import Accordion from '$lib/Components/Accordion.svelte';
+	import Card from '$lib/Components/Containers/Card.svelte';
+	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import Label from '$lib/Components/FormElements/Label.svelte';
+	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 
 	const personalInfo = {
 		firstName: 'Alex',
