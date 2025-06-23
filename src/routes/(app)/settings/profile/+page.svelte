@@ -15,6 +15,7 @@
 		<Card className="md:col-span-2">
 			<form>
 				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+					<ImageUpload className="sm:col-span-6" label="Profile Image" />
 					<TextInput
 						className="sm:col-span-3"
 						id="firstName"
@@ -53,10 +54,41 @@
 					<Select
 						label="What are you looking for?"
 						className="sm:col-span-3"
-						options={[{ id: 'growing', label: 'Growing my skillset' }]}
+						options={[
+							{ id: 'growing', label: 'Growing my skillset' },
+							{ id: 'job', label: 'Looking for a job' },
+							{ id: 'student', label: 'A student preparing for a career' }
+						]}
 						value={data.user.lookingFor}
 					/>
-					<ImageUpload />
+					<Select
+						id="timezone"
+						label="What timezone"
+						className="sm:col-span-3"
+						options={[
+							{ id: 'pst', label: 'Pacific Standard Time' },
+							{ id: 'mst', label: 'Mountain Standard Time' },
+							{ id: 'cst', label: 'Central Standard Time' },
+							{ id: 'est', label: 'Eastern Standard Time' },
+							{ id: 'ast', label: 'Atlantic Standard Time' },
+							{ id: 'akst', label: 'Alaska Standard Time' },
+							{ id: 'hst', label: 'Hawaii-Aleutian Standard Time' },
+							{ id: 'gmt', label: 'Greenwich Mean Time' },
+							{ id: 'cet', label: 'Central European Time' },
+							{ id: 'eet', label: 'Eastern European Time' },
+							{ id: 'ist', label: 'India Standard Time' },
+							{ id: 'cst-asia', label: 'China Standard Time' },
+							{ id: 'jst', label: 'Japan Standard Time' },
+							{ id: 'kst', label: 'Korea Standard Time' },
+							{ id: 'aest', label: 'Australian Eastern Standard Time' },
+							{ id: 'acst', label: 'Australian Central Standard Time' },
+							{ id: 'awst', label: 'Australian Western Standard Time' },
+							{ id: 'nzst', label: 'New Zealand Standard Time' },
+							{ id: 'msk', label: 'Moscow Standard Time' },
+							{ id: 'sast', label: 'South Africa Standard Time' }
+						]}
+						value={'est'}
+					/>
 				</div>
 			</form>
 			{#snippet actions()}
@@ -65,31 +97,11 @@
 			{/snippet}
 		</Card>
 	</TwoColumn>
-	<TwoColumn title={'Positions'} childrenClassName="space-y-4">
-		<Card className="md:col-span-2">
-			<form>
-				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<TextInput id="jobTitle" label="Title" className="sm:col-span-3" />
-					<TextInput id="company" label="Company" className="sm:col-span-3" />
-					<TextArea id="description" label="Description" className="sm:col-span-6" />
-				</div>
-			</form>
+	<TwoColumn title="Delete Your Account">
+		<Card>
+			<p class="pb-2">If you no longer want to use our service</p>
 			{#snippet actions()}
-				<button type="button" class="btn btn-text--error">Delete</button>
-				<button type="submit" class="btn btn--primary">Save</button>
-			{/snippet}
-		</Card>
-		<Card className="md:col-span-2">
-			<form>
-				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<TextInput id="jobTitle" label="Title" className="sm:col-span-3" />
-					<TextInput id="company" label="Company" className="sm:col-span-3" />
-					<TextArea id="description" label="Description" className="sm:col-span-6" />
-				</div>
-			</form>
-			{#snippet actions()}
-				<button type="button" class="btn btn-text--error">Delete</button>
-				<button type="submit" class="btn btn--primary">Save</button>
+				<button class="btn btn--error">Delete Account</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
