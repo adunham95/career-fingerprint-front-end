@@ -4,17 +4,17 @@
 	import Card from '$lib/Compoenents/Containers/Card.svelte';
 	import TextInput from '$lib/Compoenents/FormElements/TextInput.svelte';
 
-	let email = $state('');
-	let password = $state('');
+	let email = $state();
+	let password = $state();
+	let firstName = $state();
+	let lastName = $state();
 	let isLoading = $state(false);
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
 
-		console.log({ email, password });
-
 		isLoading = true;
-		const url = `${PUBLIC_API_URL}/auth/login`;
+		const url = `${PUBLIC_API_URL}/users`;
 
 		try {
 			const res = await fetch(url, {
@@ -24,6 +24,8 @@
 					'Content-Type': 'application/json' // Set content type to JSON
 				},
 				body: JSON.stringify({
+					firstName,
+					lastName,
 					email,
 					password
 				})
@@ -32,7 +34,7 @@
 				// toastStore.show({ message: 'Successfully logged in', type: 'success' });
 				const data = await res.json();
 				console.log(data);
-				await goto('/dashboard');
+				await goto('/login');
 				isLoading = false;
 			} else {
 				const data = await res.json();
@@ -49,23 +51,20 @@
 </script>
 
 <Card headline="Sign in" contentClassName="space-y-3">
-	<p>
-		Not a member? <a href="/get-started" class=" text-primary hover:text-primary-800"
-			>Create your account</a
-		>
-	</p>
-	<form onsubmit={(e) => login(e)} class="space-y-2">
-		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
+	<form onsubmit={(e) => login(e)} class="gap-2 space-y-2 md:grid md:grid-cols-2">
+		<TextInput id="firstName" label="First Name" bind:value={firstName} autocomplete="given-name" />
+		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
+		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email'} />
 		<TextInput
 			id="password"
 			label="Password"
 			type="password"
 			bind:value={password}
-			autocomplete={'current-password webauthn'}
+			autocomplete={'new-password'}
 		/>
 		<div class="flex w-full justify-between pt-2">
-			<button class="btn btn-text--primary btn-small">Forgot Password</button>
-			<button class="btn btn-text--primary btn-small">Login</button>
+			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
+			<button class="btn btn-text--primary btn-small">Create Account</button>
 		</div>
 	</form>
 </Card>
