@@ -1,25 +1,33 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import AutogrowTextInput from '$lib/Components/FormElements/AutogrowTextInput.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
 
-	const personalInfo = {
-		firstName: 'Alex',
-		lastName: 'Johnson',
-		title: 'Senior Software Engineer',
-		email: 'alex.johnson@example.com',
-		phone: '(555) 123-4567',
-		location: 'San Francisco, CA',
-		website: 'alexjohnson.dev',
-		linkedin: 'linkedin.com/in/alexjohnson',
-		github: 'github.com/alexjohnson',
-		summary:
-			'Experienced software engineer with 8+ years of experience specializing in full-stack development. Passionate about creating scalable, efficient solutions and mentoring junior developers.'
-	};
+	const { data } = $props();
+
+	console.log(data);
+
+	let resumeName = $state(data.resume.name);
+
+	let personalInfo = $state({
+		firstName: data.resume.firstName || data.user.firstName,
+		lastName: data.resume.lastName || data.user.lastName,
+		title: data.resume.title,
+		email: data.resume.contactEmail || data.user.email,
+		phoneNumber: data.resume.phoneNumber,
+		location: data.resume.location,
+		website: data.resume.website,
+		linkedin: data.resume.linkedIn,
+		github: data.resume.github,
+		summary: data.resume.summary || data.user.pitch || ''
+	});
 
 	const experience = [
 		{
@@ -84,19 +92,65 @@
 			description: "Minor in Mathematics. Dean's List for 6 semesters."
 		}
 	];
+
+	async function updateResumeName() {
+		const url = `${PUBLIC_API_URL}/resume/${data.resume.id}`;
+
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				name: resumeName
+			})
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `Resume Updated`
+			});
+		}
+	}
+
+	async function updateResume() {
+		const url = `${PUBLIC_API_URL}/resume/${data.resume.id}`;
+
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(personalInfo)
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `Resume Updated`
+			});
+		}
+	}
+
+	async function addJob() {}
 </script>
 
 <PageContainer>
-	<h1 class="font-title pt-5 text-3xl">Edit Resume</h1>
+	<div class="pt-6">
+		<AutogrowTextInput
+			label="Resume Name"
+			id="resumeName"
+			bind:value={resumeName}
+			placeholder="Untitled Resume"
+			textSize="text-3xl"
+			onblur={updateResumeName}
+		/>
+	</div>
 	<div class="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">
 		<div class="col-span-1">
-			<TextInput
-				className="pb-1"
-				id="resumeName"
-				label="Resume Name"
-				value=""
-				placeholder="Steve - Senior Software Engineer"
-			/>
 			<Accordion title="Profile">
 				<Card contentClassName="space-y-2 px-4 py-4">
 					<TextInput id="firstName" label="First Name" bind:value={personalInfo.firstName} />
@@ -107,13 +161,13 @@
 						type="email"
 						bind:value={personalInfo.email}
 					/>
-					<TextInput id="phone" label="Phone" type="phone" bind:value={personalInfo.phone} />
+					<TextInput id="phone" label="Phone" type="phone" bind:value={personalInfo.phoneNumber} />
 					<TextInput id="location" label="Location" bind:value={personalInfo.location} />
 					<TextInput id="website" label="Website" bind:value={personalInfo.website} />
 					<TextInput id="linkedin" label="Linkedin" bind:value={personalInfo.linkedin} />
 					<TextArea id="summary" label="Summary" bind:value={personalInfo.summary} />
 					{#snippet actions()}
-						<button class="btn btn-text--success btn-small">Save</button>
+						<button class="btn btn-text--success btn-small" onclick={updateResume}>Save</button>
 					{/snippet}
 				</Card>
 			</Accordion>
@@ -213,7 +267,7 @@
 										d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
 									/>
 								</svg>
-								<span>{personalInfo.phone}</span>
+								<span>{personalInfo.phoneNumber}</span>
 							</div>
 							<div class="mt-2 flex items-center">
 								<svg

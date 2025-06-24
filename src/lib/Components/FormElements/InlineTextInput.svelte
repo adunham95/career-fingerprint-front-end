@@ -28,6 +28,7 @@
 			{id}
 			class="peer block w-full border-0 bg-gray-50 px-3 py-1.5 text-gray-900 placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
 			{placeholder}
+			{value}
 		/>
 		<div
 			class="peer-focus:border-primary absolute inset-x-0 bottom-0 border-t border-gray-300 peer-focus:border-t-2"

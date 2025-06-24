@@ -1,14 +1,45 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { getMonthName } from '$lib/Utils/formatDate';
+
+	const { data } = $props();
+
+	console.log(data);
+
+	let isLoading = $state(false);
+
+	async function createNewResume(e: Event) {
+		e.preventDefault();
+		isLoading = true;
+		const url = `${PUBLIC_API_URL}/resume`;
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			}
+		});
+
+		if (res.ok) {
+			const newResume = await res.json();
+			goto(`/resumes/${newResume.id}`);
+			isLoading = false;
+		}
+	}
 </script>
 
 <PageContainer className="py-2">
 	<ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-		<li>
+		<li class="aspect-square">
 			<button
 				type="button"
 				class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
+				disabled={isLoading}
+				onclick={createNewResume}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -28,13 +59,19 @@
 				<span class="mt-2 block text-sm font-semibold text-gray-900">Create a new resume</span>
 			</button>
 		</li>
-		<li>
-			<a href="/resumes/1">
-				<Card className="h-full">
-					<p>Steve - Senior Software Engineer</p>
-					<p class="text-xs text-gray-400">Last Edited May 2025</p>
-				</Card>
-			</a>
-		</li>
+		{#each data.resumes as resume}
+			{@const date = new Date(resume.updatedAt)}
+			<li class=" aspect-square">
+				<a href={`/resumes/${resume.id}`}>
+					<Card className="h-full">
+						<p>{resume.name}</p>
+						<p class="text-xs text-gray-400">
+							Last Edited {getMonthName(date.getMonth())}
+							{date.getFullYear()}
+						</p>
+					</Card>
+				</a>
+			</li>
+		{/each}
 	</ul>
 </PageContainer>

@@ -7,7 +7,7 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 
-	const { data } = $props();
+	const../settings/profile/$types.js { data } = $props();
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
