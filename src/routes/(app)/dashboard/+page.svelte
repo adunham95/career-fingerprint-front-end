@@ -1,7 +1,10 @@
 <script>
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
 	let { data } = $props();
+
+	let isOpen = $state(false);
 </script>
 
 <PageContainer className="py-6">
@@ -50,3 +53,13 @@
 		</div>
 	</div>
 </PageContainer>
+
+<button
+	onclick={() => (isOpen = !isOpen)}
+	class="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
+	>Open drawer</button
+>
+
+<Drawer bind:isOpen title="Add Achievement" subTitle="Add an a achievement here">
+	<h1>Hello world</h1>
+</Drawer>
