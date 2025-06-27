@@ -1,8 +1,59 @@
-<script>
+<script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast';
+
+	function scrollToView(id: string) {
+		const elm = document.getElementById(id);
+		if (elm) elm.scrollIntoView({ behavior: 'smooth' });
+	}
+
+	let profile = $state({
+		lookingFor: '',
+		firstName: '',
+		companyName: '',
+		institution: '',
+		degree: '',
+		startDate: '',
+		endDate: '',
+		email: '',
+		password: '',
+		achievement: ''
+	});
+
+	async function createAccount() {
+		const url = `${PUBLIC_API_URL}/register`;
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				...profile,
+				startDate: profile.startDate ? new Date(profile.startDate).toISOString() : ''
+			})
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `User saved`
+			});
+			scrollToView('stickers');
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `Error updating User`
+			});
+		}
+	}
+
+	$inspect(profile);
 </script>
 
 <div class="mx-auto max-w-2xl px-3 py-3">
@@ -13,80 +64,144 @@
 			We’re here to help you build your unique career story — and we’re glad you’re here
 		</h3>
 		<div class="flex justify-end py-2">
-			<button class="btn btn--primary">Lets Get Started</button>
+			<button class="btn btn--primary" onclick={() => scrollToView('current-situation')}
+				>Lets Get Started</button
+			>
 		</div>
 	</div>
 
 	<!-- Step 2 -->
-	<div id="step-2" class="flex min-h-screen flex-col items-center justify-center">
+	<div id="current-situation" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-4 text-lg">Which of these best describes your current situation?</h3>
 		<CheckCards
 			wrapperClass="sm:grid-cols-2"
-			value=""
 			groupName="currentRole"
 			options={[
-				{ id: 'current', label: 'Currently Employed' },
+				{ id: 'growing', label: 'Currently Employed' },
 				{ id: 'student', label: 'Student' },
-				{ id: 'between', label: 'Between Roles' }
+				{ id: 'job', label: 'Looking for a job' }
 			]}
+			bind:value={profile.lookingFor}
 		/>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary">Continue</button>
+			<button class="btn btn--primary" onclick={() => scrollToView('introduction')}>Continue</button
+			>
 		</div>
 	</div>
 
 	<!-- Step 3 -->
-	<div id="step-3" class="flex min-h-screen flex-col items-center justify-center">
+	<div id="introduction" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-4 text-lg">Introduce Yourself</h3>
-		<p>
+		<p class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
 			Hello, my name is <InlineTextInput
-				id="firstName"
+				id="firstName-growing"
 				label="First name"
 				placeholder="Adrian"
-				value=""
+				bind:value={profile.firstName}
 			/> and I work at <InlineTextInput
-				id="companyName"
+				id="companyName-gowing"
 				label="Company Name"
 				placeholder="Google"
-				value=""
-			/> since <InlineTextInput id="month" label="Month" value="" type="date" width={130} />
+				bind:value={profile.companyName}
+			/> since <InlineTextInput
+				id="start-date-growing"
+				label="Month"
+				bind:value={profile.startDate}
+				type="date"
+				width={130}
+			/>
 		</p>
+		<p class={profile.lookingFor === 'job' ? 'block' : 'hidden'}>
+			Hello, my name is <InlineTextInput
+				id="firstName-job"
+				label="First name"
+				placeholder="Adrian"
+				bind:value={profile.firstName}
+			/> and I worked at <InlineTextInput
+				id="companyName-job"
+				label="Company Name"
+				placeholder="Google"
+				bind:value={profile.companyName}
+			/> from <InlineTextInput
+				id="start-job"
+				label="Starting Date"
+				bind:value={profile.startDate}
+				type="date"
+				width={130}
+			/> to
+			<InlineTextInput
+				id="end-job"
+				label="Ending Date"
+				bind:value={profile.endDate}
+				type="date"
+				width={130}
+			/>
+		</p>
+		<p class={profile.lookingFor === 'student' ? 'block' : 'hidden'}>
+			Hello, my name is <InlineTextInput
+				id="firstName-student"
+				label="First name"
+				placeholder="Adrian"
+				bind:value={profile.firstName}
+			/> and I've been studying <InlineTextInput
+				id="degree-student"
+				label="Degree"
+				placeholder="Business Administration"
+				bind:value={profile.degree}
+			/> at <InlineTextInput
+				id="schoolName-student"
+				label="School Name"
+				placeholder="Harvard"
+				bind:value={profile.institution}
+			/> since <InlineTextInput
+				id="start-student"
+				label="Starting Date"
+				bind:value={profile.startDate}
+				type="date"
+				width={130}
+			/>
+		</p>
+		<!-- {/if} -->
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary">Continue</button>
+			<button class="btn btn--primary" onclick={() => scrollToView('achievement')}>
+				Continue</button
+			>
 		</div>
 	</div>
 
 	<!-- Step 4 -->
-	<div id="step-4" class="flex min-h-screen flex-col items-center justify-center">
+	<div id="achievement" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-4 text-lg">
-			Tell us one thing you’re proud of from your time at [Company/School Name].
+			Tell us one thing you’re proud of from your time at {profile.institution ||
+				profile.companyName}.
 		</h3>
 		<TextArea
 			className="w-full max-w-2xl"
 			id="tellus"
 			placeholder="E.g., Led a team project, built a new system, mentored a junior, etc."
+			bind:value={profile.achievement}
 		/>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary">Continue</button>
+			<button class="btn btn--primary" onclick={() => scrollToView('account')}>Continue</button>
 		</div>
 	</div>
 
 	<!-- Step 5 -->
-	<div id="step-5" class="flex min-h-screen flex-col items-center justify-center">
+	<div id="account" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Create Your Account</h3>
 		<p class="pb-4">Save your progress and access it anytime.</p>
 		<div>
-			<TextInput id="email" label="Email" type="email" />
-			<TextInput id="password" label="Password" />
+			<TextInput id="email" label="Email" type="email" bind:value={profile.email} />
+			<TextInput id="password" label="Password" bind:value={profile.password} />
 		</div>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary">Create Account</button>
+			<button class="btn btn--primary" onclick={createAccount}>Create Account</button>
 		</div>
 	</div>
 
-	<!-- Step 5 -->
-	<div id="step-5" class="flex min-h-screen flex-col items-center justify-center">
-		<h3 class="font-title pb-2 text-lg">Want free CareerFingerprint stickers?</h3>
+	<!-- Step 6 -->
+	<div id="stickers" class="flex min-h-screen flex-col items-center justify-center">
+		<h3 class="font-title pb-2 text-lg">Want free Skill Fingerprint stickers?</h3>
 		<p class="pb-4">
 			Drop your mailing address and we’ll send you a small pack to celebrate your career journey!
 		</p>
@@ -97,13 +212,17 @@
 			<TextInput id="postalCode" label="ZIP / Postal code" />
 		</div>
 		<div class="flex w-full flex-col justify-end gap-1.5 pt-2 sm:flex-row">
-			<button class="btn btn-text--secondary">I dont want stickers</button>
-			<button class="btn btn--primary">Claim my stickers!</button>
+			<button class="btn btn-text--secondary" onclick={() => scrollToView('premium')}
+				>I dont want stickers</button
+			>
+			<button class="btn btn--primary" onclick={() => scrollToView('premium')}
+				>Claim my stickers!</button
+			>
 		</div>
 	</div>
 
-	<!-- Step 6 -->
-	<div id="step-6" class="flex min-h-screen flex-col items-center justify-center">
+	<!-- Step 7 -->
+	<div id="premium" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-4">Unlock additional features when building your fingerprint</p>
 
