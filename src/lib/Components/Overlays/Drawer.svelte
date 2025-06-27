@@ -132,7 +132,7 @@
 						</p>
 					</div>
 				</div>
-				<div class="flex flex-1 flex-col justify-between">
+				<div class="flex flex-1 flex-col justify-between p-4">
 					{@render children()}
 				</div>
 			</div>
