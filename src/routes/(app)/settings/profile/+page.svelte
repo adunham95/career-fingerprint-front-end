@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
@@ -6,8 +7,62 @@
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
 
-	const../settings/profile/$types.js { data } = $props();
+	const { data } = $props();
+
+	let newPassword = $state(null);
+	let confirmPassword = $state(null);
+
+	function getUserData(saveType: 'profile' | 'password' | 'account') {
+		switch (saveType) {
+			case 'account':
+				return {
+					firstName: data.user.firstName,
+					lastName: data.user.lastName,
+					profileImage: data.user.profileImage,
+					email: data.user.email
+				};
+			case 'password':
+				return {
+					password: newPassword
+				};
+			case 'profile':
+				return {
+					pitch: data.user.pitch,
+					lookingFor: data.user.lookingFor
+					// timezone: data.user.timezone
+				};
+
+			default:
+				return {};
+		}
+	}
+
+	async function updateAccount(saveType: 'profile' | 'password' | 'account') {
+		const url = `${PUBLIC_API_URL}/users/${data.user.id}`;
+
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(getUserData(saveType))
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `User saved`
+			});
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `Error updating User`
+			});
+		}
+	}
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
@@ -15,34 +70,63 @@
 		<Card className="md:col-span-2">
 			<form>
 				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<ImageUpload className="sm:col-span-6" label="Profile Image" />
+					<ImageUpload
+						className="sm:col-span-6"
+						label="Profile Image"
+						bind:value={data.user.profileImage}
+					/>
 					<TextInput
 						className="sm:col-span-3"
 						id="firstName"
 						label="First Name"
 						placeholder="Adrian"
-						value={data.user.firstName}
+						bind:value={data.user.firstName}
 					/>
 					<TextInput
 						className="sm:col-span-3"
 						id="lastName"
 						label="Last Name"
 						placeholder="Dunham"
-						value={data.user.lastName}
+						bind:value={data.user.lastName}
 					/>
 					<TextInput
 						className="sm:col-span-6"
 						id="email"
 						label="Email"
 						placeholder="adunham95@gmail.com"
-						value={data.user.email}
+						bind:value={data.user.email}
 					/>
-					<TextInput className="sm:col-span-3" id="password" label="Password" />
-					<TextInput className="sm:col-span-3" id="confirm-password" label="Confirm Password" />
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="submit" class="btn btn--primary">Update</button>
+				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('account')}
+					>Update</button
+				>
+			{/snippet}
+		</Card>
+	</TwoColumn>
+	<TwoColumn title={'Password'}>
+		<Card className="md:col-span-2">
+			<form>
+				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+					<TextInput
+						className="sm:col-span-3"
+						id="password"
+						label="Password"
+						bind:value={newPassword}
+					/>
+					<TextInput
+						className="sm:col-span-3"
+						id="confirm-password"
+						label="Confirm Password"
+						bind:value={confirmPassword}
+					/>
+				</div>
+			</form>
+			{#snippet actions()}
+				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('password')}
+					>Update</button
+				>
 			{/snippet}
 		</Card>
 	</TwoColumn>
@@ -50,7 +134,12 @@
 		<Card className="md:col-span-2">
 			<form>
 				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<TextArea className="sm:col-span-6" id="pitch" label="60 Second Pitch" />
+					<TextArea
+						className="sm:col-span-6"
+						id="pitch"
+						label="60 Second Pitch"
+						bind:value={data.user.pitch}
+					/>
 					<Select
 						label="What are you looking for?"
 						className="sm:col-span-3"
@@ -59,7 +148,7 @@
 							{ id: 'job', label: 'Looking for a job' },
 							{ id: 'student', label: 'A student preparing for a career' }
 						]}
-						value={data.user.lookingFor}
+						bind:value={data.user.lookingFor}
 					/>
 					<Select
 						id="timezone"
@@ -87,13 +176,14 @@
 							{ id: 'msk', label: 'Moscow Standard Time' },
 							{ id: 'sast', label: 'South Africa Standard Time' }
 						]}
-						value={'est'}
+						bind:value={data.user.timezone}
 					/>
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="button" class="btn btn-text--error">Delete</button>
-				<button type="submit" class="btn btn--primary">Save</button>
+				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('profile')}
+					>Save</button
+				>
 			{/snippet}
 		</Card>
 	</TwoColumn>

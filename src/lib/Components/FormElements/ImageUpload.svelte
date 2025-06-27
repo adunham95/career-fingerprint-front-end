@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Loader from '$lib/Components/Loader.svelte';
-	// import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '../Toasts/toast';
 	import Label, { type LabelProps } from './Label.svelte';
 
 	let isLoading = $state(false);
@@ -27,7 +27,7 @@
 		isLoading = true;
 		let file = e?.currentTarget?.files?.[0];
 		if (!file) {
-			// toastStore.show({ type: 'error', message: 'No File Selected' });
+			toastStore.show({ type: 'error', message: 'No File Selected' });
 			return;
 		}
 
@@ -41,15 +41,15 @@
 			});
 			const data = await res.json();
 			if (data.success) {
-				// toastStore.show({ type: 'success', message: 'Upload successful' });
+				toastStore.show({ type: 'success', message: 'Upload successful' });
 				console.log(data);
 				value = data.result.variants[0];
 			} else {
-				// toastStore.show({ type: 'error', message: 'Upload failed' });
+				toastStore.show({ type: 'error', message: 'Upload failed' });
 				console.error(data.errors);
 			}
 		} catch (err: unknown) {
-			// toastStore.show({ type: 'error', message: 'Upload failed' });
+			toastStore.show({ type: 'error', message: 'Upload failed' });
 			console.log(err);
 		} finally {
 			isLoading = false;
