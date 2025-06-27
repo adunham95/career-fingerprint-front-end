@@ -29,7 +29,7 @@
 			{headline}
 		</h4>
 	{/if}
-	<div class={`p-8 ${headline && 'pt-4'} ${actions && 'pb-4'} ${contentClassName}`}>
+	<div class={`p-6 ${headline && 'pt-4'} ${actions && 'pb-4'} ${contentClassName}`}>
 		{@render children()}
 	</div>
 	{#if actions}

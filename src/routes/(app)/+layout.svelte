@@ -11,7 +11,8 @@
 	appTitle="Skill Fingerprint"
 	routes={[
 		{ title: 'Dashboard', path: '/dashboard' },
-		{ title: 'Resumes', path: '/resumes' }
+		{ title: 'Resumes', path: '/resumes' },
+		{ title: 'Job Applications', path: '/job-applications' }
 	]}
 	lastName={data.user.lastName}
 	firstName={data.user.firstName}

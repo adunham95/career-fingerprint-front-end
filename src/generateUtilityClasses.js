@@ -61,6 +61,14 @@ variants.forEach((variant) => {
 }
 `;
 
+	output += `
+.badge--${variant} {
+  background-color: var(${colorVar}-50);
+  --tw-ring-color: color-mix(in oklab, var(${colorVar}-600) 10%, transparent);
+  color: var(${colorVar}-500);
+}
+`;
+
 	// Disabled overrides
 	if (variant === 'disabled') {
 		output += `

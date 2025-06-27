@@ -1,9 +1,11 @@
 <script>
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+
+	let { data } = $props();
 </script>
 
 <PageContainer className="py-6">
-	<p class="font-title text-4xl">Hello, Adrian</p>
+	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div class="mt-3 grid grid-cols-4 grid-rows-6 gap-3">
 		<div class="bg-surface-100 col-span-2 row-span-2 rounded border border-gray-200 p-2">
 			Hello World
