@@ -47,9 +47,9 @@
 			Our Starting Point
 		</h2>
 		<p class="text-xl/8 text-gray-600">
-			Career Fingerprint started when Adrian was job searching and needed a place to take note of
-			all his career achievements and realized there was only two solutions. A spreadsheet or a
-			notebook. It was after that he started building the foundations for Career Fingerprint
+			Skill Fingerprint started when Adrian was job searching and needed a place to take note of all
+			his career achievements and realized there was only two solutions. A spreadsheet or a
+			notebook. It was after that he started building the foundations for Skill Fingerprint
 		</p>
 	</div>
 

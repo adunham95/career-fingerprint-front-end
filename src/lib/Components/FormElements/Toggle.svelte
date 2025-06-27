@@ -4,7 +4,7 @@
 	interface Props extends LabelProps {
 		name?: string;
 		required?: boolean;
-		checked?: boolean;
+		checked?: boolean | null;
 		className?: string;
 		checkItemClassName?: string;
 		postLabel?: string;

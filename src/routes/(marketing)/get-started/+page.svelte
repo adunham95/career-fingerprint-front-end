@@ -8,7 +8,7 @@
 <div class="mx-auto max-w-2xl px-3 py-3">
 	<!-- Step 1 -->
 	<div id="step-1" class="flex min-h-screen flex-col items-center justify-center">
-		<h2 class="font-title pb-2 text-3xl">Welcome to Career Fingerprint!</h2>
+		<h2 class="font-title pb-2 text-3xl">Welcome to Skill Fingerprint!</h2>
 		<h3 class="font-title text-lg">
 			We’re here to help you build your unique career story — and we’re glad you’re here
 		</h3>

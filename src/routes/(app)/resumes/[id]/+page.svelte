@@ -4,11 +4,13 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import AutogrowTextInput from '$lib/Components/FormElements/AutogrowTextInput.svelte';
-	import Label from '$lib/Components/FormElements/Label.svelte';
+	import DateInput from '$lib/Components/FormElements/DateInput.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
+	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import type { JobPosition } from '../../../../app.js';
 
 	const { data } = $props();
 
@@ -28,6 +30,8 @@
 		github: data.resume.github,
 		summary: data.resume.summary || data.user.pitch || ''
 	});
+
+	let jobs = $state(data.jobs);
 
 	const experience = [
 		{
@@ -80,12 +84,14 @@
 
 	const education = [
 		{
+			id: '1',
 			institution: 'University of California, Berkeley',
 			degree: 'Master of Science in Computer Science',
 			duration: '2013 - 2015',
 			description: 'Focused on distributed systems and machine learning.'
 		},
 		{
+			id: '2',
 			institution: 'Oregon State University',
 			degree: 'Bachelor of Science in Computer Science',
 			duration: '2009 - 2013',
@@ -135,7 +141,128 @@
 		}
 	}
 
-	async function addJob() {}
+	const typeMap = {
+		education: 'Education',
+		'job-positions': 'Job'
+	};
+
+	async function addObject(type: keyof typeof typeMap) {
+		const url = `${PUBLIC_API_URL}/${type}`;
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			}
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `${typeMap[type]} Added`
+			});
+			switch (type) {
+				case 'job-positions':
+					const newJob: JobPosition = await res.json();
+
+					jobs?.push(newJob);
+
+					break;
+				default:
+					break;
+			}
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `${typeMap[type]} Added`
+			});
+		}
+	}
+
+	async function deleteObject(type: keyof typeof typeMap, id: string) {
+		const url = `${PUBLIC_API_URL}/${type}/${id}`;
+
+		const res = await fetch(url, {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			}
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `${typeMap[type]} Deleted`
+			});
+			switch (type) {
+				case 'job-positions':
+					const newJob: JobPosition = await res.json();
+
+					jobs = jobs?.filter((j) => j.id !== newJob.id);
+
+					break;
+				default:
+					break;
+			}
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `${typeMap[type]} Added`
+			});
+		}
+	}
+
+	function getObjectData(type: keyof typeof typeMap, item: JobPosition) {
+		switch (type) {
+			case 'job-positions':
+				const { name, company, location, description, startDate, endDate, currentPosition } = item;
+				return {
+					name,
+					company,
+					location,
+					description,
+					startDate: startDate ? new Date(startDate).toISOString() : null,
+					endDate: endDate ? new Date(endDate).toISOString() : null,
+					currentPosition
+				};
+
+			default:
+				return {};
+		}
+	}
+
+	async function saveObject(type: keyof typeof typeMap, item: JobPosition) {
+		const url = `${PUBLIC_API_URL}/${type}/${item.id}`;
+
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(getObjectData(type, item))
+		});
+
+		if (res.ok) {
+			toastStore.show({
+				type: 'success',
+				message: `${typeMap[type]} saved`
+			});
+			switch (type) {
+				case 'job-positions':
+					break;
+				default:
+					break;
+			}
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `${typeMap[type]} Added`
+			});
+		}
+	}
 </script>
 
 <PageContainer>
@@ -173,26 +300,37 @@
 			</Accordion>
 			<Accordion title="Jobs">
 				{#snippet actions()}
-					<button class="btn btn-outline--accent btn-small">Add Job</button>
+					<button
+						class="btn btn-outline--accent btn-small"
+						onclick={() => addObject('job-positions')}>Add Job</button
+					>
 				{/snippet}
 				<div class="space-y-4">
-					{#each experience as exp, idx}
+					{#each jobs || [] as job, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
-							<TextInput id={'title' + idx} label="Title" value={exp.position} />
-							<Toggle id={'display' + idx} postLabel="Display On This Resume" />
-							<TextInput id={'company' + idx} label="Company" value={exp.company} />
-							<TextInput id={'location' + idx} label="Location" value={exp.location} />
-							<TextArea id={'description' + idx} label="Basic Description" value={exp.description}
+							<TextInput id={'title' + idx} label="Title" bind:value={job.name} />
+							<TextInput id={'company' + idx} label="Company" bind:value={job.company} />
+							<TextInput id={'location' + idx} label="Location" bind:value={job.location} />
+							<Toggle label="Current Job" bind:checked={job.currentPosition} />
+							<DateInput id={'startDate' + idx} label="Start Date" bind:value={job.startDate} />
+							{#if !job.currentPosition}
+								<DateInput id={'endDate' + idx} label="End Date" bind:value={job.endDate} />
+							{/if}
+							<TextArea
+								id={'description' + idx}
+								label="Basic Description"
+								bind:value={job.description}
 							></TextArea>
-							<Label label="Select what achievements you would like to add to this resume" />
-							<div class=" max-h-36 overflow-y-auto">
-								{#each exp.achievements as ach}
-									<Toggle id={ach} postLabel={ach} />
-								{/each}
-							</div>
 							{#snippet actions()}
-								<button class="btn btn-text--error btn-small">Delete</button>
-								<button class="btn btn-text--success btn-small">Save</button>
+								<button
+									class="btn btn-text--error btn-small"
+									onclick={() => deleteObject('job-positions', job.id)}>Delete</button
+								>
+								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
+								<button
+									class="btn btn-text--success btn-small"
+									onclick={() => saveObject('job-positions', job)}>Save</button
+								>
 							{/snippet}
 						</Card>
 					{/each}
@@ -200,7 +338,9 @@
 			</Accordion>
 			<Accordion title="Education">
 				{#snippet actions()}
-					<button class="btn btn-outline--accent btn-small">Add Education</button>
+					<button class="btn btn-outline--accent btn-small" onclick={() => addObject('education')}
+						>Add Education</button
+					>
 				{/snippet}
 				<div class="space-y-2 rounded border border-gray-300 p-4">
 					<TextInput id="firstName" label="First Name" />
@@ -226,187 +366,7 @@
 			</button>
 		</div>
 		<div class="md:col-span-2">
-			<Card className="font-serif">
-				<!-- Header -->
-				<div>
-					<div class="flex flex-col justify-between md:flex-row">
-						<div>
-							<p class="text-3xl font-bold">{personalInfo.firstName} {personalInfo.lastName}</p>
-							<p class="mt-1 text-xl">{personalInfo.title}</p>
-						</div>
-						<div class="mt-4 md:mt-0">
-							<div class="mt-2 flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="mr-2 h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-									/>
-								</svg>
-								<span>{personalInfo.email}</span>
-							</div>
-							<div class="mt-2 flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="mr-2 h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-									/>
-								</svg>
-								<span>{personalInfo.phoneNumber}</span>
-							</div>
-							<div class="mt-2 flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="mr-2 h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-									/>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-									/>
-								</svg>
-								<span>{personalInfo.location}</span>
-							</div>
-						</div>
-					</div>
-					<div class="mt-6">
-						<p class="text-lg">{personalInfo.summary}</p>
-					</div>
-				</div>
-
-				<!-- Content -->
-				<div class="pt-8">
-					<!-- Experience -->
-					<section class="mb-10">
-						<h2 class="border-primary mb-6 border-b-2 pb-2 text-2xl font-bold text-gray-800">
-							Professional Experience
-						</h2>
-						{#each experience as job}
-							<div class="mb-8">
-								<div class="mb-2 flex flex-col justify-between md:flex-row">
-									<h3 class="text-xl font-semibold text-gray-800">
-										{job.position} | {job.company}
-									</h3>
-									<div class="text-gray-600">{job.duration}</div>
-								</div>
-								<div class="mb-2 text-gray-600">{job.location}</div>
-								<p class="mb-3 text-gray-700">{job.description}</p>
-								<ul class="list-inside list-disc pl-4 text-gray-700">
-									{#each job.achievements as achievement}
-										<li class="mb-1">{achievement}</li>
-									{/each}
-								</ul>
-							</div>
-						{/each}
-					</section>
-
-					<!-- Education -->
-					<section class="mb-10">
-						<h2 class="border-primary mb-6 border-b-2 pb-2 text-2xl font-bold text-gray-800">
-							Education
-						</h2>
-						{#each education as edu}
-							<div class="mb-6">
-								<div class="mb-2 flex flex-col justify-between md:flex-row">
-									<h3 class="text-xl font-semibold text-gray-800">{edu.degree}</h3>
-									<div class="text-gray-600">{edu.duration}</div>
-								</div>
-								<div class="mb-2 text-gray-700">{edu.institution}</div>
-								<p class="text-gray-600">{edu.description}</p>
-							</div>
-						{/each}
-					</section>
-				</div>
-
-				<!-- Footer -->
-				{#snippet actions()}
-					<div class="flex justify-center space-x-6">
-						<a
-							href={`https://${personalInfo.website}`}
-							aria-label="Personal Website"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="text-primary hover:text-primary-dark"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-								/>
-							</svg>
-						</a>
-						<a
-							href={`https://${personalInfo.linkedin}`}
-							aria-label="Linkedin"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="text-primary hover:text-primary-dark"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6"
-								fill="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
-								/>
-							</svg>
-						</a>
-						<a
-							href={`https://${personalInfo.github}`}
-							aria-label="Github"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="text-primary hover:text-primary-dark"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6"
-								fill="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-								/>
-							</svg>
-						</a>
-					</div>
-				{/snippet}
-			</Card>
+			<BasicResume {personalInfo} experience={jobs} {education} />
 		</div>
 	</div>
 </PageContainer>
