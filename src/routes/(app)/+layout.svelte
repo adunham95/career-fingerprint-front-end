@@ -16,7 +16,6 @@
 	lastName={data.user.lastName}
 	firstName={data.user.firstName}
 	profileImageURL={data.user.profileImage}
-	email={data.user.email}
 	profileRoutes={[{ title: 'Account', path: '/settings/profile' }]}
 />
 
