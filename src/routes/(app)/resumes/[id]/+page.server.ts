@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { JobPosition } from '../../../../app';
+import type { Education, JobPosition } from '../../../../app';
 
 export const load = async (event) => {
 	const token = event.cookies.get('accessToken');
@@ -22,7 +22,7 @@ export const load = async (event) => {
 			}
 		});
 		const resume = await resResumeDetails.json();
-		const education = await resEducation.json();
+		const education: Education[] = await resEducation.json();
 		const jobs: JobPosition[] = await resJobs.json();
 		return { resume, education, jobs };
 	} catch (error) {

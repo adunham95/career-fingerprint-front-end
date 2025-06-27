@@ -3,6 +3,7 @@
 	import Card from '../Containers/Card.svelte';
 
 	interface Props {
+		showIncomplete?: boolean;
 		personalInfo: {
 			firstName: string | null;
 			lastName: string | null;
@@ -20,7 +21,9 @@
 		education?: Education[];
 	}
 
-	const { personalInfo, experience = [], education = [] }: Props = $props();
+	const { personalInfo, experience = [], education = [], showIncomplete = false }: Props = $props();
+
+	console.log(education);
 
 	function formatDate(dateString?: string | null) {
 		if (!dateString) {
@@ -135,25 +138,27 @@
 				Professional Experience
 			</h2>
 			{#each experience as job}
-				<div class="mb-8">
-					<div class="mb-2 flex flex-col justify-between md:flex-row">
-						<h3 class="text-xl font-semibold text-gray-800">
-							{job.name} | {job.company}
-						</h3>
-						<div class="text-gray-600">
-							{formatDate(job.startDate)} - {job.currentPosition
-								? 'Current'
-								: formatDate(job.endDate)}
+				{#if showIncomplete || (job.name && job.company && job.startDate)}
+					<div class="mb-8">
+						<div class="mb-2 flex flex-col justify-between md:flex-row">
+							<h3 class="text-xl font-semibold text-gray-800">
+								{job.name} | {job.company}
+							</h3>
+							<div class="text-gray-600">
+								{formatDate(job.startDate)} - {job.currentPosition
+									? 'Current'
+									: formatDate(job.endDate)}
+							</div>
 						</div>
-					</div>
-					<div class="mb-2 text-gray-600">{job.location}</div>
-					<p class="mb-3 text-gray-700">{job.description}</p>
-					<!-- <ul class="list-inside list-disc pl-4 text-gray-700">
+						<div class="mb-2 text-gray-600">{job.location}</div>
+						<p class="mb-3 text-gray-700">{job.description}</p>
+						<!-- <ul class="list-inside list-disc pl-4 text-gray-700">
 					{#each job.achievements as achievement}
 						<li class="mb-1">{achievement}</li>
 					{/each}
 				</ul> -->
-				</div>
+					</div>
+				{/if}
 			{/each}
 		</section>
 
@@ -163,14 +168,20 @@
 				Education
 			</h2>
 			{#each education as edu}
-				<div class="mb-6">
-					<div class="mb-2 flex flex-col justify-between md:flex-row">
-						<h3 class="text-xl font-semibold text-gray-800">{edu.degree}</h3>
-						<div class="text-gray-600">{edu.duration}</div>
+				{#if showIncomplete || (edu.degree && edu.institution)}
+					<div class="mb-6">
+						<div class="mb-2 flex flex-col justify-between md:flex-row">
+							<h3 class="text-xl font-semibold text-gray-800">{edu.degree}</h3>
+							<div class="text-gray-600">
+								{formatDate(edu.startDate)} - {edu.currentPosition
+									? 'Current'
+									: formatDate(edu.endDate)}
+							</div>
+						</div>
+						<div class="mb-2 text-gray-700">{edu.institution}</div>
+						<p class="text-gray-600">{edu.description}</p>
 					</div>
-					<div class="mb-2 text-gray-700">{edu.institution}</div>
-					<p class="text-gray-600">{edu.description}</p>
-				</div>
+				{/if}
 			{/each}
 		</section>
 	</div>

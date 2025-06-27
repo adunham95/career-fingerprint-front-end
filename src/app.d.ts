@@ -25,7 +25,9 @@ interface Education {
 	id: string;
 	institution: string | null;
 	degree: string | null;
-	duration: string | null;
+	startDate: string | null;
+	endDate: string | null;
+	currentPosition: boolean | null;
 	description: string | null;
 }
 

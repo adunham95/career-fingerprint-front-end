@@ -10,7 +10,7 @@
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
-	import type { JobPosition } from '../../../../app.js';
+	import type { Education, JobPosition } from '../../../../app.js';
 
 	const { data } = $props();
 
@@ -31,73 +31,8 @@
 		summary: data.resume.summary || data.user.pitch || ''
 	});
 
-	let jobs = $state(data.jobs);
-
-	const experience = [
-		{
-			company: 'Tech Innovations Inc.',
-			position: 'Senior Software Engineer',
-			duration: 'Jan 2020 - Present',
-			location: 'San Francisco, CA',
-			description:
-				"Lead developer for the company's flagship product, managing a team of 5 engineers.",
-			achievements: [
-				'Redesigned the architecture resulting in 40% performance improvement',
-				'Implemented CI/CD pipeline reducing deployment time by 60%',
-				'Mentored 3 junior developers who were promoted within a year',
-				'Redesigned the architecture resulting in 40% performance improvement',
-				'Implemented CI/CD pipeline reducing deployment time by 60%',
-				'Mentored 3 junior developers who were promoted within a year',
-				'Redesigned the architecture resulting in 40% performance improvement',
-				'Implemented CI/CD pipeline reducing deployment time by 60%',
-				'Mentored 3 junior developers who were promoted within a year',
-				'Redesigned the architecture resulting in 40% performance improvement',
-				'Implemented CI/CD pipeline reducing deployment time by 60%',
-				'Mentored 3 junior developers who were promoted within a year'
-			]
-		},
-		{
-			company: 'DataSoft Solutions',
-			position: 'Software Engineer',
-			duration: 'Mar 2017 - Dec 2019',
-			location: 'Seattle, WA',
-			description: 'Full-stack developer working on enterprise data management solutions.',
-			achievements: [
-				'Developed RESTful APIs serving 10,000+ daily users',
-				'Optimized database queries resulting in 30% faster load times',
-				'Contributed to open-source libraries used by the company'
-			]
-		},
-		{
-			company: 'StartUp Ventures',
-			position: 'Junior Developer',
-			duration: 'Jun 2015 - Feb 2017',
-			location: 'Portland, OR',
-			description: 'Worked on front-end development for various client projects.',
-			achievements: [
-				'Built responsive web applications using React',
-				'Collaborated with designers to implement pixel-perfect UIs',
-				'Participated in code reviews and quality assurance'
-			]
-		}
-	];
-
-	const education = [
-		{
-			id: '1',
-			institution: 'University of California, Berkeley',
-			degree: 'Master of Science in Computer Science',
-			duration: '2013 - 2015',
-			description: 'Focused on distributed systems and machine learning.'
-		},
-		{
-			id: '2',
-			institution: 'Oregon State University',
-			degree: 'Bachelor of Science in Computer Science',
-			duration: '2009 - 2013',
-			description: "Minor in Mathematics. Dean's List for 6 semesters."
-		}
-	];
+	let jobs = $state(data.jobs || []);
+	let education = $state(data.education || []);
 
 	async function updateResumeName() {
 		const url = `${PUBLIC_API_URL}/resume/${data.resume.id}`;
@@ -169,6 +104,12 @@
 					jobs?.push(newJob);
 
 					break;
+				case 'education':
+					const newDegree: Education = await res.json();
+
+					education?.push(newDegree);
+
+					break;
 				default:
 					break;
 			}
@@ -203,6 +144,12 @@
 					jobs = jobs?.filter((j) => j.id !== newJob.id);
 
 					break;
+				case 'education':
+					const newDegree: Education = await res.json();
+
+					education = education?.filter((e) => e.id !== newDegree.id);
+
+					break;
 				default:
 					break;
 			}
@@ -214,26 +161,41 @@
 		}
 	}
 
-	function getObjectData(type: keyof typeof typeMap, item: JobPosition) {
+	function getObjectData(type: keyof typeof typeMap, item: JobPosition | Education) {
 		switch (type) {
 			case 'job-positions':
-				const { name, company, location, description, startDate, endDate, currentPosition } = item;
-				return {
-					name,
-					company,
-					location,
-					description,
-					startDate: startDate ? new Date(startDate).toISOString() : null,
-					endDate: endDate ? new Date(endDate).toISOString() : null,
-					currentPosition
-				};
-
+				if ('name' in item) {
+					item as JobPosition;
+					return {
+						name: item.name,
+						company: item.company,
+						location: item.company,
+						description: item.description,
+						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
+						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
+						currentPosition: item.currentPosition
+					};
+				}
+				return {};
+			case 'education':
+				if ('degree' in item) {
+					item as Education;
+					return {
+						degree: item.degree,
+						institution: item.institution,
+						description: item.description,
+						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
+						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
+						currentPosition: item.currentPosition
+					};
+				}
+				return {};
 			default:
 				return {};
 		}
 	}
 
-	async function saveObject(type: keyof typeof typeMap, item: JobPosition) {
+	async function saveObject(type: keyof typeof typeMap, item: JobPosition | Education) {
 		const url = `${PUBLIC_API_URL}/${type}/${item.id}`;
 
 		const res = await fetch(url, {
@@ -259,7 +221,7 @@
 		} else {
 			toastStore.show({
 				type: 'error',
-				message: `${typeMap[type]} Added`
+				message: `Error updating ${typeMap[type]}`
 			});
 		}
 	}
@@ -342,8 +304,31 @@
 						>Add Education</button
 					>
 				{/snippet}
-				<div class="space-y-2 rounded border border-gray-300 p-4">
-					<TextInput id="firstName" label="First Name" />
+				<div class="space-y-2">
+					{#each education as edu, idx}
+						<Card contentClassName="space-y-2 px-4 py-4">
+							<TextInput id="degree" label="Degree" bind:value={edu.degree} />
+							<TextInput id="institution" label="Institution" bind:value={edu.institution} />
+							<TextArea id="description" label="Description" bind:value={edu.description}
+							></TextArea>
+							<Toggle label="Currently In School" bind:checked={edu.currentPosition} />
+							<DateInput id={'startDate' + idx} label="Start Date" bind:value={edu.startDate} />
+							{#if !edu.currentPosition}
+								<DateInput id={'endDate' + idx} label="End Date" bind:value={edu.endDate} />
+							{/if}
+							{#snippet actions()}
+								<button
+									class="btn btn-text--error btn-small"
+									onclick={() => deleteObject('education', edu.id)}>Delete</button
+								>
+								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
+								<button
+									class="btn btn-text--success btn-small"
+									onclick={() => saveObject('education', edu)}>Save</button
+								>
+							{/snippet}
+						</Card>
+					{/each}
 				</div>
 			</Accordion>
 			<p class="mt-4 text-gray-600">Download PDF version or print this resume</p>
@@ -366,7 +351,7 @@
 			</button>
 		</div>
 		<div class="md:col-span-2">
-			<BasicResume {personalInfo} experience={jobs} {education} />
+			<BasicResume {personalInfo} experience={jobs} {education} showIncomplete />
 		</div>
 	</div>
 </PageContainer>
