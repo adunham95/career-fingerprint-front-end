@@ -1,5 +1,4 @@
 <script lang="ts">
-	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import AccountHeader from '$lib/Components/Header/AccountHeader.svelte';
 
 	let { children, data } = $props();
@@ -17,7 +16,10 @@
 	lastName={data.user.lastName}
 	firstName={data.user.firstName}
 	profileImageURL={data.user.profileImage}
-	profileRoutes={[{ title: 'Account', path: '/settings/profile' }]}
+	profileRoutes={[
+		{ title: 'Account', path: '/settings/profile' },
+		{ title: 'Membership', path: '/settings/membership' }
+	]}
 />
 
 {@render children()}
