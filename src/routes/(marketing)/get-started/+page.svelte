@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
@@ -24,6 +25,13 @@
 		achievement: ''
 	});
 
+	let proPlan = $state({
+		name: 'Pro Plan',
+		priceCents: 999,
+		interval: 'month',
+		stripePriceID: null
+	});
+
 	async function createAccount() {
 		const url = `${PUBLIC_API_URL}/register`;
 
@@ -40,6 +48,12 @@
 		});
 
 		if (res.ok) {
+			const data = await res.json();
+
+			if (data?.plan) {
+				proPlan = data.plan;
+			}
+
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
@@ -51,6 +65,47 @@
 				message: `Error updating User`
 			});
 		}
+	}
+
+	async function startFreeTrial() {
+		const url = `${PUBLIC_API_URL}/stripe/trial`;
+
+		if (!proPlan.stripePriceID) {
+			toastStore.show({
+				type: 'error',
+				message: `Error creating subscription`
+			});
+		}
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				priceID: proPlan.stripePriceID
+			})
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+
+			if (data?.plan) {
+				proPlan = data.plan;
+			}
+
+			toastStore.show({
+				type: 'success',
+				message: `Free trial started`
+			});
+		} else {
+			toastStore.show({
+				type: 'error',
+				message: `Error creating free trial`
+			});
+		}
+		goto('/dashboard');
 	}
 
 	$inspect(profile);
@@ -233,7 +288,9 @@
 				<p class="mt-6 flex items-baseline gap-x-1">
 					<span class="text-4xl font-semibold tracking-tight text-gray-900">Free</span>
 				</p>
-				<button class="btn btn-outline--primary mt-2 w-full">Continue with basic account</button>
+				<a href="/dashboard" class="btn btn-outline--primary mt-2 w-full"
+					>Continue with basic account</a
+				>
 				<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600">
 					<li class="flex gap-x-3">
 						<svg
@@ -269,65 +326,69 @@
 					</li>
 				</ul>
 			</div>
-			<div class="bg-surface-100 rounded-3xl p-8 ring-1 ring-gray-200">
-				<h3 id="tier-freelancer" class="text-lg/8 font-semibold text-gray-900">Elevate</h3>
-				<p class="mt-4 text-sm/6 text-gray-600">For active professionals and job switchers</p>
-				<p class="mt-6 flex items-baseline gap-x-1">
-					<span class="text-4xl font-semibold tracking-tight text-gray-900">$9.99</span>
-					<span class="text-sm/6 font-semibold text-gray-600">/month</span>
-				</p>
-				<button class="btn btn-outline--primary mt-2 w-full">Upgrade account</button>
-				<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600">
-					<li class="flex gap-x-3">
-						<svg
-							class="text-primary h-6 w-5 flex-none"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-						Resume Editor
-					</li>
-					<li class="flex gap-x-3">
-						<svg
-							class="text-primary h-6 w-5 flex-none"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-						Weekly Achievement Reminders
-					</li>
-					<li class="flex gap-x-3">
-						<svg
-							class="text-primary h-6 w-5 flex-none"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-						Interview Prep Tools
-					</li>
-				</ul>
-			</div>
+			{#if proPlan.stripePriceID}
+				<div class="bg-secondary ring-primary rounded-3xl p-8 shadow-2xl ring-2">
+					<h3 id="tier-freelancer" class="text-lg/8 font-semibold text-gray-50">Elevate</h3>
+					<p class="mt-4 text-sm/6 text-gray-200">For active professionals and job switchers</p>
+					<p class="mt-6 flex items-baseline gap-x-1">
+						<span class="text-4xl font-semibold tracking-tight text-gray-100">$9.99</span>
+						<span class="text-sm/6 font-semibold text-gray-200">/month</span>
+					</p>
+					<button class="btn btn--primary mt-2 w-full" onclick={startFreeTrial}
+						>Start Your Free Trial</button
+					>
+					<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-200">
+						<li class="flex gap-x-3">
+							<svg
+								class="text-primary h-6 w-5 flex-none"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								aria-hidden="true"
+								data-slot="icon"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Resume Editor
+						</li>
+						<li class="flex gap-x-3">
+							<svg
+								class="text-primary h-6 w-5 flex-none"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								aria-hidden="true"
+								data-slot="icon"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Weekly Achievement Reminders
+						</li>
+						<li class="flex gap-x-3">
+							<svg
+								class="text-primary h-6 w-5 flex-none"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								aria-hidden="true"
+								data-slot="icon"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Interview Prep Tools
+						</li>
+					</ul>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>
