@@ -1,4 +1,5 @@
 <script>
+	import Calender from '$lib/Components/Calender/Calender.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
@@ -50,6 +51,7 @@
 				</svg>
 				<p>Calender</p>
 			</div>
+			<Calender disableSelectedDays />
 		</div>
 	</div>
 </PageContainer>
