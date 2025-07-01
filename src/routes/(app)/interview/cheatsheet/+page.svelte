@@ -1,5 +1,4 @@
 <script>
-	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
@@ -9,72 +8,9 @@
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import { formatDate } from '$lib/Utils/formatDate';
 
+	const { data } = $props();
+
 	let current = $state('resume');
-
-	let placeholderJobs = [
-		{
-			id: '1',
-			name: 'Software Engineer',
-			company: 'TechNova',
-			description: 'Developed full-stack applications using React and Node.js.',
-			location: 'San Francisco, CA',
-			startDate: '2021-06-01',
-			endDate: null,
-			currentPosition: true
-		},
-		{
-			id: '2',
-			name: 'Frontend Developer',
-			company: 'PixelCraft',
-			description: 'Built responsive UI components and improved performance across web apps.',
-			location: 'Remote',
-			startDate: '2020-01-15',
-			endDate: '2021-05-30',
-			currentPosition: false
-		},
-		{
-			id: '3',
-			name: 'Software Engineering Intern',
-			company: 'InnoSoft',
-			description: 'Assisted with backend development and wrote unit tests.',
-			location: 'Austin, TX',
-			startDate: '2019-06-01',
-			endDate: '2019-08-31',
-			currentPosition: false
-		},
-		{
-			id: '4',
-			name: 'Technical Support Specialist',
-			company: 'NetAssist',
-			description: 'Provided customer support and resolved technical issues.',
-			location: 'Chicago, IL',
-			startDate: '2018-03-01',
-			endDate: '2019-05-01',
-			currentPosition: false
-		},
-		{
-			id: '5',
-			name: 'Junior Web Developer',
-			company: 'BrightByte',
-			description: 'Maintained company website and implemented new features.',
-			location: 'New York, NY',
-			startDate: '2017-07-01',
-			endDate: '2018-02-28',
-			currentPosition: false
-		}
-	];
-
-	const placeholderEducation = [
-		{
-			id: '1',
-			institution: 'Western Carolina University',
-			degree: 'Computer engineering',
-			startDate: '2013-08-23',
-			endDate: '2017-05-23',
-			currentPosition: false,
-			description: 'Learned computers'
-		}
-	];
 
 	const placeholderProjects = [
 		{
@@ -167,13 +103,13 @@
 					{ id: 'resume', label: 'Resume' },
 					{ id: 'achievements', label: 'Achievements' },
 					{ id: 'projects', label: 'Projects' },
-					{ id: 'notes', label: 'Notes' }
+					{ id: 'notes', label: 'Prior Notes' }
 				]}
 			/>
 			<div class="overflow-y-auto px-1 py-1 md:max-h-[600px]">
 				{#if current === 'resume'}
 					<ul class="space-y-2">
-						{#each placeholderJobs as job}
+						{#each data.jobs || [] as job}
 							<Card size="sm" headline={`${job.name} | ${job.company}`}>
 								<h5>
 									{formatDate(job.startDate)} - {job.currentPosition
@@ -183,7 +119,7 @@
 								<p>{job.description}</p>
 							</Card>
 						{/each}
-						{#each placeholderEducation as edu}
+						{#each data.education || [] as edu}
 							<Card size="sm" headline={`${edu.degree} | ${edu.institution}`}>
 								<h5>
 									{formatDate(edu.startDate)} - {edu.currentPosition
