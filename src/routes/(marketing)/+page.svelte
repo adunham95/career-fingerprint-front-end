@@ -55,8 +55,9 @@
 						Capture your career
 					</p>
 					<p class="mt-6 text-lg/8 text-gray-600">
-						Don’t let your achievements get lost in emails, docs, or memory. Skill Fingerprint gives
-						you one organized place to track wins, reflect on progress, and prep for your next move.
+						Don’t let your achievements get lost in emails, docs, or memory. Career Fingerprint
+						gives you one organized place to track wins, reflect on progress, and prep for your next
+						move.
 					</p>
 					<dl class="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
 						<div class="relative pl-9">
@@ -148,7 +149,7 @@
 				Built for every stage of your journey
 			</p>
 			<p class="mt-6 text-lg/8 text-gray-100">
-				Skill Fingerprint adapts to your needs—whether you're thriving in your current role,
+				Career Fingerprint adapts to your needs—whether you're thriving in your current role,
 				exploring what's next, or just getting started.
 			</p>
 		</div>
@@ -305,7 +306,7 @@
 		</div>
 		<blockquote class="mt-10 text-xl/8 font-semibold tracking-tight text-gray-900 sm:text-2xl/9">
 			<p>
-				“Skill Fingerprint helped me realize just how much I’d achieved. I walked into my
+				“Career Fingerprint helped me realize just how much I’d achieved. I walked into my
 				performance review fully prepared to got the promotion I wanted.”
 			</p>
 		</blockquote>
@@ -333,7 +334,7 @@
 			</h2>
 			<p class="mx-auto mt-6 max-w-xl text-lg/8 text-pretty text-gray-100">
 				Your career is unique your tools should be too. Begin capturing your journey and building
-				your future with Skill Fingerprint.
+				your future with Career Fingerprint.
 			</p>
 			<div class="mt-10 flex items-center justify-center gap-x-6">
 				<a href="/get-started" class="btn btn--primary">Get started with your own fingerprint</a>

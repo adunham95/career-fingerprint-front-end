@@ -7,7 +7,7 @@
 </script>
 
 <AccountHeader
-	appTitle="Skill Fingerprint"
+	appTitle="Career Fingerprint"
 	routes={[
 		{ title: 'Dashboard', path: '/dashboard' },
 		{ title: 'Resumes', path: '/resumes' },

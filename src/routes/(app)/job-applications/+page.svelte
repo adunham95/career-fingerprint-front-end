@@ -35,7 +35,7 @@
 			{@render JobCard(
 				'Software Engineer',
 				'https://skillfingerprint.com',
-				'Skill Fingerprint',
+				'Career Fingerprint',
 				1,
 				1
 			)}

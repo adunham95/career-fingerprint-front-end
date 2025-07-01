@@ -7,7 +7,7 @@
 		<div class="flex lg:flex-1">
 			<a href="/" class="-m-1.5 flex items-center p-1.5">
 				<img class="h-8 w-auto" src="/logo-brand.svg" alt="" />
-				<span class="ml-2 text-2xl">Skill Fingerprint</span>
+				<span class="ml-2 text-2xl">Career Fingerprint</span>
 			</a>
 		</div>
 		<div class="flex lg:hidden">
@@ -51,7 +51,7 @@
 		>
 			<div class="flex items-center justify-between">
 				<a href="#" class="-m-1.5 p-1.5">
-					<span class="sr-only">Skill Fingerprint</span>
+					<span class="sr-only">Career Fingerprint</span>
 					<img class="h-8 w-auto" src="/logo-brand.svg" alt="" />
 				</a>
 				<button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
@@ -114,7 +114,7 @@
 			<div class="space-y-8">
 				<div class="text-background flex items-center">
 					<img class="h-9" src="/logo-brand.svg" alt="Company name" />
-					<span class="ml-2 text-2xl">Skill Fingerprint</span>
+					<span class="ml-2 text-2xl">Career Fingerprint</span>
 				</div>
 				<p class="text-sm/6 text-balance text-gray-400">
 					A smart system for tracking your career, wins, and next big move
@@ -250,7 +250,7 @@
 		</div>
 		<div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
 			<p class="text-sm/6 text-gray-400">
-				&copy; {new Date().getFullYear()} Skill Fingerprint LLC. All rights reserved.
+				&copy; {new Date().getFullYear()} Career Fingerprint LLC. All rights reserved.
 			</p>
 		</div>
 	</div>
