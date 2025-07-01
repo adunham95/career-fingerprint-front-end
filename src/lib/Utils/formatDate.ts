@@ -20,3 +20,27 @@ export function getMonthName(monthNumber: number): string {
 
 	return months[monthNumber];
 }
+
+export function formatDate(dateString?: string | null) {
+	if (!dateString) {
+		return '';
+	}
+	const date = new Date(dateString);
+
+	const months: string[] = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	];
+
+	return `${months[date.getMonth()]} ${date.getFullYear()}`;
+}

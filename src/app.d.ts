@@ -21,6 +21,13 @@ interface JobPosition {
 	currentPosition: boolean | null;
 }
 
+interface Project {
+	id: string;
+	name: string | null;
+	description: string | null;
+	jobID: string | null;
+}
+
 interface Education {
 	id: string;
 	institution: string | null;
@@ -31,4 +38,4 @@ interface Education {
 	description: string | null;
 }
 
-export { JobPosition, Education };
+export { JobPosition, Education, Project };

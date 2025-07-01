@@ -10,11 +10,90 @@
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
-	<div class="mt-3 grid grid-cols-4 grid-rows-6 gap-3">
-		<div class="bg-surface-100 col-span-2 row-span-2 rounded border border-gray-200 p-2">
+	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
+		<div
+			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-green-600 bg-green-600/10 p-2 text-center transition hover:border-green-900 hover:bg-green-600/40 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		>
+			<div class="flex flex-col items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-8"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+					/>
+				</svg>
+
+				<p>Add Achievement</p>
+				<p class=" text-xs">Take note of your achievements</p>
+			</div>
+		</div>
+		<a
+			href="/interview/cheatsheet"
+			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-sky-600 bg-sky-600/10 p-2 text-center transition hover:border-sky-900 hover:bg-sky-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		>
+			<div class="flex flex-col items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-8"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
+					/>
+				</svg>
+
+				<p>Start Interview</p>
+				<p class=" text-xs">Quickly access your cheatsheet</p>
+			</div>
+		</a>
+		<div
+			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-violet-600 bg-violet-600/10 p-2 text-center transition hover:border-violet-900 hover:bg-violet-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		>
+			<div class="flex flex-col items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-8"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+					/>
+				</svg>
+
+				<p>Download Achievements</p>
+				<p class=" text-xs">Prepare your 1:1 or Review</p>
+			</div>
+		</div>
+		<div
+			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-fuchsia-600 bg-fuchsia-600/10 p-2 text-center hover:border-fuchsia-900 hover:bg-fuchsia-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		>
+			TBD
+		</div>
+	</div>
+
+	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+		<div class="bg-surface-100 row-span-2 rounded border border-gray-200 p-2 md:col-span-2">
 			Hello World
 		</div>
-		<div class="bg-surface-100 col-span-2 rounded border border-gray-200 p-2">
+
+		<div class="bg-surface-100 rounded border border-gray-200 p-2 md:col-span-2">
 			<div class="flex items-center">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +114,7 @@
 				<p>Projects</p>
 			</div>
 		</div>
-		<div class="bg-surface-100 col-span-2 rounded border border-gray-200 p-2">
+		<div class="bg-surface-100 rounded border border-gray-200 p-2 md:col-span-2">
 			<div class="flex items-center">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
