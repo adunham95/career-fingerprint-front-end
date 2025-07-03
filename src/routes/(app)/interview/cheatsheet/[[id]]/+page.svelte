@@ -1,4 +1,5 @@
 <script>
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
@@ -9,6 +10,37 @@
 	import { formatDate } from '$lib/Utils/formatDate';
 
 	const { data } = $props();
+
+	console.log({ data });
+
+	let newJobTitle = $state('');
+	let newJobCompany = $state(null);
+
+	let selectedCompany = $state();
+
+	let applications = $state(data.applications || []);
+
+	async function saveNewJobApplication() {
+		const url = `${PUBLIC_API_URL}/job-applications`;
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				title: newJobTitle,
+				company: newJobCompany
+			})
+		});
+
+		if (res.ok) {
+			const newJob = await res.json();
+			applications.push(newJob);
+			selectedCompany = newJob.id;
+		}
+	}
 
 	let current = $state('resume');
 
@@ -80,19 +112,31 @@
 		<div class="block space-y-2 md:hidden">
 			<h3 class="font-title">Assign To Job</h3>
 			<Select
+				bind:value={selectedCompany}
 				label="Current Job Applications"
 				id="jobApplicaiton"
-				value=""
-				options={[
-					{ id: 'johndeere-sse', label: 'John Deere - Senior Software Engineer' },
-					{ id: 'riv-sse', label: 'Rivian - Senior Software Engineer' }
-				]}
+				options={(data.applications || []).map((app) => ({
+					id: app.id,
+					label: `${app.company} - ${app.title}`
+				}))}
 			/>
 			<Label id="jobDetails" label="Job details" />
-			<TextInput id="jobTitle" label="Job Title" placeholder="Job Title" hideLabel />
-			<TextArea id="jobDescription" label="Job Description" placeholder="Description" hideLabel />
+			<TextInput
+				id="jobTitle"
+				label="Job Title"
+				placeholder="Job Title"
+				hideLabel
+				bind:value={newJobTitle}
+			/>
+			<TextInput
+				id="jobCompany"
+				label="Company"
+				placeholder="Company"
+				hideLabel
+				bind:value={newJobCompany}
+			/>
 			<div class="flex justify-end">
-				<button class="btn btn-text--primary">Save</button>
+				<button class="btn btn-text--primary" onclick={saveNewJobApplication}>Save</button>
 			</div>
 		</div>
 		<div class="  row-span-2">
@@ -167,17 +211,29 @@
 			<Select
 				label="Current Job Applications"
 				id="jobApplicaiton"
-				value=""
-				options={[
-					{ id: 'johndeere-sse', label: 'John Deere - Senior Software Engineer' },
-					{ id: 'riv-sse', label: 'Rivian - Senior Software Engineer' }
-				]}
+				bind:value={selectedCompany}
+				options={applications.map((app) => ({
+					id: app.id,
+					label: `${app.company} - ${app.title}`
+				}))}
 			/>
 			<Label id="jobDetails" label="Job details" />
-			<TextInput id="jobTitle" label="Job Title" placeholder="Job Title" hideLabel />
-			<TextArea id="jobDescription" label="Job Description" placeholder="Description" hideLabel />
+			<TextInput
+				id="jobTitle"
+				label="Job Title"
+				placeholder="Job Title"
+				hideLabel
+				bind:value={newJobTitle}
+			/>
+			<TextInput
+				id="jobCompany"
+				label="Company"
+				placeholder="Company"
+				hideLabel
+				bind:value={newJobCompany}
+			/>
 			<div class="flex justify-end">
-				<button class="btn btn-text--primary">Save</button>
+				<button class="btn btn-text--primary" onclick={saveNewJobApplication}>Save</button>
 			</div>
 		</div>
 	</div>

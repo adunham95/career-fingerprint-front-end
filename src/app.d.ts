@@ -38,4 +38,15 @@ interface Education {
 	description: string | null;
 }
 
-export { JobPosition, Education, Project };
+interface JobApplication {
+	id: string;
+	company?: string;
+	companyURL?: string;
+	jobDescriptionURL?: string;
+	location?: string;
+	status?: string;
+	title?: string;
+	_count?: { notes: int; interviews: int };
+}
+
+export { JobPosition, Education, Project, JobApplication };

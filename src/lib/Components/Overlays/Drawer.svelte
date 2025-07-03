@@ -16,6 +16,7 @@
 		children: Snippet;
 		title: string;
 		subTitle?: string;
+		onSave?: () => void;
 	}
 
 	let {
@@ -27,7 +28,8 @@
 		closeOnBackdrop = true,
 		children,
 		title,
-		subTitle
+		subTitle,
+		onSave
 	}: Props = $props();
 
 	// Handle escape key
@@ -80,6 +82,7 @@
 {#if isOpen}
 	<!-- Backdrop -->
 	{#if backdrop}
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div
 			class="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
 			onclick={handleBackdropClick}
@@ -137,8 +140,12 @@
 				</div>
 			</div>
 			<div class="flex shrink-0 justify-end px-4 py-4">
-				<button type="button" class="btn btn-text--error">Cancel</button>
-				<button type="submit" class="btn btn-text--primary">Save</button>
+				<button type="button" class="btn btn-text--error" onclick={() => (isOpen = false)}
+					>Cancel</button
+				>
+				{#if onSave}
+					<button type="submit" class="btn btn-text--primary" onclick={onSave}>Save</button>
+				{/if}
 			</div>
 		</form>
 	</div>

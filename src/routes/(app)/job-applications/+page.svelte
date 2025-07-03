@@ -1,9 +1,45 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
 	let isOpen = $state(false);
+	let jobTitle = $state('');
+	let company = $state(null);
+	let companyURL = $state(null);
+	let location = $state(null);
+	let jobDescriptionURL = $state(null);
+
+	const { data } = $props();
+
+	let applications = $state(data.applications || []);
+
+	async function saveNewJobApplication() {
+		const url = `${PUBLIC_API_URL}/job-applications`;
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				jobDescriptionURL,
+				title: jobTitle,
+				company,
+				companyURL,
+				location
+			})
+		});
+
+		if (res.ok) {
+			const newJob = await res.json();
+			applications.push(newJob);
+			isOpen = false;
+		}
+	}
 </script>
 
 <PageContainer className="py-5">
@@ -31,34 +67,29 @@
 				New Job Application
 			</button>
 		</li>
-		<li>
-			{@render JobCard(
-				'Software Engineer',
-				'https://skillfingerprint.com',
-				'Career Fingerprint',
-				1,
-				1
-			)}
-		</li>
-		<li>
-			{@render JobCard('Senior Software Engineer', 'https://google.com', 'Google', 5, 2)}
-		</li>
-		<li>
-			{@render JobCard('Staff Software Engineer', 'https://facebook.com', 'Facebook', 2, 1)}
-		</li>
-		<li>
-			{@render JobCard('Software Engineer', 'https://netflix.com', 'Netflix', 1, 1)}
-		</li>
-		<li>
-			{@render JobCard('UI Engineer', 'https://amazon.com', 'Amazon', 1, 1)}
-		</li>
-		<li>
-			{@render JobCard('Hardware Engineer', 'https://microsoft.com', 'Microsoft', 1, 1)}
-		</li>
+		{#each applications as app}
+			<li>
+				{@render JobCard(
+					app.title,
+					app.companyURL,
+					app.company,
+					app.location,
+					app?._count?.notes,
+					app?._count?.interviews
+				)}
+			</li>
+		{/each}
 	</ul>
 </PageContainer>
 
-{#snippet JobCard(title: string, url: string, company: string, notes: number, interviews: number)}
+{#snippet JobCard(
+	title?: string,
+	url?: string,
+	company?: string,
+	location?: string,
+	notes: number = 0,
+	interviews: number = 0
+)}
 	<Card contentClassName=" px-4 py-4">
 		<div class="flex">
 			<div class="size-14 shrink-0 overflow-hidden rounded border border-gray-300 p-1">
@@ -75,7 +106,7 @@
 			</div>
 		</div>
 		<div class="mt-1">
-			<span class="badge badge--gray"> Remote </span>
+			<span class="badge badge--gray">{location}</span>
 			<span class="badge badge--secondary"> Interviewing</span>
 		</div>
 		<div class="mt-1 flex justify-end gap-1 text-gray-500">
@@ -116,6 +147,12 @@
 	</Card>
 {/snippet}
 
-<Drawer bind:isOpen title="Add Job Application">
-	<h1>Hello world</h1>
+<Drawer bind:isOpen title="Add Job Application" onSave={saveNewJobApplication}>
+	<div class="space-y-2">
+		<TextInput id="jobTitle" label="Job Title" bind:value={jobTitle} />
+		<TextInput id="company" label="Company" bind:value={company} />
+		<TextInput id="companyURL" label="Company URL" bind:value={companyURL} />
+		<TextInput id="location" label="Location" bind:value={location} />
+		<TextInput id="jobDescriptionURL" label="Job Description URL" bind:value={jobDescriptionURL} />
+	</div>
 </Drawer>
