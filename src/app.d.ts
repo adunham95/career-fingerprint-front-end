@@ -49,4 +49,12 @@ interface JobApplication {
 	_count?: { notes: int; interviews: int };
 }
 
-export { JobPosition, Education, Project, JobApplication };
+interface Achievement {
+	id: string;
+	startDate: string | null;
+	endDate: string | null;
+	myContribution: string;
+	description: string;
+}
+
+export { JobPosition, Education, Project, JobApplication, Achievement };

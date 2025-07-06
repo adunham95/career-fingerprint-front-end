@@ -34,7 +34,7 @@
 	// Reactive state using runes
 	let selectedMonth: number = $state(initialDate.getMonth());
 	let selectedYear: number = $state(initialDate.getFullYear());
-	let selectedDay: number = $state(initialDate.getDay());
+	let selectedDay: number = $state(initialDate.getDate());
 
 	// Month names
 	const months: string[] = [
@@ -100,7 +100,7 @@
 					class="cursor-pointer rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 				>
 					{#each days() as day, index}
-						<option value={index}>{day}</option>
+						<option value={index + 1}>{day}</option>
 					{/each}
 				</select>
 			</div>

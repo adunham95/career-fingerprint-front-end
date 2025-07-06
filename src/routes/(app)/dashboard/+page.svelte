@@ -1,5 +1,4 @@
 <script>
-	import { disableScrollHandling } from '$app/navigation';
 	import Calender from '$lib/Components/Calender/Calender.svelte';
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
@@ -9,6 +8,8 @@
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
 
 	let { data } = $props();
+
+	console.log(data);
 
 	let dialogOpen = $state(false);
 	let isOpen = $state(false);
@@ -116,7 +117,16 @@
 	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 row-span-2 rounded border border-gray-200 p-4 md:col-span-2">
 			<h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>
-			<Timeline />
+			<Timeline
+				dates={data.achievements?.map((ach) => {
+					return {
+						title: 'Achievement',
+						date: ach.startDate ? new Date(ach.startDate) : new Date(),
+						description: ach.myContribution,
+						type: 'achievement'
+					};
+				}) || []}
+			/>
 		</div>
 
 		<div class="bg-surface-100 rounded border border-gray-200 p-4 md:col-span-2">
@@ -143,7 +153,7 @@
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
 >
-	<NewAchievementForm id="newAchievement" />
+	<NewAchievementForm id="newAchievement" onSuccess={() => (isOpen = false)} />
 </Drawer>
 
 <Modal bind:isOpen={dialogOpen} title="Select Type">

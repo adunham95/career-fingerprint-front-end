@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -8,6 +8,7 @@
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import { formatDate } from '$lib/Utils/formatDate';
+	import type { Education, JobApplication, JobPosition } from '../../../../app';
 
 	const { data } = $props();
 
@@ -16,9 +17,9 @@
 	let newJobTitle = $state('');
 	let newJobCompany = $state(null);
 
-	let selectedCompany = $state();
+	let selectedCompany = $state<string>('');
 
-	let applications = $state(data.applications || []);
+	let applications = $state<JobApplication[]>(data.applications || []);
 
 	async function saveNewJobApplication() {
 		const url = `${PUBLIC_API_URL}/job-applications`;
@@ -115,7 +116,7 @@
 				bind:value={selectedCompany}
 				label="Current Job Applications"
 				id="jobApplicaiton"
-				options={(data.applications || []).map((app) => ({
+				options={(applications || []).map((app) => ({
 					id: app.id,
 					label: `${app.company} - ${app.title}`
 				}))}
@@ -275,16 +276,18 @@
 		</div>
 		<div class="hidden flex-col gap-2 md:flex">
 			<h3 class="font-title">Assign To Job</h3>
-			<Select
-				label="Current Job Applications"
-				id="jobApplicaiton"
-				bind:value={selectedCompany}
-				options={applications.map((app) => ({
-					id: app.id,
-					label: `${app.company} - ${app.title}`
-				}))}
-			/>
-			<Label id="jobDetails" label="Job details" />
+			{#if applications.length > 0}
+				<Select
+					label="Current Job Applications"
+					id="jobApplicaiton"
+					bind:value={selectedCompany}
+					options={applications.map((app) => ({
+						id: app.id,
+						label: `${app.company} - ${app.title}`
+					}))}
+				/>
+			{/if}
+			<Label id="jobDetails" label="Create New Job Application" />
 			<TextInput
 				id="jobTitle"
 				label="Job Title"

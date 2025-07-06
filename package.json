@@ -38,6 +38,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-auto": "^6.0.1",
+		"javascript-time-ago": "^2.5.11",
 		"tailwind-merge": "^3.3.1"
 	}
 }
