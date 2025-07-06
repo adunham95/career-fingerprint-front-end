@@ -4,7 +4,7 @@
 	interface Props extends LabelProps {
 		name?: string;
 		required?: boolean;
-		value: string;
+		value: string | undefined | null;
 		className?: string;
 		checkItemClassName?: string;
 		options?: { id: string; label?: string; selected?: boolean }[];
@@ -32,7 +32,7 @@
 		{required}
 		name={name || id}
 		bind:value
-		class="block bg-white w-full rounded-md border-0 px-1.5 py-1.5 text-theme-content shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-theme-secondary-content focus:ring-2 focus:ring-inset focus:ring-theme-brand sm:text-[1.2rem] sm:leading-6"
+		class="text-theme-content placeholder:text-theme-secondary-content focus:ring-theme-brand block w-full rounded-md border-0 bg-white px-1.5 py-1.5 shadow-sm ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-inset sm:text-[1.2rem] sm:leading-6"
 	>
 		{#each options as option}
 			<option value={option.id} selected={option.selected || false}>

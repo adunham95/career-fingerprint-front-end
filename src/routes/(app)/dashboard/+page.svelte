@@ -1,6 +1,7 @@
 <script>
 	import Calender from '$lib/Components/Calender/Calender.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
 	let { data } = $props();
@@ -14,7 +15,7 @@
 		<div
 			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-green-600 bg-green-600/10 p-2 text-center transition hover:border-green-900 hover:bg-green-600/40 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
-			<div class="flex flex-col items-center">
+			<button class="flex flex-col items-center" onclick={() => (isOpen = true)}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
@@ -32,7 +33,7 @@
 
 				<p>Add Achievement</p>
 				<p class=" text-xs">Take note of your achievements</p>
-			</div>
+			</button>
 		</div>
 		<a
 			href="/interview/cheatsheet"
@@ -141,6 +142,11 @@
 	>Open drawer</button
 >
 
-<Drawer bind:isOpen title="Add Achievement" subTitle="Add an a achievement here">
-	<h1>Hello world</h1>
+<Drawer
+	bind:isOpen
+	title="Add Achievement"
+	subTitle="Add an a achievement here"
+	saveFormID="newAchievement"
+>
+	<NewAchievementForm id="newAchievement" />
 </Drawer>

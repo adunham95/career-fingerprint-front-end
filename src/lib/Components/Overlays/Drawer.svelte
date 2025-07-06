@@ -17,6 +17,7 @@
 		title: string;
 		subTitle?: string;
 		onSave?: () => void;
+		saveFormID?: string;
 	}
 
 	let {
@@ -29,7 +30,8 @@
 		children,
 		title,
 		subTitle,
-		onSave
+		onSave,
+		saveFormID
 	}: Props = $props();
 
 	// Handle escape key
@@ -145,6 +147,9 @@
 				>
 				{#if onSave}
 					<button type="submit" class="btn btn-text--primary" onclick={onSave}>Save</button>
+				{/if}
+				{#if saveFormID}
+					<button type="submit" class="btn btn-text--primary" form={saveFormID}>Save</button>
 				{/if}
 			</div>
 		</form>
