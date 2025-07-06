@@ -15,6 +15,9 @@ export const load = async (event) => {
 		});
 		const user = await res.json();
 		console.log({ user });
+		if (user?.message === 'Unauthorized') {
+			redirect(302, '/login');
+		}
 		return { user };
 	} catch (error) {
 		console.error(error);

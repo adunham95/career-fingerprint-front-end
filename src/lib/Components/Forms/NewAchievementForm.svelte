@@ -7,6 +7,7 @@
 	import type { Education, JobPosition } from '../../../app';
 	import Label from '../FormElements/Label.svelte';
 	import Rating from '../FormElements/Rating.svelte';
+	import DateInput from '../FormElements/DateInput.svelte';
 
 	interface Props {
 		id: string;
@@ -63,7 +64,7 @@
 <form {id} class="@container/new-achive-form" onsubmit={submitFunction}>
 	<div class="grid gap-2">
 		<!-- <TextInput id="ach-name" label="Name" /> -->
-		<TextArea id="ach-desc" label="What Happened" bind:value={description} />
+		<TextArea id="ach-desc" label="Background" bind:value={description} />
 		<TextArea id="ach-contriubution" label="What I Did" bind:value={myContribution} />
 		<TextArea id="ach-reult" label="What was the outcome" bind:value={result} />
 		<Select
@@ -78,27 +79,7 @@
 			bind:value={educationID}
 			options={education.map((j) => ({ id: j.id, label: `${j.degree} | ${j.institution}` }))}
 		/>
-		<Rating
-			label="Level"
-			groupName="level"
-			value=""
-			options={[
-				{ id: '1', label: '1' },
-				{ id: '2', label: '2' },
-				{ id: '3', label: '3' },
-				{ id: '4', label: '4' },
-				{ id: '5', label: '5' }
-			]}
-		/>
-		<!-- <div>
-			<Label label="Select Level" />
-			<div class="flex">
-				<button>1</button>
-				<button>2</button>
-				<button>3</button>
-				<button>4</button>
-				<button>5</button>
-			</div>
-		</div> -->
+		<DateInput label="Start Date" id="ach-start" value="" showDate />
+		<DateInput label="End Date" id="ach-end" value="" showDate />
 	</div>
 </form>

@@ -1,9 +1,11 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { Education, JobApplication, JobPosition } from '../../../../../app';
+import type { Education, JobApplication, JobPosition } from '../../../../app';
 
 export const load = async (event) => {
-	const id = event.params.id;
+	const id = event.params.meetingId;
 	const token = event.cookies.get('accessToken');
+
+	console.log('meetingID', id);
 
 	try {
 		let interviewData;

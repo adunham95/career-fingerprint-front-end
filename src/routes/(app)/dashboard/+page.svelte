@@ -1,21 +1,27 @@
 <script>
+	import { disableScrollHandling } from '$app/navigation';
 	import Calender from '$lib/Components/Calender/Calender.svelte';
+	import Timeline from '$lib/Components/Calender/Timeline.svelte';
+	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import Modal from '$lib/Components/Overlays/Modal.svelte';
 
 	let { data } = $props();
 
+	let dialogOpen = $state(false);
 	let isOpen = $state(false);
 </script>
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
-		<div
-			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-green-600 bg-green-600/10 p-2 text-center transition hover:border-green-900 hover:bg-green-600/40 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		<button
+			onclick={() => (isOpen = true)}
+			class="border-pastel-green-600 hover:border-pastel-green-900 hover:bg-pastel-green-600/40 bg-pastel-green-600/10 focus:ring-pastel-gree-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
-			<button class="flex flex-col items-center" onclick={() => (isOpen = true)}>
+			<div class="flex flex-col items-center">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
@@ -33,11 +39,11 @@
 
 				<p>Add Achievement</p>
 				<p class=" text-xs">Take note of your achievements</p>
-			</button>
-		</div>
-		<a
-			href="/interview/cheatsheet"
-			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-sky-600 bg-sky-600/10 p-2 text-center transition hover:border-sky-900 hover:bg-sky-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+			</div>
+		</button>
+		<button
+			onclick={() => (dialogOpen = true)}
+			class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
 				<svg
@@ -55,12 +61,35 @@
 					/>
 				</svg>
 
-				<p>Start Interview</p>
-				<p class=" text-xs">Quickly access your cheatsheet</p>
+				<p>Start Meeting</p>
+				<p class=" text-xs">Quickly access your cheat sheet for an interview or 1:1</p>
 			</div>
-		</a>
+		</button>
 		<div
-			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-violet-600 bg-violet-600/10 p-2 text-center transition hover:border-violet-900 hover:bg-violet-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+			class="border-pastel-purple-600 bg-pastel-purple-600/10 hover:border-pastel-purple-900 hover:bg-pastel-purple-600/50 focus:ring-pastel-purple-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		>
+			<div class="flex flex-col items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-8"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"
+					/>
+				</svg>
+
+				<p>Prepare</p>
+				<p class=" text-xs">Prepare your 1:1, Annual Review or Interview</p>
+			</div>
+		</div>
+		<div
+			class="border-pastel-orange-600 bg-pastel-orange-600/10 hover:border-pastel-orange-900 hover:bg-pastel-orange-600/50 focus:ring-pastel-orange-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
 				<svg
@@ -79,58 +108,24 @@
 				</svg>
 
 				<p>Download Achievements</p>
-				<p class=" text-xs">Prepare your 1:1 or Review</p>
+				<p class=" text-xs">Download a list if you achievements</p>
 			</div>
-		</div>
-		<div
-			class="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 border-fuchsia-600 bg-fuchsia-600/10 p-2 text-center hover:border-fuchsia-900 hover:bg-fuchsia-600/50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
-		>
-			TBD
 		</div>
 	</div>
 
 	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="bg-surface-100 row-span-2 rounded border border-gray-200 p-2 md:col-span-2">
-			Hello World
+		<div class="bg-surface-100 row-span-2 rounded border border-gray-200 p-4 md:col-span-2">
+			<h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>
+			<Timeline />
 		</div>
 
-		<div class="bg-surface-100 rounded border border-gray-200 p-2 md:col-span-2">
-			<div class="flex items-center">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="mr-1 size-6"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-						clip-rule="evenodd"
-					/>
-					<path
-						d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z"
-					/>
-				</svg>
-
-				<p>Projects</p>
-			</div>
+		<div class="bg-surface-100 rounded border border-gray-200 p-4 md:col-span-2">
+			<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
+			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
+				<UpcomingEventRow name="James Smith" eventTime={new Date()} />
+			</ol>
 		</div>
-		<div class="bg-surface-100 rounded border border-gray-200 p-2 md:col-span-2">
-			<div class="flex items-center">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="mr-1 size-6"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z"
-						clip-rule="evenodd"
-					/>
-				</svg>
-				<p>Calender</p>
-			</div>
+		<div class="bg-surface-100 rounded border border-gray-200 p-6 md:col-span-2">
 			<Calender disableSelectedDays />
 		</div>
 	</div>
@@ -150,3 +145,21 @@
 >
 	<NewAchievementForm id="newAchievement" />
 </Drawer>
+
+<Modal bind:isOpen={dialogOpen} title="Select Type">
+	{#snippet children()}
+		<p>Select what type of meeting you want to start</p>
+	{/snippet}
+	{#snippet actions()}
+		<div class="grid w-full grid-cols-2 gap-2">
+			<a
+				href="/cheatsheet?interview"
+				class="btn btn-outline--secondary btn-small w-full text-center">Interview</a
+			>
+			<a
+				href="/cheatsheet?interview"
+				class="btn btn-outline--secondary btn-small w-full text-center">Internal</a
+			>
+		</div>
+	{/snippet}
+</Modal>

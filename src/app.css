@@ -117,6 +117,67 @@ button {
 	--color-disabled-900: #111b2b;
 	--color-disabled-950: #070e1c;
 
+	/* Pastel Purple */
+	--color-pastel-purple-50: #fefcff;
+	--color-pastel-purple-100: #fefcff;
+	--color-pastel-purple-200: #faf5fc;
+	--color-pastel-purple-300: #f9f2fc;
+	--color-pastel-purple-400: #f2e6fa;
+	--color-pastel-purple-500: #eadcf8;
+	--color-pastel-purple-600: #c7b1de;
+	--color-pastel-purple-700: #977dba;
+	--color-pastel-purple-800: #6a4e94;
+	--color-pastel-purple-900: #462d70;
+	--color-pastel-purple-950: #231347;
+	/* Pastel Green */
+	--color-pastel-green-50: #fcfffe;
+	--color-pastel-green-100: #fcfffe;
+	--color-pastel-green-200: #f7fffa;
+	--color-pastel-green-300: #edfcf2;
+	--color-pastel-green-400: #e3fce7;
+	--color-pastel-green-500: #d7f9d7;
+	--color-pastel-green-600: #ade0ad;
+	--color-pastel-green-700: #77ba77;
+	--color-pastel-green-800: #4e964e;
+	--color-pastel-green-900: #2c702c;
+	--color-pastel-green-950: #124712;
+	/* Pastel Blue */
+	--color-pastel-blue-50: #fcffff;
+	--color-pastel-blue-100: #fcffff;
+	--color-pastel-blue-200: #f5fbfc;
+	--color-pastel-blue-300: #ebf7fa;
+	--color-pastel-blue-400: #dff1f7;
+	--color-pastel-blue-500: #d0e8f2;
+	--color-pastel-blue-600: #a9cadb;
+	--color-pastel-blue-700: #749cb5;
+	--color-pastel-blue-800: #4c7391;
+	--color-pastel-blue-900: #2b4c6e;
+	--color-pastel-blue-950: #122a47;
+	/* Pastel Pink */
+	--color-pastel-pink-50: #fffcfe;
+	--color-pastel-pink-100: #fffcfe;
+	--color-pastel-pink-200: #fff7fb;
+	--color-pastel-pink-300: #fcf0f4;
+	--color-pastel-pink-400: #fce6eb;
+	--color-pastel-pink-500: #fadadd;
+	--color-pastel-pink-600: #e0afb4;
+	--color-pastel-pink-700: #ba797e;
+	--color-pastel-pink-800: #964e54;
+	--color-pastel-pink-900: #702c30;
+	--color-pastel-pink-950: #471215;
+	/* Pastel Orange */
+	--color-pastel-orange-50: #fffffc;
+	--color-pastel-orange-100: #fffdf7;
+	--color-pastel-orange-200: #fffbed;
+	--color-pastel-orange-300: #fff7e0;
+	--color-pastel-orange-400: #fff0cc;
+	--color-pastel-orange-500: #ffe5b4;
+	--color-pastel-orange-600: #e6c693;
+	--color-pastel-orange-700: #bf9865;
+	--color-pastel-orange-800: #996f42;
+	--color-pastel-orange-900: #734925;
+	--color-pastel-orange-950: #4a2810;
+
 	--font-title: 'Libre Baskerville', serif;
 
 	--font-paragraph: 'Josefin Sans', sans-serif;
