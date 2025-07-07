@@ -919,6 +919,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/query-core@npm:5.81.5"
+  checksum: 10c0/8d3af841f0e2f3fba1dfd100a8bbc2d07e7b1d5b8570d3d0d8bba5127601c2788e5f7c84839f93f3b0cbe54f14866c1fef8e3f9e745f02d27afaaeea33b7b755
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/query-devtools@npm:5.81.2"
+  checksum: 10c0/f942cba7bd3ecb471063cd472eeebb2ec76005feeb7e0f357b191da5ab9f769aa767bc88d4da82b2b39c4fcbb16dfed38ce3c77b6eea4d4c30405368c1120207
+  languageName: node
+  linkType: hard
+
+"@tanstack/svelte-query-devtools@npm:^5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/svelte-query-devtools@npm:5.81.5"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.81.2"
+    esm-env: "npm:^1.2.1"
+  peerDependencies:
+    "@tanstack/svelte-query": ^5.81.5
+    svelte: ^3.54.0 || ^4.0.0 || ^5.0.0
+  checksum: 10c0/256cb35266a6b91c902a3fd4e10b6ac252dea6e24ebdaa50eaf250b6badb9e17f541276943d6c66475c0186fd6fd66dfc6887de90d16b38172d615a3608c39c5
+  languageName: node
+  linkType: hard
+
+"@tanstack/svelte-query@npm:^5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/svelte-query@npm:5.81.5"
+  dependencies:
+    "@tanstack/query-core": "npm:5.81.5"
+  peerDependencies:
+    svelte: ^3.54.0 || ^4.0.0 || ^5.0.0
+  checksum: 10c0/a8ce0035fd52444bbac1270f58293cdafa4c50645547b06b985abf8df0a8fca4b237c93919d35bde3f9f8ffd08232f172bc86a57ac1be0cd3d37777df898f763
+  languageName: node
+  linkType: hard
+
 "@tybys/wasm-util@npm:^0.9.0":
   version: 0.9.0
   resolution: "@tybys/wasm-util@npm:0.9.0"
@@ -1817,6 +1855,8 @@ __metadata:
     "@tailwindcss/forms": "npm:^0.5.9"
     "@tailwindcss/typography": "npm:^0.5.15"
     "@tailwindcss/vite": "npm:^4.0.0"
+    "@tanstack/svelte-query": "npm:^5.81.5"
+    "@tanstack/svelte-query-devtools": "npm:^5.81.5"
     eslint: "npm:^9.18.0"
     eslint-config-prettier: "npm:^10.0.1"
     eslint-plugin-svelte: "npm:^3.0.0"

@@ -4,6 +4,7 @@
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
+	import NewMeetingForm from '$lib/Components/Forms/NewMeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
 
@@ -12,14 +13,15 @@
 	console.log(data);
 
 	let dialogOpen = $state(false);
-	let isOpen = $state(false);
+	let isAchievementOpen = $state(false);
+	let isNewMeetingOpen = $state(false);
 </script>
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
 		<button
-			onclick={() => (isOpen = true)}
+			onclick={() => (isAchievementOpen = true)}
 			class="border-pastel-green-600 hover:border-pastel-green-900 hover:bg-pastel-green-600/40 bg-pastel-green-600/10 focus:ring-pastel-gree-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
@@ -130,7 +132,13 @@
 		</div>
 
 		<div class="bg-surface-100 rounded border border-gray-200 p-4 md:col-span-2">
-			<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
+			<div class="flex justify-between">
+				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
+				<button
+					class="btn btn-outline--secondary flex items-center py-1"
+					onclick={() => (isNewMeetingOpen = true)}>Add Meeting</button
+				>
+			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				<UpcomingEventRow name="James Smith" eventTime={new Date()} />
 			</ol>
@@ -141,19 +149,22 @@
 	</div>
 </PageContainer>
 
-<button
-	onclick={() => (isOpen = !isOpen)}
-	class="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
-	>Open drawer</button
->
-
 <Drawer
-	bind:isOpen
+	bind:isOpen={isAchievementOpen}
 	title="Add Achievement"
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
 >
-	<NewAchievementForm id="newAchievement" onSuccess={() => (isOpen = false)} />
+	<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+</Drawer>
+
+<Drawer
+	bind:isOpen={isNewMeetingOpen}
+	title="Add New Meeting"
+	subTitle="Create a new interview, or internal meeting"
+	saveFormID="newMeeting"
+>
+	<NewMeetingForm id="newMeeting" />
 </Drawer>
 
 <Modal bind:isOpen={dialogOpen} title="Select Type">
