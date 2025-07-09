@@ -1,115 +1,63 @@
 <script>
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
-	import { onMount } from 'svelte';
+	import NewMeetingForm from '$lib/Components/Forms/NewMeetingForm.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
-	let text = $state();
+	const { data } = $props();
 
-	onMount(() => {
-		document.addEventListener('mouseup', () => {
-			let selText = window?.getSelection()?.toString();
-			if (selText !== '') {
-				text = selText;
-			}
-		});
-	});
+	let isNewMeetingOpen = $state(false);
+	console.log({ data });
 </script>
 
-<PageContainer>
-	<div class="grid grid-cols-2">
-		<div>
-			<p>
-				<strong>Location:</strong> Remote / Hybrid / On-site (City, State)<br />
-				<strong>Employment Type:</strong> Full-Time<br />
-				<strong>Department:</strong> Engineering
-			</p>
+<PageContainer className="py-4">
+	<h1 class="font-title py-2 text-2xl">Select a meeting</h1>
+	<ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+		<li class="aspect-square">
+			<button
+				type="button"
+				class="relative block h-full w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
+				onclick={() => (isNewMeetingOpen = true)}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="mx-auto size-12 text-gray-400"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+					/>
+				</svg>
 
-			<h2>About the Role</h2>
-			<p class="bg-opacity-10 hover:bg-green-100">
-				We are seeking a talented and motivated Software Developer to join our growing engineering
-				team. As a Software Developer, you will be responsible for designing, developing, and
-				maintaining high-quality software solutions that help solve real-world problems for our
-				users.
-			</p>
-
-			<h2>Key Responsibilities</h2>
-			<ul>
-				<li>Design, develop, test, and deploy scalable and efficient code</li>
-				<li>Collaborate with cross-functional teams to define and deliver new features</li>
-				<li>Troubleshoot and resolve software defects and performance issues</li>
-				<li>Write clean, well-documented, and maintainable code</li>
-				<li>Participate in code reviews and provide constructive feedback</li>
-			</ul>
-
-			<h2>Requirements</h2>
-			<ul>
-				<li>Bachelor’s degree in Computer Science or a related field (or equivalent experience)</li>
-				<li>
-					Proficiency in one or more programming languages (e.g., JavaScript, Python, Java, C#)
-				</li>
-				<li>Experience with web frameworks and RESTful APIs</li>
-				<li>Familiarity with version control systems (e.g., Git)</li>
-				<li>Strong problem-solving and communication skills</li>
-			</ul>
-
-			<h2>Preferred Qualifications</h2>
-			<ul>
-				<li>Experience with cloud platforms like AWS, Azure, or GCP</li>
-				<li>Knowledge of Agile development methodologies</li>
-				<li>Contributions to open source projects or a strong developer portfolio</li>
-			</ul>
-
-			<h2>What We Offer</h2>
-			<ul>
-				<li>Competitive salary and benefits</li>
-				<li>Flexible work hours and remote work options</li>
-				<li>Professional development opportunities</li>
-				<li>Collaborative and inclusive company culture</li>
-			</ul>
-
-			<p>
-				<strong>To Apply:</strong> Please submit your resume and a brief cover letter outlining your
-				experience and interest in the role to
-				<a href="mailto:careers@example.com">careers@example.com</a>.
-			</p>
-		</div>
-		<div>
-			{#if text}
-				<blockquote>
-					<Card>
-						{text}
+				<span class="mt-2 block text-sm font-semibold text-gray-900">Create a new meeting</span>
+			</button>
+		</li>
+		{#each data.meetings as meeting}
+			<li class="aspect-square">
+				<a href={`/prep/${meeting.id}`}>
+					<Card className="h-full">
+						<p>{meeting.title}</p>
+						<!-- <p class="text-xs text-gray-400">
+							Last Edited {getMonthName(date.getMonth())}
+							{date.getFullYear()}
+						</p> -->
 					</Card>
-				</blockquote>
-				<CheckCards
-					value=""
-					options={[
-						{
-							id: '1',
-							label: 'Led the refactoring of a legacy codebase, reducing technical debt by 40%.'
-						},
-						{
-							id: '1',
-							label:
-								'Designed and implemented a microservice that improved system scalability and reduced load time by 25%.'
-						},
-						{
-							id: '1',
-							label:
-								'Migrated a monolithic architecture to a microservices-based architecture using Docker andKubernetes.'
-						},
-						{
-							id: '1',
-							label:
-								'Developed a new user-facing feature that increased customer engagement by 30%.'
-						},
-						{
-							id: '1',
-							label: 'Contributed to a core product used by over 500,000 monthly active users.'
-						}
-					]}
-				/>
-			{/if}
-		</div>
-	</div>
+				</a>
+			</li>
+		{/each}
+	</ul>
 </PageContainer>
+
+<Drawer
+	bind:isOpen={isNewMeetingOpen}
+	title="Add New Meeting"
+	subTitle="Create a new interview, or internal meeting"
+	saveFormID="newMeeting"
+>
+	<NewMeetingForm id="newMeeting" />
+</Drawer>

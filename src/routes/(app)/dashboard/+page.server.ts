@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { Achievement } from '../../../app';
+import type { Achievement, Meeting } from '../../../app';
 
 export const load = async (event) => {
 	const token = event.cookies.get('accessToken');
@@ -10,9 +10,15 @@ export const load = async (event) => {
 				Authorization: 'Bearer ' + token
 			}
 		});
+		const resMeetings = await fetch(`${PUBLIC_API_URL}/meetings/my`, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		});
 
 		const achievements: Achievement[] = await resAchievements.json();
-		return { achievements };
+		const meetings: Meeting[] = await resMeetings.json();
+		return { achievements, meetings };
 	} catch (error) {
 		console.error(error);
 	}

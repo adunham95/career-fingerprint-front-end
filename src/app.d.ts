@@ -57,4 +57,11 @@ interface Achievement {
 	description: string;
 }
 
-export { JobPosition, Education, Project, JobApplication, Achievement };
+interface Meeting {
+	id: string;
+	time: Date;
+	title: string;
+	type: string;
+}
+
+export { JobPosition, Education, Project, JobApplication, Achievement, Meeting };

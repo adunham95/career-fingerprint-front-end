@@ -1,12 +1,13 @@
 <script lang="ts">
 	interface Props {
+		id: string;
 		imageURL?: string;
-		type?: 'Interview' | 'Review' | '1:1';
+		type?: string | 'interview' | 'review' | '1-1';
 		name: string;
 		eventTime: Date;
 	}
 
-	const { imageURL, type = 'Interview', name, eventTime }: Props = $props();
+	const { id, imageURL, type = 'interview', name, eventTime }: Props = $props();
 </script>
 
 <li class="relative flex gap-x-6 py-6 xl:static">
@@ -77,7 +78,7 @@
 		</dl>
 	</div>
 	<div class="flex flex-col justify-end">
-		<button class="btn btn-text--primary btn-small">Prep</button>
-		<a href="/cheatsheet" class="btn btn-text--secondary btn-small">Start</a>
+		<a href={`/prep/${id}`} class="btn btn-text--primary btn-small">Prep</a>
+		<a href={`/cheatsheet/${id}`} class="btn btn-text--secondary btn-small">Start</a>
 	</div>
 </li>

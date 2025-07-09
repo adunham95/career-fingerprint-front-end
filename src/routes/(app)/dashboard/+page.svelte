@@ -44,6 +44,7 @@
 				<p class=" text-xs">Take note of your achievements</p>
 			</div>
 		</button>
+
 		<button
 			onclick={() => (dialogOpen = true)}
 			class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
@@ -68,7 +69,9 @@
 				<p class=" text-xs">Quickly access your cheat sheet for an interview or 1:1</p>
 			</div>
 		</button>
-		<div
+
+		<a
+			href="/prep"
 			class="border-pastel-purple-600 bg-pastel-purple-600/10 hover:border-pastel-purple-900 hover:bg-pastel-purple-600/50 focus:ring-pastel-purple-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
@@ -90,7 +93,7 @@
 				<p>Prepare</p>
 				<p class=" text-xs">Prepare your 1:1, Annual Review or Interview</p>
 			</div>
-		</div>
+		</a>
 		<div
 			class="border-pastel-orange-600 bg-pastel-orange-600/10 hover:border-pastel-orange-900 hover:bg-pastel-orange-600/50 focus:ring-pastel-orange-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
@@ -140,7 +143,14 @@
 				>
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
-				<UpcomingEventRow name="James Smith" eventTime={new Date()} />
+				{#each data.meetings || [] as meeting}
+					<UpcomingEventRow
+						id={meeting.id}
+						name={meeting.title}
+						type={meeting.type}
+						eventTime={new Date(meeting.time)}
+					/>
+				{/each}
 			</ol>
 		</div>
 		<div class="bg-surface-100 rounded border border-gray-200 p-6 md:col-span-2">
