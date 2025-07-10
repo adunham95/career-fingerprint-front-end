@@ -50,7 +50,7 @@
 	}
 </script>
 
-<Card headline="Sign in" contentClassName="space-y-3">
+<Card headline="Sign in" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<form onsubmit={(e) => login(e)} class="gap-2 space-y-2 md:grid md:grid-cols-2">
 		<TextInput id="firstName" label="First Name" bind:value={firstName} autocomplete="given-name" />
 		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
@@ -64,7 +64,7 @@
 		/>
 		<div class="flex w-full justify-between pt-2">
 			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
-			<button class="btn btn-text--primary btn-small">Create Account</button>
+			<button disabled={isLoading} class="btn btn-text--primary btn-small">Create Account</button>
 		</div>
 	</form>
 </Card>

@@ -16,6 +16,7 @@
 		lookingFor: '',
 		firstName: '',
 		companyName: '',
+		title: '',
 		institution: '',
 		degree: '',
 		startDate: '',
