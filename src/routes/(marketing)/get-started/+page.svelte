@@ -152,13 +152,18 @@
 			Hello, my name is <InlineTextInput
 				id="firstName-growing"
 				label="First name"
-				placeholder="Adrian"
+				placeholder="First Name"
 				bind:value={profile.firstName}
 			/> and I work at <InlineTextInput
 				id="companyName-gowing"
 				label="Company Name"
-				placeholder="Google"
+				placeholder="Company"
 				bind:value={profile.companyName}
+			/> as <InlineTextInput
+				id="jobTitle-gowing"
+				label="Job Title"
+				placeholder="Job Title"
+				bind:value={profile.title}
 			/> since <InlineTextInput
 				id="start-date-growing"
 				label="Month"
@@ -171,13 +176,18 @@
 			Hello, my name is <InlineTextInput
 				id="firstName-job"
 				label="First name"
-				placeholder="Adrian"
+				placeholder="First Name"
 				bind:value={profile.firstName}
 			/> and I worked at <InlineTextInput
 				id="companyName-job"
 				label="Company Name"
-				placeholder="Google"
+				placeholder="Company"
 				bind:value={profile.companyName}
+			/> as <InlineTextInput
+				id="title-job"
+				label="Job Title"
+				placeholder="Job"
+				bind:value={profile.title}
 			/> from <InlineTextInput
 				id="start-job"
 				label="Starting Date"
