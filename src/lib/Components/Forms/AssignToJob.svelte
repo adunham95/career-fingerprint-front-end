@@ -13,9 +13,10 @@
 
 	interface Props {
 		className?: string;
+		selectedCompany?: string | null;
 	}
 
-	const { className = '' }: Props = $props();
+	let { className = '', selectedCompany = $bindable() }: Props = $props();
 
 	let MyJobApplicationsQuery = createQuery<JobApplication[]>({
 		queryKey: [myJobApplicationsQueryKey],
@@ -34,8 +35,6 @@
 
 	let newJobTitle = $state('');
 	let newJobCompany = $state(null);
-
-	let selectedCompany = $state<string>('');
 
 	async function saveNewJobApplication() {
 		const url = `${PUBLIC_API_URL}/job-applications`;
@@ -62,15 +61,17 @@
 
 <div class={className}>
 	<h3 class="font-title">Assign To Job Application</h3>
-	<Select
-		bind:value={selectedCompany}
-		label="Current Job Applications"
-		id="jobApplicaiton"
-		options={(applications?.data || []).map((app) => ({
-			id: app.id,
-			label: `${app.company} - ${app.title}`
-		}))}
-	/>
+	{#if (applications?.data?.length || 0) > 0}
+		<Select
+			bind:value={selectedCompany}
+			label="Current Job Applications"
+			id="jobApplicaiton"
+			options={(applications?.data || []).map((app) => ({
+				id: app.id,
+				label: `${app.company} - ${app.title}`
+			}))}
+		/>
+	{/if}
 	<Label id="jobDetails" label="Job details" />
 	<TextInput
 		id="jobTitle"
@@ -87,6 +88,8 @@
 		bind:value={newJobCompany}
 	/>
 	<div class="flex justify-end">
-		<button class="btn btn-text--primary" onclick={saveNewJobApplication}>Save</button>
+		<button class="btn btn-text--primary" onclick={saveNewJobApplication}
+			>Add New Job Application</button
+		>
 	</div>
 </div>

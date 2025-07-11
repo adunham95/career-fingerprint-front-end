@@ -2,20 +2,20 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
+		type?: 'radio';
+		groupName?: string;
 		options: { id: string; label: string; subLabel?: string; snippet?: Snippet; name?: string }[];
-		value: string[];
+		value: string | string[];
 		wrapperClass?: string;
 	}
 
-	let { value = $bindable(), options, wrapperClass = '' }: Props = $props();
-
-	function toggleOption(id: string) {
-		if (value.includes(id)) {
-			value = value.filter((v) => v != id);
-		} else {
-			value.push(id);
-		}
-	}
+	let {
+		value = $bindable(),
+		options,
+		groupName,
+		type = 'radio',
+		wrapperClass = ''
+	}: Props = $props();
 </script>
 
 <div class={`mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 ${wrapperClass}`}>
@@ -24,12 +24,11 @@
 			class="group has-checked:ring-primary-500 relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-hidden has-checked:ring-2"
 		>
 			<input
-				type="checkbox"
-				name={option?.name || option.id}
+				type="radio"
+				name={type === 'radio' ? groupName : option?.name || option.id}
 				value={option.id}
-				checked={value.includes(option.id)}
 				class="sr-only"
-				onchange={() => toggleOption(option.id)}
+				onchange={() => (value = option.id)}
 			/>
 			<div>
 				<p class="text-base font-medium text-gray-900">{option.label}</p>

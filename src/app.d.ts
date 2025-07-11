@@ -43,6 +43,7 @@ interface JobApplication {
 	company?: string;
 	companyURL?: string;
 	jobDescriptionURL?: string;
+	jobDescription?: string;
 	location?: string;
 	status?: string;
 	title?: string;
@@ -59,7 +60,7 @@ interface Achievement {
 
 interface Meeting {
 	id: string;
-	time: Date;
+	time: Date | string;
 	title: string;
 	type: string;
 }

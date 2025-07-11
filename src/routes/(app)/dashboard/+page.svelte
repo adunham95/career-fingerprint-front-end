@@ -144,12 +144,7 @@
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#each data.meetings || [] as meeting}
-					<UpcomingEventRow
-						id={meeting.id}
-						name={meeting.title}
-						type={meeting.type}
-						eventTime={new Date(meeting.time)}
-					/>
+					<UpcomingEventRow {...meeting} />
 				{/each}
 			</ol>
 		</div>

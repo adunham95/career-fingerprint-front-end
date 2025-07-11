@@ -6,6 +6,7 @@
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import AssignToJob from '$lib/Components/Forms/AssignToJob.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import { formatDate } from '$lib/Utils/formatDate';
 	import type { Education, JobApplication, JobPosition } from '../../../../app';
@@ -104,42 +105,12 @@
 	<div class="grid grid-cols-1 gap-2 md:grid-cols-2 md:grid-rows-2">
 		<div class="flex flex-col gap-2">
 			<Label label="Take Notes" />
-			<TextInput id="title" label="Title" hideLabel placeholder="Note Title" />
-			<TextArea id="note" label="Note" hideLabel placeholder="Note" />
+			<TextArea id="note" label="Note" hideLabel placeholder="Note" rows={4} />
 			<div class="flex justify-end">
 				<button class="btn btn-text--primary">Add Note</button>
 			</div>
 		</div>
-		<div class="block space-y-2 md:hidden">
-			<h3 class="font-title">Assign To Job</h3>
-			<Select
-				bind:value={selectedCompany}
-				label="Current Job Applications"
-				id="jobApplicaiton"
-				options={(applications || []).map((app) => ({
-					id: app.id,
-					label: `${app.company} - ${app.title}`
-				}))}
-			/>
-			<Label id="jobDetails" label="Job details" />
-			<TextInput
-				id="jobTitle"
-				label="Job Title"
-				placeholder="Job Title"
-				hideLabel
-				bind:value={newJobTitle}
-			/>
-			<TextInput
-				id="jobCompany"
-				label="Company"
-				placeholder="Company"
-				hideLabel
-				bind:value={newJobCompany}
-			/>
-			<div class="flex justify-end">
-				<button class="btn btn-text--primary" onclick={saveNewJobApplication}>Save</button>
-			</div>
-		</div>
+		<AssignToJob className="block space-y-2 md:hidden" bind:selectedCompany />
 		<div class="  row-span-2">
 			<NavPillButtons
 				bind:currentTab={current}
@@ -147,7 +118,7 @@
 					{ id: 'details', label: 'Job Details' },
 					{ id: 'resume', label: 'Resume' },
 					{ id: 'achievements', label: 'Achievements' },
-					{ id: 'projects', label: 'Projects' },
+					// { id: 'projects', label: 'Projects' },
 					{ id: 'notes', label: 'Prior Notes' },
 					{ id: 'highlights', label: 'Highlights' }
 				]}
@@ -274,37 +245,6 @@
 				{/if}
 			</div>
 		</div>
-		<div class="hidden flex-col gap-2 md:flex">
-			<h3 class="font-title">Assign To Job</h3>
-			{#if applications.length > 0}
-				<Select
-					label="Current Job Applications"
-					id="jobApplicaiton"
-					bind:value={selectedCompany}
-					options={applications.map((app) => ({
-						id: app.id,
-						label: `${app.company} - ${app.title}`
-					}))}
-				/>
-			{/if}
-			<Label id="jobDetails" label="Create New Job Application" />
-			<TextInput
-				id="jobTitle"
-				label="Job Title"
-				placeholder="Job Title"
-				hideLabel
-				bind:value={newJobTitle}
-			/>
-			<TextInput
-				id="jobCompany"
-				label="Company"
-				placeholder="Company"
-				hideLabel
-				bind:value={newJobCompany}
-			/>
-			<div class="flex justify-end">
-				<button class="btn btn-text--primary" onclick={saveNewJobApplication}>Save</button>
-			</div>
-		</div>
+		<AssignToJob className="hidden flex-col gap-2 md:flex" bind:selectedCompany />
 	</div>
 </PageContainer>

@@ -1,21 +1,12 @@
 <script lang="ts">
 	import AccountHeader from '$lib/Components/Header/AccountHeader.svelte';
 	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
-	import { browser } from '$app/environment';
-	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import { QueryClientProvider } from '@tanstack/svelte-query';
+	import { queryClient } from '$lib/API/queryClient.js';
 
 	let { children, data } = $props();
 
 	console.log({ data });
-
-	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: {
-				staleTime: 600000,
-				enabled: browser
-			}
-		}
-	});
 </script>
 
 <QueryClientProvider client={queryClient}>

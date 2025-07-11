@@ -23,6 +23,8 @@
 	let title = $state();
 	let time = $state<string | Date>();
 	let type = $state('interview');
+	let location = $state();
+	let link = $state();
 	let jobPositionID = $state(null);
 	let educationID = $state(null);
 	let jobAppID = $state(null);
@@ -78,7 +80,12 @@
 			body: JSON.stringify({
 				title,
 				time: time ? new Date(time).toISOString() : null,
-				type
+				type,
+				jobAppID,
+				jobPositionID,
+				educationID,
+				location,
+				link
 			})
 		});
 
@@ -89,6 +96,8 @@
 			type = 'interview';
 			jobPositionID = null;
 			educationID = null;
+			location = null;
+			link = null;
 			onSuccess();
 		} else {
 			toastStore.show({ message: 'Could not save achievement', type: 'error' });
@@ -100,6 +109,8 @@
 	<div class="grid gap-2">
 		<TextInput id="evt-title" label="Event Title" bind:value={title} />
 		<TextInput id="evt-time" label="Event Time" type="datetime-local" bind:value={time} />
+		<TextInput id="evt-location" label="Event Location" bind:value={location} />
+		<TextInput id="evt-link" label="Event Link" bind:value={link} />
 		<Select
 			id="evt-type"
 			label="Type"
