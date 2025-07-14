@@ -65,4 +65,13 @@ interface Meeting {
 	type: string;
 }
 
-export { JobPosition, Education, Project, JobApplication, Achievement, Meeting };
+interface PrepQuestion {
+	id: string;
+	question: string;
+	key: string;
+	displayOn: string[];
+	order: number;
+	prepAnswers: { answer: string }[];
+}
+
+export { JobPosition, Education, Project, JobApplication, Achievement, Meeting, PrepQuestion };

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import StepList from '$lib/Components/StepList.svelte';
 	import StepHeader from '../StepHeader.svelte';
-	import { getSteps } from '../steps.js';
+	import SaveAsType from './saveAsType.svelte';
 
 	const { data } = $props();
 
@@ -17,5 +16,17 @@ Why your a good fit
 
 <PageContainer>
 	<StepHeader currentStep={2} meetingID={data.meetingID || ''} />
-	<div></div>
+	<ul class="mx-auto h-1 max-w-[500px] space-y-4">
+		{#each data.questions || [] as question}
+			<li>
+				<SaveAsType
+					id={question.id}
+					label={question.question}
+					value={question.prepAnswers[0]?.answer || ''}
+					meetingID={data.meetingID || ''}
+					jobApplicationID={data.meeting.jobAppID}
+				/>
+			</li>
+		{/each}
+	</ul>
 </PageContainer>
