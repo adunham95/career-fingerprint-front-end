@@ -1,33 +1,36 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { onDestroy } from 'svelte';
-	import type { Education, JobApplication, JobPosition } from '../../../app';
+	import type { Education, JobPosition } from '../../../app';
 	import Select from '../FormElements/Select.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
 	import { toastStore } from '../Toasts/toast';
 	import { createQuery, type QueryObserverResult } from '@tanstack/svelte-query';
 	import { fetchMyEducation, myEducationQueryKey } from '$lib/API/Queries/my-education';
 	import { fetchMyJobPositions, myJobPositionsQueryKey } from '$lib/API/Queries/my-jobs-positions';
-	import {
-		fetchMyJobApplications,
-		myJobApplicationsQueryKey
-	} from '$lib/API/Queries/my-job-applications';
+	import AssignToJob from './AssignToJob.svelte';
 
 	interface Props {
 		id: string;
+		meetingID?: string;
 		onSuccess?: () => void;
+		meeting?: Partial<{
+			time?: string | Date;
+		}>;
 	}
 
-	const { id, onSuccess = () => null }: Props = $props();
+	const { id, meetingID, onSuccess = () => null, meeting = {} }: Props = $props();
 
 	let title = $state();
-	let time = $state<string | Date>();
+	let time = $state<string | Date>(meeting?.time || new Date().toUTCString());
 	let type = $state('interview');
 	let location = $state();
 	let link = $state();
 	let jobPositionID = $state(null);
 	let educationID = $state(null);
 	let jobAppID = $state(null);
+
+	$inspect({ time });
 
 	let MyEducationQuery = createQuery<Education[]>({
 		queryKey: [myEducationQueryKey],
@@ -39,14 +42,8 @@
 		queryFn: async () => await fetchMyJobPositions()
 	});
 
-	let MyJobApplicationsQuery = createQuery<JobApplication[]>({
-		queryKey: [myJobApplicationsQueryKey],
-		queryFn: async () => await fetchMyJobApplications()
-	});
-
 	let education = $state<QueryObserverResult<Education[], Error>>();
 	let jobPositions = $state<QueryObserverResult<JobPosition[], Error>>();
-	let jobApps = $state<QueryObserverResult<JobApplication[], Error>>();
 
 	const unsubscribeEducation = MyEducationQuery.subscribe((t) => {
 		education = t;
@@ -54,14 +51,10 @@
 	const unsubscribeJobPositions = MyJobPositionsQuery.subscribe((t) => {
 		jobPositions = t;
 	});
-	const unsubscribeJobApplications = MyJobApplicationsQuery.subscribe((t) => {
-		jobApps = t;
-	});
 
 	onDestroy(() => {
 		unsubscribeEducation();
 		unsubscribeJobPositions();
-		unsubscribeJobApplications();
 	});
 
 	$inspect({ education, jobPositions });
@@ -69,10 +62,12 @@
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
 
-		const url = `${PUBLIC_API_URL}/meetings`;
+		const url = meetingID
+			? `${PUBLIC_API_URL}/meetings/${meetingID}`
+			: `${PUBLIC_API_URL}/meetings`;
 
 		const res = await fetch(url, {
-			method: 'POST',
+			method: meetingID ? 'PATCH' : 'POST',
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json' // Set content type to JSON
@@ -108,7 +103,7 @@
 <form {id} class="@container/new-achive-form" onsubmit={submitFunction}>
 	<div class="grid gap-2">
 		<TextInput id="evt-title" label="Event Title" bind:value={title} />
-		<TextInput id="evt-time" label="Event Time" type="datetime-local" bind:value={time} />
+		<TextInput id="evt-time" label="Event Time" type="datetime-local" bind:value={time} required />
 		<TextInput id="evt-location" label="Event Location" bind:value={location} />
 		<TextInput id="evt-link" label="Event Link" bind:value={link} />
 		<Select
@@ -117,17 +112,11 @@
 			bind:value={type}
 			options={[
 				{ id: 'interview', label: 'Interview' },
-				{ id: '1-1', label: '1:1' },
-				{ id: 'review', label: 'Review' }
+				{ id: 'internal', label: 'Internal' }
 			]}
 		/>
 		{#if type === 'interview'}
-			<Select
-				id="select-job-app"
-				label="Link To Job Application"
-				bind:value={jobAppID}
-				options={jobApps?.data?.map((j) => ({ id: j.id, label: `${j.title} | ${j.company}` }))}
-			/>
+			<AssignToJob bind:selectedCompany={jobAppID} className="space-y-2" />
 		{:else}
 			<Select
 				id="select-job"

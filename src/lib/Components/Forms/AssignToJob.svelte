@@ -39,6 +39,10 @@
 	async function saveNewJobApplication() {
 		const url = `${PUBLIC_API_URL}/job-applications`;
 
+		if (newJobTitle === '' && newJobCompany === '') {
+			return;
+		}
+
 		const res = await fetch(url, {
 			method: 'POST',
 			credentials: 'include',
@@ -60,7 +64,6 @@
 </script>
 
 <div class={className}>
-	<h3 class="font-title">Assign To Job Application</h3>
 	{#if (applications?.data?.length || 0) > 0}
 		<Select
 			bind:value={selectedCompany}
@@ -72,7 +75,7 @@
 			}))}
 		/>
 	{/if}
-	<Label id="jobDetails" label="Job details" />
+	<Label id="jobDetails" label="Create New Job Application" />
 	<TextInput
 		id="jobTitle"
 		label="Job Title"

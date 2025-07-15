@@ -4,7 +4,7 @@
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
-	import NewMeetingForm from '$lib/Components/Forms/NewMeetingForm.svelte';
+	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
 
@@ -45,8 +45,8 @@
 			</div>
 		</button>
 
-		<button
-			onclick={() => (dialogOpen = true)}
+		<a
+			href="/cheatsheet"
 			class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
@@ -68,7 +68,7 @@
 				<p>Start Meeting</p>
 				<p class=" text-xs">Quickly access your cheat sheet for an interview or 1:1</p>
 			</div>
-		</button>
+		</a>
 
 		<a
 			href="/prep"
@@ -171,21 +171,3 @@
 >
 	<NewMeetingForm id="newMeeting" />
 </Drawer>
-
-<Modal bind:isOpen={dialogOpen} title="Select Type">
-	{#snippet children()}
-		<p>Select what type of meeting you want to start</p>
-	{/snippet}
-	{#snippet actions()}
-		<div class="grid w-full grid-cols-2 gap-2">
-			<a
-				href="/cheatsheet?interview"
-				class="btn btn-outline--secondary btn-small w-full text-center">Interview</a
-			>
-			<a
-				href="/cheatsheet?interview"
-				class="btn btn-outline--secondary btn-small w-full text-center">Internal</a
-			>
-		</div>
-	{/snippet}
-</Modal>

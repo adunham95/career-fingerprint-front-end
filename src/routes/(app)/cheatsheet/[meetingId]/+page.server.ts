@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { Education, JobApplication, JobPosition } from '../../../../app';
+import type { Education, JobApplication, JobPosition, Achievement } from '../../../../app';
 
 export const load = async (event) => {
 	const id = event.params.meetingId;
@@ -8,15 +8,12 @@ export const load = async (event) => {
 	console.log('meetingID', id);
 
 	try {
-		let interviewData;
-		if (id) {
-			const resInterview = await fetch(`${PUBLIC_API_URL}/interview/${id}`, {
-				headers: {
-					Authorization: 'Bearer ' + token
-				}
-			});
-			interviewData = await resInterview.json();
-		}
+		const resInterview = await fetch(`${PUBLIC_API_URL}/meetings/${id}`, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		});
+
 		const resEducation = await fetch(`${PUBLIC_API_URL}/education/my`, {
 			headers: {
 				Authorization: 'Bearer ' + token
@@ -32,11 +29,18 @@ export const load = async (event) => {
 				Authorization: 'Bearer ' + token
 			}
 		});
+		const resAch = await fetch(`${PUBLIC_API_URL}/achievement/my`, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		});
 
+		const interviewData = await resInterview.json();
 		const applications: JobApplication[] = await resApplications.json();
 		const education: Education[] = await resEducation.json();
 		const jobs: JobPosition[] = await resJobs.json();
-		return { education, jobs, applications, id, interviewData };
+		const achievements: Achievement[] = await resAch.json();
+		return { education, jobs, applications, id, interviewData, meetingID: id, achievements };
 	} catch (error) {
 		console.error(error);
 	}

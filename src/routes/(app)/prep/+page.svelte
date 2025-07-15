@@ -1,7 +1,7 @@
 <script>
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import NewMeetingForm from '$lib/Components/Forms/NewMeetingForm.svelte';
+	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 
 	const { data } = $props();
