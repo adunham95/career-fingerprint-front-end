@@ -2,6 +2,7 @@
 	import EventDetails from '$lib/Components/Calender/EventDetails.svelte';
 	import ContactsChecklist from '$lib/Components/ContactsChecklist.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import MeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import StepHeader from './StepHeader.svelte';
 
 	const { data } = $props();
@@ -14,7 +15,8 @@
 
 	<div class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
 		<div class="pb-4">
-			<EventDetails {...data.meeting} />
+			<!-- <EventDetails {...data.meeting} /> -->
+			<MeetingForm id="update-meeting" meetingID={data.meetingID} meeting={data.meeting} />
 		</div>
 		<div>
 			<ContactsChecklist

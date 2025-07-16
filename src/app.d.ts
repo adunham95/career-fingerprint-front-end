@@ -19,6 +19,7 @@ interface JobPosition {
 	startDate: string | null;
 	endDate: string | null;
 	currentPosition: boolean | null;
+	achievements: Achievement[];
 }
 
 interface Project {
@@ -36,6 +37,7 @@ interface Education {
 	endDate: string | null;
 	currentPosition: boolean | null;
 	description: string | null;
+	achievements: Achievement[];
 }
 
 interface JobApplication {

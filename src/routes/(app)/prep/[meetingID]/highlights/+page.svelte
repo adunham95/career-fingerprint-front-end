@@ -84,11 +84,21 @@
 				<Toggle bind:checked={showEditJD} label="Edit Job Description" />
 			</div>
 			{#if showEditJD}
-				<UpdateJobDescription jobAppID={data.meeting.jobApp.jobDescription} />
+				<UpdateJobDescription
+					jobAppID={data?.meeting?.jobApp?.id}
+					jobDescription={data?.meeting?.jobApp?.jobDescription}
+				/>
 			{:else}
 				<Card>
 					<p class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
-						{data.meeting.jobApp.jobDescription}
+						{#if data.meeting?.jobApp?.jobDescription}
+							{data.meeting.jobApp.jobDescription}
+						{:else}
+							<InfoBlock
+								title="Job Description"
+								description="Add your job description before you can highlight"
+							/>
+						{/if}
 					</p>
 				</Card>
 			{/if}

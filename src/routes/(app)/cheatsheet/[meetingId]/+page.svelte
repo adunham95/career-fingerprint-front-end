@@ -17,8 +17,6 @@
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
 
-	let selectedCompany = $state<string | null>(null);
-
 	async function saveNote() {
 		const url = `${PUBLIC_API_URL}/notes`;
 
@@ -30,8 +28,7 @@
 			},
 			body: JSON.stringify({
 				note: currentNote,
-				meetingID: data.meetingID,
-				jobAppID: selectedCompany
+				meetingID: data.meetingID
 			})
 		});
 
@@ -78,7 +75,6 @@
 				tabs={[
 					{ id: 'details', label: 'Job Details' },
 					{ id: 'resume', label: 'Resume' },
-					{ id: 'achievements', label: 'Achievements' },
 					{ id: 'notes', label: 'Prior Notes' },
 					{ id: 'highlights', label: 'Highlights' }
 				]}
@@ -93,7 +89,15 @@
 										? 'Current'
 										: formatDate(job.endDate)}
 								</h5>
-								<p>{job.description}</p>
+								<p class="mb-2 border-b border-gray-300 pb-2">{job.description}</p>
+								{#if job?.achievements?.length > 0}
+									<Label id="" label="My Achievements" />
+									<ul class="list-disk list-inside">
+										{#each job.achievements as ach}
+											<li class="ml-5">{ach.myContribution}</li>
+										{/each}
+									</ul>
+								{/if}
 							</Card>
 						{/each}
 						{#each data.education || [] as edu}
@@ -104,87 +108,69 @@
 										: formatDate(edu.endDate)}
 								</h5>
 								<p>{edu.description}</p>
+								{#if edu?.achievements?.length > 0}
+									<Label id="" label="My Achievements" />
+									<ol class="list-disk list-inside">
+										{#each edu.achievements as ach}
+											<li>{ach.myContribution}</li>
+										{/each}
+									</ol>
+								{/if}
 							</Card>
 						{/each}
 					</ul>
-				{:else if current === 'achievements'}
-					<ul class="list-inside list-disc">
-						{#each data.achievements || [] as achievement}
+				{:else if current === 'details'}
+					<p class="whitespace-pre-wrap">
+						{data.interviewData?.jobApp?.jobDescription}
+					</p>
+				{:else if current === 'notes'}
+					<ul class="space-y-2">
+						{#each data.relatedNotes as note}
 							<li>
-								{achievement.myContribution}
+								<Card size="sm">
+									<p>{note.note}</p>
+								</Card>
 							</li>
 						{/each}
 					</ul>
-				{:else if current === 'details'}
-					<p>
-						<strong>Location:</strong> Remote / Hybrid / On-site (City, State)<br />
-						<strong>Employment Type:</strong> Full-Time<br />
-						<strong>Department:</strong> Engineering
-					</p>
-
-					<h2>About the Role</h2>
-					<p class="bg-opacity-10 hover:bg-green-100">
-						We are seeking a talented and motivated Software Developer to join our growing
-						engineering team. As a Software Developer, you will be responsible for designing,
-						developing, and maintaining high-quality software solutions that help solve real-world
-						problems for our users.
-					</p>
-
-					<h2>Key Responsibilities</h2>
-					<ul>
-						<li>Design, develop, test, and deploy scalable and efficient code</li>
-						<li>Collaborate with cross-functional teams to define and deliver new features</li>
-						<li>Troubleshoot and resolve software defects and performance issues</li>
-						<li>Write clean, well-documented, and maintainable code</li>
-						<li>Participate in code reviews and provide constructive feedback</li>
-					</ul>
-
-					<h2>Requirements</h2>
-					<ul>
-						<li>
-							Bachelor’s degree in Computer Science or a related field (or equivalent experience)
-						</li>
-						<li>
-							Proficiency in one or more programming languages (e.g., JavaScript, Python, Java, C#)
-						</li>
-						<li>Experience with web frameworks and RESTful APIs</li>
-						<li>Familiarity with version control systems (e.g., Git)</li>
-						<li>Strong problem-solving and communication skills</li>
-					</ul>
-
-					<h2>Preferred Qualifications</h2>
-					<ul>
-						<li>Experience with cloud platforms like AWS, Azure, or GCP</li>
-						<li>Knowledge of Agile development methodologies</li>
-						<li>Contributions to open source projects or a strong developer portfolio</li>
-					</ul>
-
-					<h2>What We Offer</h2>
-					<ul>
-						<li>Competitive salary and benefits</li>
-						<li>Flexible work hours and remote work options</li>
-						<li>Professional development opportunities</li>
-						<li>Collaborative and inclusive company culture</li>
-					</ul>
-
-					<p>
-						<strong>To Apply:</strong> Please submit your resume and a brief cover letter outlining
-						your experience and interest in the role to
-						<a href="mailto:careers@example.com">careers@example.com</a>.
-					</p>
-				{:else if current === 'notes'}
-					<Card size="sm">
-						<p>This is a note</p>
-					</Card>
 				{:else if current === 'highlights'}
-					<ol>
-						<li>
-							<blockquote>"...SKills in React.."</blockquote>
-							<ol class="list-disk">
-								<li>Led the refactoring of a legacy codebase, reducing technical debt by 40%.</li>
-							</ol>
-						</li>
-					</ol>
+					<ul class="space-y-2">
+						{#each data.highlights as highlight}
+							<li>
+								<Card size="sm" contentClassName="divide-y divide-gray-200">
+									<div class="pb-2">
+										<div class="bg-secondary-50 text-secondary-600 rounded-md p-2">
+											<blockquote>"{highlight.text}"</blockquote>
+										</div>
+									</div>
+									{#if highlight.notes.length > 0}
+										<div class="mt-2">
+											<Label id="" label="Notes" />
+											<ul>
+												{#each highlight.notes as note}
+													<li>
+														{note.note}
+													</li>
+												{/each}
+											</ul>
+										</div>
+									{/if}
+									{#if highlight.achievements.length > 0}
+										<div class="mt-2">
+											<Label id="" label="Related Achievements" />
+											<ol class="ml-5 list-disc">
+												{#each highlight.achievements as ach}
+													<li>
+														{ach.myContribution}
+													</li>
+												{/each}
+											</ol>
+										</div>
+									{/if}
+								</Card>
+							</li>
+						{/each}
+					</ul>
 				{/if}
 			</div>
 		</div>

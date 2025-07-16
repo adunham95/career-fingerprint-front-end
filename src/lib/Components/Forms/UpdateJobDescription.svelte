@@ -47,7 +47,7 @@
 </script>
 
 <form onsubmit={(e) => updateJobDescription(e)}>
-	<TextArea id="" label="Job Description" rows={6} bind:value={jobDescription} />
+	<TextArea id="job-description" label="Job Description" rows={6} bind:value={jobDescription} />
 	<div class="flex justify-end pt-4">
 		<button type="submit" class="btn btn--primary">Updated Job Description</button>
 	</div>
