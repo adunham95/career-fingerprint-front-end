@@ -62,9 +62,14 @@ interface Achievement {
 
 interface Meeting {
 	id: string;
-	time: Date | string;
+	time: Date | string | null;
 	title: string;
 	type: string;
+	location: string;
+	link: string;
+	jobAppID: string;
+	jobPositionID: string;
+	educationID: string;
 }
 
 interface PrepQuestion {
