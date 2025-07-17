@@ -10,7 +10,7 @@ export const load = async (event) => {
 				Authorization: 'Bearer ' + token
 			}
 		});
-		const resMeetings = await fetch(`${PUBLIC_API_URL}/meetings/my`, {
+		const resMeetings = await fetch(`${PUBLIC_API_URL}/meetings/my?page=1&limit=3`, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}

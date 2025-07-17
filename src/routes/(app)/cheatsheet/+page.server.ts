@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { redirect, error } from '@sveltejs/kit';
-import { load } from './../dashboard/+page.server';
+
 export const load = async (event) => {
 	const token = event.cookies.get('accessToken');
 	const meetingType = event.url.searchParams.get('meeting-type');
@@ -15,7 +15,8 @@ export const load = async (event) => {
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify({
-				type: meetingType
+				type: meetingType,
+				time: new Date().toDateString()
 			})
 		});
 
