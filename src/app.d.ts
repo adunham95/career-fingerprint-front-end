@@ -47,9 +47,9 @@ interface JobApplication {
 	jobDescriptionURL?: string;
 	jobDescription?: string;
 	location?: string;
-	status?: string;
+	status?: AppStatusEnum;
 	title?: string;
-	_count?: { notes: int; interviews: int };
+	_count?: { notes: int; meetings: int };
 }
 
 interface Achievement {

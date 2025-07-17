@@ -32,7 +32,7 @@
 		{required}
 		name={name || id}
 		bind:value
-		class="text-theme-content placeholder:text-theme-secondary-content focus:ring-theme-brand block w-full rounded-md border-0 bg-white px-1.5 py-1.5 shadow-sm ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-inset sm:text-[1.2rem] sm:leading-6"
+		class="text-theme-content placeholder:text-theme-secondary-content focus:ring-theme-brand block w-full rounded-md border-0 bg-white px-1.5 py-1.5 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-inset sm:text-[1.2rem] sm:leading-6"
 	>
 		{#each options as option}
 			<option value={option.id} selected={option.selected || false}>

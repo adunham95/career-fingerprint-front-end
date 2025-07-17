@@ -2,35 +2,56 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import Select from '$lib/Components/FormElements/Select.svelte';
+	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import StatusBadge from '$lib/Components/StatusBadge.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { AppStatusEnum } from '$lib/Utils/AppStatusTypes.js';
 
 	let isOpen = $state(false);
+	let jobID = $state<string | null>(null);
 	let jobTitle = $state('');
-	let company = $state(null);
-	let companyURL = $state(null);
-	let location = $state(null);
-	let jobDescriptionURL = $state(null);
+	let company = $state<string | null>(null);
+	let companyURL = $state<string | null>(null);
+	let location = $state<string | null>(null);
+	let jobDescription = $state<string | null>(null);
+	let jobStatus = $state(AppStatusEnum.APPLIED);
 
 	const { data } = $props();
 
 	let applications = $state(data.applications || []);
 
+	function setJobDetails(id: string) {
+		let selectedApp = applications.find((app) => app.id === id);
+		jobID = id;
+		jobTitle = selectedApp?.title || '';
+		company = selectedApp?.company || null;
+		companyURL = selectedApp?.companyURL || null;
+		jobStatus = selectedApp?.status || AppStatusEnum.APPLIED;
+		jobDescription = selectedApp?.jobDescription || null;
+		isOpen = true;
+	}
+
 	async function saveNewJobApplication() {
-		const url = `${PUBLIC_API_URL}/job-applications`;
+		const url = jobID
+			? `${PUBLIC_API_URL}/job-applications/${jobID}`
+			: `${PUBLIC_API_URL}/job-applications`;
 
 		const res = await fetch(url, {
-			method: 'POST',
+			method: jobID ? 'PATCH' : 'POST',
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify({
-				jobDescriptionURL,
 				title: jobTitle,
 				company,
 				companyURL,
-				location
+				location,
+				status: jobStatus,
+				jobDescription
 			})
 		});
 
@@ -38,8 +59,19 @@
 			const newJob = await res.json();
 			applications.push(newJob);
 			isOpen = false;
+			jobID = null;
+			jobTitle = '';
+			company = null;
+			companyURL = null;
+			jobStatus = AppStatusEnum.APPLIED;
+			jobDescription = null;
+			isOpen = true;
+		} else {
+			toastStore.show({ message: 'Error' });
 		}
 	}
+
+	console.log({ data });
 </script>
 
 <PageContainer className="py-5">
@@ -69,14 +101,17 @@
 		</li>
 		{#each applications as app}
 			<li>
-				{@render JobCard(
-					app.title,
-					app.companyURL,
-					app.company,
-					app.location,
-					app?._count?.notes,
-					app?._count?.interviews
-				)}
+				<button class="w-full" onclick={() => setJobDetails(app.id)}>
+					{@render JobCard(
+						app.title,
+						app.companyURL,
+						app.company,
+						app.location,
+						app.status,
+						app?._count?.notes,
+						app?._count?.meetings
+					)}
+				</button>
 			</li>
 		{/each}
 	</ul>
@@ -87,10 +122,11 @@
 	url?: string,
 	company?: string,
 	location?: string,
+	status?: AppStatusEnum,
 	notes: number = 0,
 	interviews: number = 0
 )}
-	<Card contentClassName=" px-4 py-4">
+	<Card contentClassName="px-4 py-4">
 		<div class="flex">
 			<div class="size-14 shrink-0 overflow-hidden rounded border border-gray-300 p-1">
 				<img
@@ -100,14 +136,18 @@
 				/>
 			</div>
 
-			<div class="ml-4 flex flex-1 flex-col">
+			<div class="ml-4 flex flex-1 flex-col text-start">
 				<h3 class="text-base">{title}</h3>
 				<p class="text-xs text-gray-500">{company}</p>
 			</div>
 		</div>
-		<div class="mt-1">
-			<span class="badge badge--gray">{location}</span>
-			<span class="badge badge--secondary"> Interviewing</span>
+		<div class="mt-1 flex justify-start gap-2">
+			{#if location}
+				<span class="badge badge--gray">{location}</span>
+			{/if}
+			{#if status}
+				<StatusBadge {status} />
+			{/if}
 		</div>
 		<div class="mt-1 flex justify-end gap-1 text-gray-500">
 			<div class="ml-1 flex text-xs">
@@ -153,6 +193,20 @@
 		<TextInput id="company" label="Company" bind:value={company} />
 		<TextInput id="companyURL" label="Company URL" bind:value={companyURL} />
 		<TextInput id="location" label="Location" bind:value={location} />
-		<TextInput id="jobDescriptionURL" label="Job Description URL" bind:value={jobDescriptionURL} />
+		<TextArea id="jobDescription" label="Job Description" bind:value={jobDescription} />
+		<Select
+			id="status"
+			label="Application Status"
+			bind:value={jobStatus}
+			options={[
+				{ id: AppStatusEnum.APPLIED, label: 'Applied' },
+				{ id: AppStatusEnum.INTERVIEWING, label: 'Interviewing' },
+				{ id: AppStatusEnum.NEGOTIATION, label: 'Negotiation' },
+				{ id: AppStatusEnum.ACCEPTED, label: 'Accepted' },
+				{ id: AppStatusEnum.REJECTED, label: 'Rejected' },
+				{ id: AppStatusEnum.GHOST, label: 'Ghosted' },
+				{ id: AppStatusEnum.ARCHIVE, label: 'Archived' }
+			]}
+		/>
 	</div>
 </Drawer>
