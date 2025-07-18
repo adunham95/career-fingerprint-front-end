@@ -20,11 +20,5 @@
 				updateOnChange
 			/>
 		</div>
-		<!-- <div>
-			<ContactsChecklist
-				title="Add Contacts"
-				contacts={[{ id: '1', name: 'John Smith', email: 'jsmith@cf.com' }]}
-			/>
-		</div> -->
 	</div>
 </PageContainer>

@@ -14,9 +14,10 @@
 	interface Props {
 		className?: string;
 		selectedCompany?: string | null;
+		oninput?: () => void;
 	}
 
-	let { className = '', selectedCompany = $bindable() }: Props = $props();
+	let { className = '', selectedCompany = $bindable(), oninput }: Props = $props();
 
 	let MyJobApplicationsQuery = createQuery<JobApplication[]>({
 		queryKey: [myJobApplicationsQueryKey],
@@ -66,6 +67,7 @@
 <div class={className}>
 	{#if (applications?.data?.length || 0) > 0}
 		<Select
+			{oninput}
 			bind:value={selectedCompany}
 			label="Current Job Applications"
 			id="jobApplicaiton"
@@ -91,7 +93,7 @@
 		bind:value={newJobCompany}
 	/>
 	<div class="flex justify-end">
-		<button class="btn btn-text--primary" onclick={saveNewJobApplication}
+		<button type="button" class="btn btn-text--primary" onclick={saveNewJobApplication}
 			>Add New Job Application</button
 		>
 	</div>

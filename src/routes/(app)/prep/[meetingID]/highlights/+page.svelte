@@ -9,18 +9,47 @@
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
-	import { createMutation, type CreateBaseMutationResult } from '@tanstack/svelte-query';
+	import {
+		createMutation,
+		createQuery,
+		type CreateBaseMutationResult,
+		type QueryObserverResult
+	} from '@tanstack/svelte-query';
 	import {
 		postHighlight,
 		type NewHighlight,
 		type PostHighlightResponse
 	} from '$lib/API/Mutations/post-highlight.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import MenuButton from '$lib/Components/Buttons/MenuButton.svelte';
+	import {
+		fetchMeetingHighlights,
+		meetingHighlightsQueryKey
+	} from '$lib/API/Queries/meeting-highlights.js';
+	import type { MeetingHighlight } from '../../../../../app.js';
+	import { queryClient } from '$lib/API/queryClient.js';
 
 	let text = $state<string | undefined>();
 	let showEditJD = $state(false);
 	let note = $state<undefined | string>();
 	let checkedAchievements = $state([]);
+	const { data } = $props();
+
+	let MeetingHighlightsQuery = createQuery<MeetingHighlight[]>({
+		queryKey: [meetingHighlightsQueryKey, data.meetingID],
+		queryFn: async () => await fetchMeetingHighlights(data.meetingID || ''),
+		initialData: data.highlights
+	});
+
+	let highlights = $state<QueryObserverResult<MeetingHighlight[], Error>>();
+
+	const unsubscribeMeetingHighlights = MeetingHighlightsQuery.subscribe((t) => {
+		highlights = t;
+	});
+
+	onDestroy(() => {
+		unsubscribeMeetingHighlights();
+	});
 
 	onMount(() => {
 		document.addEventListener('mouseup', () => {
@@ -35,11 +64,17 @@
 
 	const saveMutation = createMutation({
 		mutationFn: postHighlight,
-		onSuccess: (data) => {
+		onSuccess: (newHighlight) => {
 			toastStore.show({ message: 'Highlight Saved', type: 'success' });
 			note = undefined;
 			checkedAchievements = [];
 			text = undefined;
+			console.log({ newHighlight });
+			queryClient.invalidateQueries({
+				queryKey: [meetingHighlightsQueryKey, data.meetingID],
+				exact: true,
+				refetchType: 'active'
+			});
 		},
 
 		onError: () => {
@@ -54,8 +89,6 @@
 	onDestroy(() => {
 		unsubscribeJobApplications();
 	});
-
-	const { data } = $props();
 
 	console.log({ data });
 
@@ -78,7 +111,7 @@
 			<a href={`/prep/${data.meetingID}/research`} class="btn btn-text--primary">Next Step</a>
 		</div>
 	</div>
-	<div class="grid grid-cols-2 gap-2 pt-2">
+	<div class="grid grid-cols-2 gap-4 pt-2">
 		<div>
 			<div class="pb-2">
 				<Toggle bind:checked={showEditJD} label="Edit Job Description" />
@@ -131,6 +164,34 @@
 					description="Get started by highlighting part of the job description. Then you can add notes, and link to achievements"
 				/>
 			{/if}
+
+			<ul role="list" class="divide-y divide-gray-100">
+				{#each highlights?.data || [] as highlight}
+					<li class="flex items-center justify-between gap-x-6 py-5">
+						<div class="min-w-0">
+							<div class="flex items-start gap-x-3">
+								<p class="text-sm/6 font-semibold text-gray-900">"{highlight.text}"</p>
+							</div>
+							<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+								<p class="whitespace-nowrap">
+									Notes: {highlight.notes.length}
+								</p>
+								<svg viewBox="0 0 2 2" class="size-0.5 fill-current">
+									<circle r="1" cx="1" cy="1" />
+								</svg>
+								<p class="truncate">Achievements: {highlight.achievements.length}</p>
+							</div>
+						</div>
+						<MenuButton
+							buttons={[
+								{ title: 'Delete', onClick: () => null },
+								{ title: 'Edit', onClick: () => null },
+								{ title: 'link', href: '/' }
+							]}
+						/>
+					</li>
+				{/each}
+			</ul>
 		</form>
 	</div>
 </PageContainer>

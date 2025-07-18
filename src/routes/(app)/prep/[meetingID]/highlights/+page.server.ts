@@ -25,11 +25,17 @@ export const load = async (event) => {
 				Authorization: 'Bearer ' + token
 			}
 		});
+		const resHighlights = await fetch(`${PUBLIC_API_URL}/highlights/meeting/${meetingID}`, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		});
 
 		const meeting = await resMeeting.json();
+		const highlights = await resHighlights.json();
 		const achievements: Achievement[] = await resAch.json();
 
-		return { meeting, meetingID, achievements };
+		return { meeting, meetingID, achievements, highlights };
 	} catch (error) {
 		console.error(error);
 	}

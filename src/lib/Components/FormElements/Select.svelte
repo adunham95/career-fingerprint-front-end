@@ -7,6 +7,7 @@
 		value: string | undefined | null;
 		className?: string;
 		checkItemClassName?: string;
+		oninput?: () => void;
 		options?: { id: string; label?: string; selected?: boolean }[];
 	}
 
@@ -20,6 +21,7 @@
 		options = [],
 		hideLabel,
 		labelClassName,
+		oninput,
 		...props
 	}: Props = $props();
 </script>
@@ -32,6 +34,7 @@
 		{required}
 		name={name || id}
 		bind:value
+		onchange={oninput}
 		class="text-theme-content placeholder:text-theme-secondary-content focus:ring-theme-brand block w-full rounded-md border-0 bg-white px-1.5 py-1.5 ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-inset sm:text-[1.2rem] sm:leading-6"
 	>
 		{#each options as option}

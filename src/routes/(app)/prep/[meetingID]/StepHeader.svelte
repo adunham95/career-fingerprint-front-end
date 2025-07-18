@@ -22,7 +22,7 @@
 </script>
 
 <StepList {currentStep} steps={getSteps(meetingID)} />
-<div class="mt-8 flex justify-between">
+<div class="mt-8 flex justify-between print:hidden">
 	<h1 class="font-title text-2xl">{currentStepDetails.currentStep?.label}</h1>
 	<div>
 		{#if currentStepDetails.prevStep}

@@ -8,7 +8,7 @@ export function getSteps(id: string = ''): Step[] {
 		{ path: `/prep/${id}`, label: 'Confirm Details' },
 		{ path: `/prep/${id}/highlights`, label: 'Highlights' },
 		{ path: `/prep/${id}/research`, label: 'Questions' },
-		{ path: `/prep/${id}/review`, label: 'Review' }
+		{ path: `/prep/${id}/review`, label: 'View Cheatsheet' }
 	];
 }
 

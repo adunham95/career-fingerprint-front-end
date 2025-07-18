@@ -168,12 +168,30 @@
 			bind:value={title}
 			oninput={() => updateOnChange && saveToAPI()}
 		/>
-		<TextInput id="evt-time" label="Event Time" type="datetime-local" bind:value={time} required />
-		<TextInput id="evt-location" label="Event Location" bind:value={location} />
-		<TextInput id="evt-link" label="Event Link" bind:value={link} />
+		<TextInput
+			id="evt-time"
+			label="Event Time"
+			type="datetime-local"
+			bind:value={time}
+			required
+			oninput={() => updateOnChange && saveToAPI()}
+		/>
+		<TextInput
+			id="evt-location"
+			label="Event Location"
+			bind:value={location}
+			oninput={() => updateOnChange && saveToAPI()}
+		/>
+		<TextInput
+			id="evt-link"
+			label="Event Link"
+			bind:value={link}
+			oninput={() => updateOnChange && saveToAPI()}
+		/>
 		<Select
 			id="evt-type"
 			label="Type"
+			oninput={() => updateOnChange && saveToAPI()}
 			bind:value={type}
 			options={[
 				{ id: 'interview', label: 'Interview' },
@@ -181,18 +199,24 @@
 			]}
 		/>
 		{#if type === 'interview'}
-			<AssignToJob bind:selectedCompany={jobAppID} className="space-y-2" />
+			<AssignToJob
+				bind:selectedCompany={jobAppID}
+				className="space-y-2"
+				oninput={() => updateOnChange && saveToAPI()}
+			/>
 		{:else}
 			<Select
 				id="select-job"
 				label="Link To Job"
 				bind:value={jobPositionID}
+				oninput={() => updateOnChange && saveToAPI()}
 				options={jobPositions?.data?.map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))}
 			/>
 			<Select
 				id="select-education"
 				label="Link To Education"
 				bind:value={educationID}
+				oninput={() => updateOnChange && saveToAPI()}
 				options={education?.data?.map((j) => ({
 					id: j.id,
 					label: `${j.degree} | ${j.institution}`

@@ -72,6 +72,30 @@ interface Meeting {
 	educationID: string;
 }
 
+interface Note {
+	createdAt: string;
+	educationID: string | null;
+	highlightID: string | null;
+	id: string;
+	jobAppID: string | null;
+	jobPositionID: string | null;
+	meetingID: string | null;
+	note: string;
+	updatedAt: string;
+	userID: number;
+}
+
+interface MeetingHighlight {
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	userID: number;
+	text: string;
+	meetingID: string;
+	notes: Note[];
+	achievements: Achievement[];
+}
+
 interface PrepQuestion {
 	id: string;
 	question: string;
@@ -81,4 +105,13 @@ interface PrepQuestion {
 	prepAnswers: { answer: string }[];
 }
 
-export { JobPosition, Education, Project, JobApplication, Achievement, Meeting, PrepQuestion };
+export {
+	JobPosition,
+	Education,
+	Project,
+	JobApplication,
+	Achievement,
+	Meeting,
+	PrepQuestion,
+	MeetingHighlight
+};

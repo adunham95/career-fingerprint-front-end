@@ -31,7 +31,7 @@
 	}
 </script>
 
-<nav aria-label="Progress">
+<nav aria-label="Progress" class="print:hidden">
 	<ol role="list" class="space-y-4 md:flex md:space-y-0 md:space-x-8">
 		{#each steps as step, idx}
 			<li class="md:flex-1">
