@@ -21,9 +21,7 @@
 
 	const saveMutation = createMutation({
 		mutationFn: patchJobApp,
-		onSuccess: (data) => {
-			alert('saved');
-		}
+		onSuccess: (data) => {}
 	});
 
 	const unsubscribeJobApplications = saveMutation.subscribe((t) => {

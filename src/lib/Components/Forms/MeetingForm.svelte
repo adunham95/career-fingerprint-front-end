@@ -36,7 +36,7 @@
 
 	let title = $state(meeting.title);
 	let time = $state<string | Date>(meeting?.time || new Date().toUTCString());
-	let type = $state<string>(meeting.type || 'interview');
+	let type = $state<string>(meeting.type || 'Interview');
 	let location = $state(meeting.location);
 	let link = $state(meeting.link);
 	let jobPositionID = $state(meeting.jobPositionID || null);
@@ -119,7 +119,7 @@
 			if (!updateOnChange) {
 				title = undefined;
 				time = '';
-				type = 'interview';
+				type = 'Interview';
 				jobPositionID = null;
 				educationID = null;
 				location = undefined;
@@ -194,11 +194,11 @@
 			oninput={() => updateOnChange && saveToAPI()}
 			bind:value={type}
 			options={[
-				{ id: 'interview', label: 'Interview' },
-				{ id: 'internal', label: 'Internal' }
+				{ id: 'Interview', label: 'Interview' },
+				{ id: 'Internal', label: 'Internal' }
 			]}
 		/>
-		{#if type === 'interview'}
+		{#if type === 'Interview'}
 			<AssignToJob
 				bind:selectedCompany={jobAppID}
 				className="space-y-2"
