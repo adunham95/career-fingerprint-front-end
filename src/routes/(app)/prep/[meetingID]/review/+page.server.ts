@@ -7,11 +7,14 @@ export const load = async (event) => {
 	console.log({ params: event.params });
 
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/meetings/${meetingID}`, {
-			headers: {
-				Authorization: 'Bearer ' + token
+		const res = await fetch(
+			`${PUBLIC_API_URL}/meetings/${meetingID}?highlights=true&questions=true`,
+			{
+				headers: {
+					Authorization: 'Bearer ' + token
+				}
 			}
-		});
+		);
 
 		console.log(res);
 

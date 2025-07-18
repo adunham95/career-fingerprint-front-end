@@ -14,8 +14,6 @@ export const load = async (event) => {
 			}
 		});
 
-		console.log(res);
-
 		if (!res) {
 			error(404, {
 				message: 'Not found'

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import StepHeader from '../StepHeader.svelte';
+	import { format } from 'date-fns';
 
 	const { data } = $props();
 
@@ -21,73 +22,54 @@ Additional Notes
 		<p class="hidden print:block">Your Career Fingerprint Meeting Guild</p>
 		<div class="max-w-xl">
 			<p class="font-title mt-2 text-4xl font-bold tracking-tight sm:text-5xl print:text-2xl">
-				Interview w/ Microsoft
+				{data?.meeting?.title || ''}
 			</p>
-			<p class="mt-2 text-base text-gray-500">July 12 2025 2:30pm</p>
-			<p class="mt-2 text-base text-gray-500">Engineering Manager | Microsoft</p>
+			{#if data?.meeting?.time}
+				<p class="mt-2 text-base text-gray-500">
+					{format(data.meeting.time, 'PPPP p')}
+				</p>
+			{/if}
+			{#if data?.meeting?.jobPosition}
+				<p class="mt-2 text-base text-gray-500">
+					{data.meeting.jobPosition.name} | {data.meeting.jobPosition.location}
+				</p>
+			{/if}
 		</div>
 		<div class="mt-4">
-			<h2 class="text-lg">Highlights</h2>
-			<div
-				class="mb-2 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid-cols-3 print:grid-cols-3"
-			>
-				<div>
-					<h2 class="text-base/7 font-semibold text-gray-900">"Highlighted Text 1"</h2>
-				</div>
+			{#if data.meeting.highlights.length > 0}
+				<h2 class="text-lg">Highlights</h2>
+				{#each data.meeting.highlights as highlight}
+					<div
+						class="mb-2 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid-cols-3 print:grid-cols-3"
+					>
+						<div>
+							<h2 class="text-base/7 font-semibold text-gray-900">"{highlight.text}"</h2>
+						</div>
 
-				<div class=" gap-x-6 gap-y-8 md:col-span-2">
-					<p>Note: This is note about text item 1</p>
-					<ul>
-						<li>I worked on a project</li>
-						<li>I started a company</li>
-					</ul>
-				</div>
-			</div>
-			<div
-				class="mb-2 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid-cols-3 print:grid-cols-3"
-			>
-				<div>
-					<h2 class="text-base/7 font-semibold text-gray-900">"Highlighted Text 1"</h2>
-				</div>
-
-				<div class=" gap-x-6 gap-y-8 md:col-span-2">
-					<p>Note: This is note about text item 1</p>
-				</div>
-			</div>
+						<div class=" gap-x-6 gap-y-8 md:col-span-2">
+							{#each highlight.notes as note}
+								<p>Note: {note.note}</p>
+							{/each}
+							<ul>
+								{#each highlight.achievement as ach}
+									<li>{ach.myContribution}</li>
+								{/each}
+							</ul>
+						</div>
+					</div>
+				{/each}
+			{/if}
 		</div>
 		<div class="mt-4">
-			<!-- <h2 class="text-lg">My Achievements</h2> -->
 			<div class="grid grid-cols-3 gap-1">
-				<div
-					class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
-				>
-					<div class="px-2 py-2.5">This is my question</div>
-					<div class="px-2 py-2.5">This is my answer</div>
-				</div>
-				<div
-					class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
-				>
-					<div class="px-2 py-2.5">This is my question</div>
-					<div class="px-2 py-2.5">This is my answer</div>
-				</div>
-				<div
-					class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-800 bg-white"
-				>
-					<div class="px-2 py-2.5">This is my question</div>
-					<div class="px-2 py-2.5">This is my answer</div>
-				</div>
-				<div
-					class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-800 bg-white"
-				>
-					<div class="px-2 py-2.5">This is my question</div>
-					<div class="px-2 py-2.5">This is my answer</div>
-				</div>
-				<div
-					class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-800 bg-white"
-				>
-					<div class="px-2 py-2.5">This is my question</div>
-					<div class="px-2 py-2.5">This is my answer</div>
-				</div>
+				{#each data.meeting.jobApp.prepAnswer as answer}
+					<div
+						class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
+					>
+						<div class="px-2 py-2.5">{answer.question.question}</div>
+						<div class="px-2 py-2.5">{answer.answer}</div>
+					</div>
+				{/each}
 			</div>
 		</div>
 	</div>
