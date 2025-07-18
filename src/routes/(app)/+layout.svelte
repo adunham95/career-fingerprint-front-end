@@ -17,7 +17,7 @@
 			{ title: 'Dashboard', path: '/dashboard' },
 			{ title: 'Resumes', path: '/resumes' },
 			{ title: 'Job Applications', path: '/job-applications' },
-			{ title: 'Meetings', path: '/calender' }
+			{ title: 'Achievement Timeline', path: '/timeline' }
 		]}
 		lastName={data.user.lastName}
 		firstName={data.user.firstName}

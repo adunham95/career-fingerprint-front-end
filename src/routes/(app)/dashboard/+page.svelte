@@ -94,7 +94,8 @@
 				<p class=" text-xs">Prepare your 1:1, Annual Review or Interview</p>
 			</div>
 		</a>
-		<div
+		<a
+			href="/meetings"
 			class="border-pastel-orange-600 bg-pastel-orange-600/10 hover:border-pastel-orange-900 hover:bg-pastel-orange-600/50 focus:ring-pastel-orange-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
@@ -109,14 +110,14 @@
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+						d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
 					/>
 				</svg>
 
-				<p>Download Achievements</p>
-				<p class=" text-xs">Download a list if you achievements</p>
+				<p>Previous Meetings</p>
+				<p class=" text-xs">View your previous meetings details and notes</p>
 			</div>
-		</div>
+		</a>
 	</div>
 
 	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -149,7 +150,7 @@
 			</ol>
 		</div>
 		<div class="bg-surface-100 rounded border border-gray-200 p-6 md:col-span-2">
-			<Calender disableSelectedDays />
+			<!-- <Calender disableSelectedDays /> -->
 		</div>
 	</div>
 </PageContainer>
