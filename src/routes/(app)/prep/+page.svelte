@@ -3,6 +3,7 @@
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { getMonthName } from '$lib/Utils/formatDate.js';
+	import { format } from 'date-fns';
 
 	const { data } = $props();
 
@@ -59,9 +60,7 @@
 								<dl class="font-normal lg:hidden">
 									<dt class="sr-only">Date</dt>
 									<dd class="mt-1 truncate text-gray-700">
-										{getMonthName(date.getMonth())}
-										{date.getDay()}
-										{date.getFullYear()}
+										{format(date, 'PPP p')}
 									</dd>
 									<dt class="sr-only sm:hidden">Type</dt>
 									<dd class="mt-1 truncate text-gray-500 sm:hidden">{meeting.type}</dd>
@@ -69,9 +68,7 @@
 							</td>
 
 							<td class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell">
-								{getMonthName(date.getMonth())}
-								{date.getDay()}
-								{date.getFullYear()}
+								{format(date, 'PPP p')}
 							</td>
 							<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
 							<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
