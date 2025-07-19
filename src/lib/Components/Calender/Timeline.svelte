@@ -1,9 +1,6 @@
 <script lang="ts">
-	import TimeAgo from 'javascript-time-ago';
-	import en from 'javascript-time-ago/locale/en';
+	import { formatDistanceToNow } from 'date-fns';
 
-	TimeAgo.addDefaultLocale(en);
-	const timeAgo = new TimeAgo('en-US');
 	interface Props {
 		dates: { title: string; description: string; date: Date; type?: 'achievement' }[];
 	}
@@ -44,7 +41,9 @@
 						<div class="min-w-0 flex-1">
 							<div>
 								<div class="text-sm">{day.title}</div>
-								<p class="mt-0.5 text-sm text-gray-500">{timeAgo.format(day.date)}</p>
+								<p class="mt-0.5 text-sm text-gray-500">
+									{formatDistanceToNow(day.date, { addSuffix: true })}
+								</p>
 							</div>
 							<div class="mt-2 text-sm text-gray-700">
 								<p>

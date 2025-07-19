@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Meeting } from '../../../app';
+	import { formatDistanceToNow } from 'date-fns';
 
 	interface Props extends Meeting {
 		id: string;
@@ -57,7 +58,9 @@
 					</svg>
 				</dt>
 				<dd>
-					<time datetime={eventTime.toString()}>{eventTime.toDateString()}</time>
+					<time datetime={eventTime?.toString()}
+						>{formatDistanceToNow(eventTime || new Date(), { addSuffix: true })}</time
+					>
 				</dd>
 			</div>
 			<div
