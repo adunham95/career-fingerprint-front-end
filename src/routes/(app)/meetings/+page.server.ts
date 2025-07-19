@@ -3,7 +3,7 @@ export const load = async (event) => {
 	const token = event.cookies.get('accessToken');
 
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/meetings/my`, {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/my?page=1&limit=20`, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}

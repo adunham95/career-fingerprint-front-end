@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import { usePreviousMeetings, useUpcomingMeetings } from '$lib/API/meeting';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
@@ -7,17 +8,52 @@
 	const { data } = $props();
 
 	let isNewMeetingOpen = $state(false);
+	let page = 1;
+	let meetingType = $state<'all' | 'upcoming' | 'previous'>('previous');
+
+	let upcomingMeetings = useUpcomingMeetings();
+	let previousMeeting = usePreviousMeetings();
+
+	let meetings = $derived.by(() => {
+		switch (meetingType) {
+			case 'upcoming':
+				return $upcomingMeetings.data;
+			case 'previous':
+				return $previousMeeting.data;
+			default:
+				return data.meetings;
+		}
+	});
+
 	console.log({ data });
 </script>
 
 <PageContainer className="py-4">
 	<div class="px-4 sm:px-6 lg:px-8">
-		<div class="sm:flex sm:items-center">
-			<div class="sm:flex-auto">
-				<h1 class="font-title text-2xl font-semibold text-gray-900">My Meetings</h1>
-			</div>
-			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button type="button" onclick={() => (isNewMeetingOpen = true)} class="btn btn--primary">
+		<div>
+			<div class="flex flex-wrap items-center gap-6 sm:flex-nowrap">
+				<h1 class="text-lg font-semibold text-gray-900">My Meetings</h1>
+				<div
+					class="order-last flex w-full gap-x-8 text-sm/6 font-semibold sm:order-0 sm:w-auto sm:border-l sm:border-gray-200 sm:pl-6 sm:text-sm/7"
+				>
+					<button
+						onclick={() => (meetingType = 'previous')}
+						class={`${meetingType === 'previous' ? 'text-primary' : ''}`}>Previous</button
+					>
+					<button
+						onclick={() => (meetingType = 'all')}
+						class={`${meetingType === 'all' ? 'text-primary' : ''}`}>All</button
+					>
+					<button
+						onclick={() => (meetingType = 'upcoming')}
+						class={`${meetingType === 'upcoming' ? 'text-primary' : ''}`}>Upcoming</button
+					>
+				</div>
+				<button
+					type="button"
+					onclick={() => (isNewMeetingOpen = true)}
+					class="btn btn--primary ml-auto"
+				>
 					Create New Meeting
 				</button>
 			</div>
@@ -48,7 +84,7 @@
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 bg-white">
-					{#each data.meetings as meeting}
+					{#each meetings as meeting}
 						{@const date = new Date(meeting.time)}
 						<tr>
 							<td
@@ -77,8 +113,36 @@
 				</tbody>
 			</table>
 		</div>
-	</div></PageContainer
->
+		<!-- <nav
+			aria-label="Pagination"
+			class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+		>
+			<div class="hidden sm:block">
+				<p class="text-sm text-gray-700">
+					Showing
+					<span class="font-medium">1</span>
+					to
+					<span class="font-medium">10</span>
+					of
+					<span class="font-medium">20</span>
+					results
+				</p>
+			</div>
+			<div class="flex flex-1 justify-between sm:justify-end">
+				<button
+					class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-offset-0"
+				>
+					Previous
+				</button>
+				<button
+					class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-offset-0"
+				>
+					Next
+				</button>
+			</div>
+		</nav> -->
+	</div>
+</PageContainer>
 
 <Drawer
 	bind:isOpen={isNewMeetingOpen}

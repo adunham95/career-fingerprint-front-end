@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { createMutation, useQueryClient } from '@tanstack/svelte-query';
+import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Meeting } from '../../app';
 
 interface NewMeeting {
@@ -78,9 +78,48 @@ export async function createMeeting(newMeeting: NewMeeting): Promise<Meeting | n
 	}
 }
 
+export async function getMeetingByPage(page: number = 1): Promise<Meeting[] | null> {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/my?page=${page}&limit=20`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getUpcomingMeeting(): Promise<Meeting[] | null> {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/my/upcoming`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getPreviousMeeting(): Promise<Meeting[] | null> {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/my/previous`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const meetingKeys = {
 	all: ['meeting'] as const,
-	meeting: (id: string) => [...meetingKeys.all, id] as const
+	meeting: (id: string) => [...meetingKeys.all, id] as const,
+	meetingsByPage: (page: number) => [...meetingKeys.all, page] as const,
+	previousMeetings: ['meeting', 'previous-meeting'] as const,
+	upcomingMeetings: ['meeting', 'upcoming-meeting'] as const
 };
 
 export const useCreateMeetingMutation = () => {
@@ -113,5 +152,29 @@ export const useUpdateMeetingMutation = (meetingID: string) => {
 		onError: (error) => {
 			console.error('Failed to update meeting:', error);
 		}
+	});
+};
+
+export const useMeetingByPageQuery = (pageNumber: number, initialData?: Meeting[]) => {
+	return createQuery({
+		queryKey: meetingKeys.meetingsByPage(pageNumber),
+		queryFn: () => getMeetingByPage(pageNumber),
+		initialData
+	});
+};
+
+export const useUpcomingMeetings = (initialData?: Meeting[]) => {
+	return createQuery({
+		queryKey: meetingKeys.upcomingMeetings,
+		queryFn: () => getUpcomingMeeting(),
+		initialData
+	});
+};
+
+export const usePreviousMeetings = (initialData?: Meeting[]) => {
+	return createQuery({
+		queryKey: meetingKeys.previousMeetings,
+		queryFn: () => getPreviousMeeting(),
+		initialData
 	});
 };
