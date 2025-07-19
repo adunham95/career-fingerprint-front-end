@@ -2,7 +2,6 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
-	import { getMonthName } from '$lib/Utils/formatDate.js';
 	import { format } from 'date-fns';
 
 	const { data } = $props();
