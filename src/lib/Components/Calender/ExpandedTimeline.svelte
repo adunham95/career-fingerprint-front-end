@@ -40,7 +40,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="min-w-0 flex-1">
+						<div
+							class="hover:bg-secondary/20 min-w-0 flex-1 rounded p-2 transition-colors duration-300"
+						>
 							<div>
 								<div class="text-sm">{day.title}</div>
 								<p class="mt-0.5 text-sm text-gray-500">
