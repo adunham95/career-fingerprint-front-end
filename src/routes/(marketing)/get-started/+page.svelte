@@ -3,6 +3,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
+	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
@@ -129,7 +130,7 @@
 	<!-- Step 2 -->
 	<div id="current-situation" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-4 text-lg">Which of these best describes your current situation?</h3>
-		<CheckCards
+		<RadioCards
 			wrapperClass="sm:grid-cols-2"
 			groupName="currentRole"
 			options={[

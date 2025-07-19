@@ -42,6 +42,7 @@
 				{#if button.href}
 					<a
 						role="menuitem"
+						onclick={() => (isOpen = false)}
 						href={button.href}
 						tabindex="-1"
 						class="hover:bg-secondary/50 block px-3 py-1 text-sm/6 text-gray-900"
@@ -50,7 +51,11 @@
 					</a>
 				{:else if button.onClick}
 					<button
-						onclick={button.onClick}
+						type="button"
+						onclick={() => {
+							isOpen = false;
+							button?.onClick?.();
+						}}
 						class="hover:bg-secondary/50 block w-full px-3 py-1 text-start text-sm/6 text-gray-900"
 					>
 						{button.title}

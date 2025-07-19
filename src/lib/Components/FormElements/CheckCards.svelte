@@ -3,17 +3,25 @@
 
 	interface Props {
 		options: { id: string; label: string; subLabel?: string; snippet?: Snippet; name?: string }[];
-		value: string[];
+		checked: string[];
+		unChecked?: string[];
 		wrapperClass?: string;
 	}
 
-	let { value = $bindable(), options, wrapperClass = '' }: Props = $props();
+	let {
+		checked = $bindable(),
+		unChecked = $bindable(),
+		options,
+		wrapperClass = ''
+	}: Props = $props();
 
 	function toggleOption(id: string) {
-		if (value.includes(id)) {
-			value = value.filter((v) => v != id);
+		if (checked.includes(id)) {
+			unChecked?.push(id);
+			checked = checked.filter((v) => v != id);
 		} else {
-			value.push(id);
+			unChecked = unChecked?.filter((v) => v != id);
+			checked.push(id);
 		}
 	}
 </script>
@@ -27,7 +35,7 @@
 				type="checkbox"
 				name={option?.name || option.id}
 				value={option.id}
-				checked={value.includes(option.id)}
+				checked={checked.includes(option.id)}
 				class="sr-only"
 				onchange={() => toggleOption(option.id)}
 			/>

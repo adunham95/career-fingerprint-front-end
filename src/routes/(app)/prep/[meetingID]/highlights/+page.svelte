@@ -9,93 +9,94 @@
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
-	import {
-		createMutation,
-		createQuery,
-		type CreateBaseMutationResult,
-		type QueryObserverResult
-	} from '@tanstack/svelte-query';
-	import {
-		postHighlight,
-		type NewHighlight,
-		type PostHighlightResponse
-	} from '$lib/API/Mutations/post-highlight.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import MenuButton from '$lib/Components/Buttons/MenuButton.svelte';
 	import {
-		fetchMeetingHighlights,
-		meetingHighlightsQueryKey
-	} from '$lib/API/Queries/meeting-highlights.js';
-	import type { MeetingHighlight } from '../../../../../app.js';
-	import { queryClient } from '$lib/API/queryClient.js';
+		useCreateHighlightMutation,
+		useDeleteHighlightMutation,
+		useMeetingHighlightsQuery,
+		useUpdateHighlightMutation
+	} from '$lib/API/highlights.js';
 
+	const { data } = $props();
+	let editID = $state<string | undefined>();
+	let noteID = $state<string | undefined>();
 	let text = $state<string | undefined>();
 	let showEditJD = $state(false);
 	let note = $state<undefined | string>();
-	let checkedAchievements = $state([]);
-	const { data } = $props();
-
-	let MeetingHighlightsQuery = createQuery<MeetingHighlight[]>({
-		queryKey: [meetingHighlightsQueryKey, data.meetingID],
-		queryFn: async () => await fetchMeetingHighlights(data.meetingID || ''),
-		initialData: data.highlights
-	});
-
-	let highlights = $state<QueryObserverResult<MeetingHighlight[], Error>>();
-
-	const unsubscribeMeetingHighlights = MeetingHighlightsQuery.subscribe((t) => {
-		highlights = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeMeetingHighlights();
-	});
-
-	onMount(() => {
-		document.addEventListener('mouseup', () => {
-			let selText = window?.getSelection()?.toString();
-			if (selText !== '') {
-				text = selText;
-			}
-		});
-	});
-
-	let save: CreateBaseMutationResult<PostHighlightResponse | null, Error, NewHighlight, unknown>;
-
-	const saveMutation = createMutation({
-		mutationFn: postHighlight,
-		onSuccess: (newHighlight) => {
-			toastStore.show({ message: 'Highlight Saved', type: 'success' });
-			note = undefined;
-			checkedAchievements = [];
-			text = undefined;
-			console.log({ newHighlight });
-			queryClient.invalidateQueries({
-				queryKey: [meetingHighlightsQueryKey, data.meetingID],
-				exact: true,
-				refetchType: 'active'
-			});
-		},
-
-		onError: () => {
-			toastStore.show({ message: 'There was an error saving your highlight', type: 'error' });
-		}
-	});
-
-	const unsubscribeJobApplications = saveMutation.subscribe((t) => {
-		save = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeJobApplications();
-	});
+	let checkedAchievements = $state<string[]>([]);
+	let unCheckedAchievements = $state<string[]>([]);
 
 	console.log({ data });
 
-	function addHighlight(e: SubmitEvent) {
+	const deleteHighlightMutation = useDeleteHighlightMutation(data.meetingID || '');
+	const meetingHighlights = useMeetingHighlightsQuery(data.meetingID || '', data.highlights);
+	const saveHighlightMutation = useCreateHighlightMutation(data.meetingID || '');
+	const updateHighlightMutation = useUpdateHighlightMutation(data.meetingID || '');
+
+	$inspect('checked', checkedAchievements);
+	$inspect('unchecked', unCheckedAchievements);
+
+	function handleMouseUp(event: MouseEvent): void {
+		const target = event.target as HTMLElement | null;
+		const noteElement = document.getElementById('job-description-area');
+
+		if (noteElement && target && noteElement.contains(target)) {
+			const selection = window.getSelection();
+			const selText = selection ? selection.toString() : '';
+			if (selText !== '') {
+				text = selText;
+			}
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('mouseup', handleMouseUp);
+	});
+
+	onDestroy(() => {
+		document.removeEventListener('mouseup', handleMouseUp);
+	});
+
+	async function addHighlight(e: SubmitEvent) {
 		e.preventDefault();
-		if (save.hasOwnProperty('mutate')) {
-			save.mutate({ text: text || '', meetingID: data.meetingID || '', achievements: [], note });
+		try {
+			if (editID) {
+				await $updateHighlightMutation.mutateAsync({
+					id: editID,
+					highlight: {
+						text: text || '',
+						achievementIDs: [...checkedAchievements],
+						uncheckAchievementIDs: [...unCheckedAchievements],
+						note,
+						noteID
+					}
+				});
+			} else {
+				await $saveHighlightMutation.mutateAsync({
+					text: text || '',
+					meetingID: data.meetingID || '',
+					achievementIDs: [...checkedAchievements],
+					note
+				});
+			}
+			toastStore.show({ message: 'Highlight Saved', type: 'success' });
+			editID = undefined;
+			note = undefined;
+			checkedAchievements = [];
+			unCheckedAchievements = [];
+			text = undefined;
+		} catch (error) {
+			toastStore.show({ message: 'There was an error saving your highlight', type: 'error' });
+		}
+	}
+
+	async function deleteHighlight(id: string) {
+		try {
+			await $deleteHighlightMutation.mutateAsync(id);
+			toastStore.show({ message: 'Deleted successfully', type: 'success' });
+		} catch (error) {
+			toastStore.show({ message: 'Error deleting highlight', type: 'error' });
 		}
 	}
 </script>
@@ -123,7 +124,7 @@
 				/>
 			{:else}
 				<Card>
-					<p class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
+					<p class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap" id="job-description-area">
 						{#if data.meeting?.jobApp?.jobDescription}
 							{data.meeting.jobApp.jobDescription}
 						{:else}
@@ -139,8 +140,13 @@
 		<form class="space-y-2" onsubmit={addHighlight}>
 			{#if text}
 				<div class="flex items-center justify-between">
-					<h2 class="font-title">Add Highlight</h2>
-					<button type="submit" class="btn btn-text--primary btn-small">Add Highlight</button>
+					{#if editID}
+						<h2 class="font-title">Update Highlight</h2>
+						<button type="submit" class="btn btn-text--primary btn-small">Update Highlight</button>
+					{:else}
+						<h2 class="font-title">Add Highlight</h2>
+						<button type="submit" class="btn btn-text--primary btn-small">Add Highlight</button>
+					{/if}
 				</div>
 				<blockquote class="border-primary bg-secondary-50 border-l-6 p-4">
 					<p class="text-sm whitespace-pre-wrap">{text}</p>
@@ -153,7 +159,8 @@
 					hideLabel
 				/>
 				<CheckCards
-					bind:value={checkedAchievements}
+					bind:unChecked={unCheckedAchievements}
+					bind:checked={checkedAchievements}
 					options={(data.achievements || []).map((a) => {
 						return { id: a.id, label: a.myContribution };
 					})}
@@ -166,7 +173,7 @@
 			{/if}
 
 			<ul role="list" class="divide-y divide-gray-100">
-				{#each highlights?.data || [] as highlight}
+				{#each $meetingHighlights.data || [] as highlight}
 					<li class="flex items-center justify-between gap-x-6 py-5">
 						<div class="min-w-0">
 							<div class="flex items-start gap-x-3">
@@ -184,9 +191,17 @@
 						</div>
 						<MenuButton
 							buttons={[
-								{ title: 'Delete', onClick: () => null },
-								{ title: 'Edit', onClick: () => null },
-								{ title: 'link', href: '/' }
+								{ title: 'Delete', onClick: () => deleteHighlight(highlight.id) },
+								{
+									title: 'Edit',
+									onClick: () => {
+										editID = highlight.id;
+										text = highlight.text;
+										note = highlight.notes?.[0]?.note || undefined;
+										noteID = highlight.notes?.[0]?.id || undefined;
+										checkedAchievements = highlight?.achievements.map((a) => a.id);
+									}
+								}
 							]}
 						/>
 					</li>
