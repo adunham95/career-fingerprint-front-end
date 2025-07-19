@@ -73,6 +73,7 @@ export async function postHighlight(highlight: NewHighlight): Promise<MeetingHig
 		return null;
 	}
 }
+
 export async function updateHighlight({
 	id,
 	highlight

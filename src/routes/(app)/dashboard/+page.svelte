@@ -1,20 +1,39 @@
 <script>
-	import Calender from '$lib/Components/Calender/Calender.svelte';
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
-	import Modal from '$lib/Components/Overlays/Modal.svelte';
+	import { useCreateMeetingMutation } from '$lib/API/meeting.js';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { goto } from '$app/navigation';
+	import Loader from '$lib/Components/Loader.svelte';
 
 	let { data } = $props();
 
 	console.log(data);
 
-	let dialogOpen = $state(false);
 	let isAchievementOpen = $state(false);
 	let isNewMeetingOpen = $state(false);
+	let isLoadingNewMeeting = $state(false);
+
+	const createNewMeetingMutation = useCreateMeetingMutation();
+
+	async function createNewMeeting() {
+		isLoadingNewMeeting = true;
+		try {
+			const newMeeting = await $createNewMeetingMutation.mutateAsync({
+				time: new Date().toISOString()
+			});
+			setTimeout(() => {
+				goto(`cheatsheet/${newMeeting?.id}`);
+			}, 1000);
+		} catch (error) {
+			isLoadingNewMeeting = false;
+			toastStore.show({ message: 'There was an error starting your meeting', type: 'error' });
+		}
+	}
 </script>
 
 <PageContainer className="py-6">
@@ -45,9 +64,10 @@
 			</div>
 		</button>
 
-		<a
-			href="/cheatsheet"
-			class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		<button
+			onclick={createNewMeeting}
+			disabled={isLoadingNewMeeting}
+			class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:opacity-30 md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
 				<svg
@@ -68,7 +88,12 @@
 				<p>Start Meeting</p>
 				<p class=" text-xs">Quickly access your cheat sheet for an interview or 1:1</p>
 			</div>
-		</a>
+			{#if isLoadingNewMeeting}
+				<div class="absolute inset-0 flex items-center justify-center">
+					<Loader />
+				</div>
+			{/if}
+		</button>
 
 		<a
 			href="/prep"
