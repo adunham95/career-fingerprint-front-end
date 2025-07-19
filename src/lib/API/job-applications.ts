@@ -1,6 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { JobApplication } from '../../app';
+import type { AppStatusEnum } from '$lib/Utils/AppStatusTypes';
 
 export async function fetchMyJobApplications(): Promise<JobApplication[]> {
 	const resHighlights = await fetch(`${PUBLIC_API_URL}/job-applications/my`, {
@@ -13,6 +14,11 @@ export async function fetchMyJobApplications(): Promise<JobApplication[]> {
 interface NewJobApp {
 	title: string;
 	company: string;
+	companyURL?: string | null;
+	jobStatus?: string | null;
+	jobDescription?: string | null;
+	location?: string | null;
+	status?: AppStatusEnum;
 }
 
 export async function postJobApplication(newJobApp: NewJobApp) {
@@ -26,6 +32,42 @@ export async function postJobApplication(newJobApp: NewJobApp) {
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify(newJobApp)
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to patch job application: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		return null;
+	}
+}
+
+interface UpdateJobApp {
+	id: string;
+	title: string;
+	company: string;
+	companyURL?: string | null;
+	jobStatus?: string | null;
+	jobDescription?: string | null;
+	location?: string | null;
+	status?: AppStatusEnum;
+}
+
+export async function patchJobApplication(updateJobApp: UpdateJobApp) {
+	const url = `${PUBLIC_API_URL}/job-applications/${updateJobApp.id}`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(updateJobApp)
 		});
 
 		if (res.ok) {
@@ -60,6 +102,21 @@ export const useCreateJobApplicationMutation = () => {
 	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: postJobApplication,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: jobApplicationKeys.my
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create job application:', error);
+		}
+	});
+};
+
+export const useUpdateJobApplicationMutation = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: patchJobApplication,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: jobApplicationKeys.my

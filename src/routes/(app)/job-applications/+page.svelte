@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import {
+		useCreateJobApplicationMutation,
+		useMyJobApplicationsQuery,
+		useUpdateJobApplicationMutation
+	} from '$lib/API/job-applications.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
@@ -13,7 +18,7 @@
 	let isOpen = $state(false);
 	let jobID = $state<string | null>(null);
 	let jobTitle = $state('');
-	let company = $state<string | null>(null);
+	let company = $state<string>('');
 	let companyURL = $state<string | null>(null);
 	let location = $state<string | null>(null);
 	let jobDescription = $state<string | null>(null);
@@ -21,13 +26,15 @@
 
 	const { data } = $props();
 
-	let applications = $state(data.applications || []);
+	let applications = useMyJobApplicationsQuery(data.applications);
+	let createJobApp = useCreateJobApplicationMutation();
+	let updateJobApp = useUpdateJobApplicationMutation();
 
 	function setJobDetails(id: string) {
-		let selectedApp = applications.find((app) => app.id === id);
+		let selectedApp = $applications.data?.find((app) => app.id === id);
 		jobID = id;
 		jobTitle = selectedApp?.title || '';
-		company = selectedApp?.company || null;
+		company = selectedApp?.company || '';
 		companyURL = selectedApp?.companyURL || null;
 		jobStatus = selectedApp?.status || AppStatusEnum.APPLIED;
 		jobDescription = selectedApp?.jobDescription || null;
@@ -35,39 +42,36 @@
 	}
 
 	async function saveNewJobApplication() {
-		const url = jobID
-			? `${PUBLIC_API_URL}/job-applications/${jobID}`
-			: `${PUBLIC_API_URL}/job-applications`;
-
-		const res = await fetch(url, {
-			method: jobID ? 'PATCH' : 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				title: jobTitle,
-				company,
-				companyURL,
-				location,
-				status: jobStatus,
-				jobDescription
-			})
-		});
-
-		if (res.ok) {
-			const newJob = await res.json();
-			applications.push(newJob);
+		try {
+			if (jobID) {
+				$updateJobApp.mutateAsync({
+					id: jobID,
+					title: jobTitle,
+					company,
+					companyURL,
+					location,
+					status: jobStatus,
+					jobDescription
+				});
+			} else {
+				$createJobApp.mutateAsync({
+					title: jobTitle,
+					company,
+					companyURL,
+					location,
+					status: jobStatus,
+					jobDescription
+				});
+			}
 			isOpen = false;
 			jobID = null;
 			jobTitle = '';
-			company = null;
+			company = '';
 			companyURL = null;
 			jobStatus = AppStatusEnum.APPLIED;
 			jobDescription = null;
-			isOpen = true;
-		} else {
-			toastStore.show({ message: 'Error' });
+		} catch (error) {
+			toastStore.show({ message: 'Error saving job application' });
 		}
 	}
 
@@ -99,7 +103,7 @@
 				New Job Application
 			</button>
 		</li>
-		{#each applications as app}
+		{#each $applications.data || [] as app}
 			<li>
 				<button class="w-full" onclick={() => setJobDetails(app.id)}>
 					{@render JobCard(
@@ -189,8 +193,8 @@
 
 <Drawer bind:isOpen title="Add Job Application" onSave={saveNewJobApplication}>
 	<div class="space-y-2">
-		<TextInput id="jobTitle" label="Job Title" bind:value={jobTitle} />
-		<TextInput id="company" label="Company" bind:value={company} />
+		<TextInput id="jobTitle" label="Job Title" bind:value={jobTitle} required />
+		<TextInput id="company" label="Company" bind:value={company} required />
 		<TextInput id="companyURL" label="Company URL" bind:value={companyURL} />
 		<TextInput id="location" label="Location" bind:value={location} />
 		<TextArea id="jobDescription" label="Job Description" bind:value={jobDescription} />
