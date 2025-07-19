@@ -38,6 +38,11 @@
 		}
 	}
 
+	function finishMeeting() {
+		showMeetingDetails = true;
+		saveNote();
+	}
+
 	let current = $state('resume');
 </script>
 
@@ -51,7 +56,7 @@
 					</h2>
 				</div>
 				<div class="mt-4 flex md:mt-0 md:ml-4">
-					<button type="button" class="btn btn--primary" onclick={() => (showMeetingDetails = true)}
+					<button type="button" class="btn btn--primary" onclick={finishMeeting}
 						>Finish Meeting</button
 					>
 				</div>
