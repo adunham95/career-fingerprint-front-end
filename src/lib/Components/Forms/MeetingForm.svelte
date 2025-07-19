@@ -1,22 +1,13 @@
 <script lang="ts">
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { onDestroy } from 'svelte';
-	import type { Education, JobPosition, Meeting } from '../../../app';
+	import type { Meeting } from '../../../app';
 	import Select from '../FormElements/Select.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
 	import { toastStore } from '../Toasts/toast';
-	import {
-		createMutation,
-		createQuery,
-		type CreateBaseMutationResult,
-		type QueryObserverResult
-	} from '@tanstack/svelte-query';
-	import { fetchMyEducation, myEducationQueryKey } from '$lib/API/Queries/my-education';
-	import { fetchMyJobPositions, myJobPositionsQueryKey } from '$lib/API/Queries/my-jobs-positions';
 	import AssignToJob from './AssignToJob.svelte';
 	import { debounce } from '$lib/Utils/debounce';
-	import { createMeeting, type CreateMeetingInput } from '$lib/API/Mutations/create-meeting';
-	import { updateMeeting, type UpdateMeetingInput } from '$lib/API/Mutations/update-meet';
+	import { useCreateMeetingMutation, useUpdateMeetingMutation } from '$lib/API/meeting';
+	import { useMyEducationQuery } from '$lib/API/education';
+	import { useMyJobPositionsQuery } from '$lib/API/job-positions';
 
 	interface Props {
 		id: string;
@@ -35,7 +26,7 @@
 	}: Props = $props();
 
 	let title = $state(meeting.title);
-	let time = $state<string | Date>(meeting?.time || new Date().toUTCString());
+	let time = $state<string | Date>(meeting?.time || new Date().toISOString().slice(0, 16));
 	let type = $state<string>(meeting.type || 'Interview');
 	let location = $state(meeting.location);
 	let link = $state(meeting.link);
@@ -43,34 +34,10 @@
 	let educationID = $state(meeting.educationID || null);
 	let jobAppID = $state(meeting.jobAppID || null);
 
-	$inspect({ time });
-
-	let MyEducationQuery = createQuery<Education[]>({
-		queryKey: [myEducationQueryKey],
-		queryFn: async () => await fetchMyEducation()
-	});
-
-	let MyJobPositionsQuery = createQuery<JobPosition[]>({
-		queryKey: [myJobPositionsQueryKey],
-		queryFn: async () => await fetchMyJobPositions()
-	});
-
-	let education = $state<QueryObserverResult<Education[], Error>>();
-	let jobPositions = $state<QueryObserverResult<JobPosition[], Error>>();
-
-	const unsubscribeEducation = MyEducationQuery.subscribe((t) => {
-		education = t;
-	});
-	const unsubscribeJobPositions = MyJobPositionsQuery.subscribe((t) => {
-		jobPositions = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeEducation();
-		unsubscribeJobPositions();
-	});
-
-	$inspect({ education, jobPositions });
+	const saveMeetingMutation = useCreateMeetingMutation();
+	const updateMeetingMutation = useUpdateMeetingMutation(meetingID || '');
+	let education = useMyEducationQuery();
+	let jobPositions = useMyJobPositionsQuery();
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
@@ -85,78 +52,37 @@
 			link
 		};
 
-		if (meetingID) {
-			update.mutate({ ...meetingDetails, id: meetingID });
-		} else {
-			save.mutate(meetingDetails);
+		try {
+			if (meetingID) {
+				$updateMeetingMutation.mutateAsync({ ...meetingDetails, id: meetingID });
+				toastStore.show({ message: 'Meeting Updated' });
+			} else {
+				$saveMeetingMutation.mutateAsync(meetingDetails);
+				toastStore.show({ message: 'Meeting Created' });
+			}
+		} catch (error) {
+			toastStore.show({ message: 'Error Updating Meeting' });
 		}
 	}
-	let save: CreateBaseMutationResult<Meeting | null, Error, Partial<CreateMeetingInput>, unknown>;
-	let update: CreateBaseMutationResult<Meeting | null, Error, Partial<UpdateMeetingInput>, unknown>;
-
-	const saveMutation = createMutation({
-		mutationFn: createMeeting,
-		onSuccess: (data) => {
-			toastStore.show({ message: 'New Meeting Added', type: 'success' });
-			title = undefined;
-			time = '';
-			type = 'interview';
-			jobPositionID = null;
-			educationID = null;
-			location = undefined;
-			link = undefined;
-			onSuccess();
-		},
-		onError: () => {
-			toastStore.show({ message: 'Could not save meeting', type: 'error' });
-		}
-	});
-
-	const updateMutation = createMutation({
-		mutationFn: updateMeeting,
-		onSuccess: (data) => {
-			toastStore.show({ message: 'Meeting Updated', type: 'success' });
-			if (!updateOnChange) {
-				title = undefined;
-				time = '';
-				type = 'Interview';
-				jobPositionID = null;
-				educationID = null;
-				location = undefined;
-				link = undefined;
-			}
-			onSuccess();
-		},
-		onError: () => {
-			toastStore.show({ message: 'Could not save meeting', type: 'error' });
-		}
-	});
-
-	const unsubscribeSaveMeeting = saveMutation.subscribe((t) => {
-		save = t;
-	});
-	const unsubscribeUpdateMeeting = updateMutation.subscribe((t) => {
-		update = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeSaveMeeting();
-		unsubscribeUpdateMeeting();
-	});
 
 	const saveToAPI = debounce(async () => {
 		console.log('saving');
-		update.mutate({
-			id: meetingID,
-			title,
-			time: time ? new Date(time).toISOString() : null,
-			type,
-			jobAppID,
-			jobPositionID,
-			educationID,
-			location,
-			link
-		});
+		try {
+			$updateMeetingMutation.mutateAsync({
+				id: meetingID,
+				title,
+				time: time ? new Date(time).toISOString() : null,
+				type,
+				jobAppID,
+				jobPositionID,
+				educationID,
+				location,
+				link
+			});
+			toastStore.show({ message: 'Meeting Updated' });
+		} catch (error) {
+			toastStore.show({ message: 'Error Updating Meeting' });
+		}
 	}, 500);
 </script>
 
@@ -165,12 +91,13 @@
 		<TextInput
 			id="evt-title"
 			label="Event Title"
+			required
 			bind:value={title}
 			oninput={() => updateOnChange && saveToAPI()}
 		/>
 		<TextInput
 			id="evt-time"
-			label="Event Time"
+			label="Event Date"
 			type="datetime-local"
 			bind:value={time}
 			required
@@ -210,14 +137,17 @@
 				label="Link To Job"
 				bind:value={jobPositionID}
 				oninput={() => updateOnChange && saveToAPI()}
-				options={jobPositions?.data?.map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))}
+				options={($jobPositions.data || []).map((j) => ({
+					id: j.id,
+					label: `${j.name} | ${j.company}`
+				}))}
 			/>
 			<Select
 				id="select-education"
 				label="Link To Education"
 				bind:value={educationID}
 				oninput={() => updateOnChange && saveToAPI()}
-				options={education?.data?.map((j) => ({
+				options={($education.data || []).map((j) => ({
 					id: j.id,
 					label: `${j.degree} | ${j.institution}`
 				}))}

@@ -2,14 +2,10 @@
 	import Label from '../FormElements/Label.svelte';
 	import Select from '../FormElements/Select.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import type { JobApplication } from '../../../app';
-	import { createQuery, type QueryObserverResult } from '@tanstack/svelte-query';
 	import {
-		fetchMyJobApplications,
-		myJobApplicationsQueryKey
-	} from '$lib/API/Queries/my-job-applications';
-	import { onDestroy } from 'svelte';
+		useCreateJobApplicationMutation,
+		useMyJobApplicationsQuery
+	} from '$lib/API/job-applications';
 
 	interface Props {
 		className?: string;
@@ -19,59 +15,35 @@
 
 	let { className = '', selectedCompany = $bindable(), oninput }: Props = $props();
 
-	let MyJobApplicationsQuery = createQuery<JobApplication[]>({
-		queryKey: [myJobApplicationsQueryKey],
-		queryFn: async () => await fetchMyJobApplications()
-	});
-
-	let applications = $state<QueryObserverResult<JobApplication[], Error>>();
-
-	const unsubscribeJobApplications = MyJobApplicationsQuery.subscribe((t) => {
-		applications = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeJobApplications();
-	});
+	let applications = useMyJobApplicationsQuery();
+	let newApplication = useCreateJobApplicationMutation();
 
 	let newJobTitle = $state('');
 	let newJobCompany = $state(null);
 
 	async function saveNewJobApplication() {
-		const url = `${PUBLIC_API_URL}/job-applications`;
-
-		if (newJobTitle === '' && newJobCompany === '') {
+		if ((newJobTitle === '' && newJobCompany === '') || newJobCompany == null) {
 			return;
 		}
 
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				title: newJobTitle,
-				company: newJobCompany
-			})
+		const newJob = await $newApplication.mutateAsync({
+			title: newJobTitle,
+			company: newJobCompany
 		});
-
-		if (res.ok) {
-			const newJob = await res.json();
-			applications?.data?.push(newJob);
-			selectedCompany = newJob.id;
-		}
+		selectedCompany = newJob.id;
+		newJobTitle = '';
+		newJobCompany = null;
 	}
 </script>
 
 <div class={className}>
-	{#if (applications?.data?.length || 0) > 0}
+	{#if ($applications?.data?.length || 0) > 0}
 		<Select
 			{oninput}
 			bind:value={selectedCompany}
 			label="Current Job Applications"
 			id="jobApplicaiton"
-			options={(applications?.data || []).map((app) => ({
+			options={($applications?.data || []).map((app) => ({
 				id: app.id,
 				label: `${app.company} - ${app.title}`
 			}))}
