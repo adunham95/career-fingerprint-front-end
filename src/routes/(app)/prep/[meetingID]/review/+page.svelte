@@ -19,7 +19,7 @@ Additional Notes
 		<button class="btn btn--primary print:hidden" onclick={() => window.print()}>Print</button>
 	</div>
 	<div class="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8 print:w-full print:p-0">
-		<p class="hidden print:block">Your Career Fingerprint Meeting Guild</p>
+		<p class="hidden print:block">Your Career Fingerprint Meeting Guide</p>
 		<div class="max-w-xl">
 			<p class="font-title mt-2 text-4xl font-bold tracking-tight sm:text-5xl print:text-2xl">
 				{data?.meeting?.title || ''}
