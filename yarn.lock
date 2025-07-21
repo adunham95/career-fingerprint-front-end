@@ -640,6 +640,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stripe/stripe-js@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "@stripe/stripe-js@npm:7.5.0"
+  checksum: 10c0/e035372e9813272fa7062fc66ad979b3eb5e96e785bedda7061199d581a5747cbe39fdf0e1965b41825f48ae9e7550f52c2241a77523cdb697e6f20a81304f76
+  languageName: node
+  linkType: hard
+
 "@sveltejs/acorn-typescript@npm:^1.0.5":
   version: 1.0.5
   resolution: "@sveltejs/acorn-typescript@npm:1.0.5"
@@ -1855,6 +1862,7 @@ __metadata:
   dependencies:
     "@eslint/compat": "npm:^1.2.5"
     "@eslint/js": "npm:^9.18.0"
+    "@stripe/stripe-js": "npm:^7.5.0"
     "@sveltejs/adapter-auto": "npm:^6.0.1"
     "@sveltejs/adapter-cloudflare": "npm:^7.0.0"
     "@sveltejs/kit": "npm:^2.16.0"
