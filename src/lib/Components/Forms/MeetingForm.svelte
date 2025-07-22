@@ -26,7 +26,9 @@
 	}: Props = $props();
 
 	let title = $state(meeting.title);
-	let time = $state<string | Date>(meeting?.time || new Date().toISOString().slice(0, 16));
+	let time = $state<string | Date>(
+		(meeting?.time ? new Date(meeting?.time) : new Date()).toISOString().slice(0, 16)
+	);
 	let type = $state<string>(meeting.type || 'Interview');
 	let location = $state(meeting.location);
 	let link = $state(meeting.link);
@@ -60,6 +62,7 @@
 				$saveMeetingMutation.mutateAsync(meetingDetails);
 				toastStore.show({ message: 'Meeting Created' });
 			}
+			onSuccess();
 		} catch (error) {
 			toastStore.show({ message: 'Error Updating Meeting' });
 		}

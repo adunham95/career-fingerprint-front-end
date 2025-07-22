@@ -11,6 +11,8 @@ interface NewMeeting {
 	jobAppID?: string | null;
 	jobPositionID?: string | null;
 	educationID?: string | null;
+	agenda?: string | null;
+	attendees?: string[];
 }
 
 export interface UpdateMeetingInput {
@@ -23,6 +25,8 @@ export interface UpdateMeetingInput {
 	jobAppID?: string | null;
 	jobPositionID?: string | null;
 	educationID?: string | null;
+	agenda?: string | null;
+	attendees?: string[];
 }
 
 export async function updateMeeting(meeting: Partial<UpdateMeetingInput>): Promise<Meeting | null> {
@@ -81,6 +85,18 @@ export async function createMeeting(newMeeting: NewMeeting): Promise<Meeting | n
 export async function getMeetingByPage(page: number = 1): Promise<Meeting[] | null> {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/meetings/my?page=${page}&limit=20`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getMeetingByID(id: string): Promise<Meeting | null> {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/${id}`, {
 			credentials: 'include'
 		});
 		return res.json();
@@ -159,6 +175,14 @@ export const useMeetingByPageQuery = (pageNumber: number, initialData?: Meeting[
 	return createQuery({
 		queryKey: meetingKeys.meetingsByPage(pageNumber),
 		queryFn: () => getMeetingByPage(pageNumber),
+		initialData
+	});
+};
+
+export const useMeetingByID = (id: string, initialData?: Meeting) => {
+	return createQuery({
+		queryKey: meetingKeys.meeting(id),
+		queryFn: () => getMeetingByID(id),
 		initialData
 	});
 };

@@ -67,9 +67,12 @@ interface Meeting {
 	type: string;
 	location: string;
 	link: string;
+	agenda: string;
+	attendees: string[];
 	jobAppID: string;
 	jobPositionID: string;
 	educationID: string;
+	jobApp: JobApplication;
 }
 
 interface Note {

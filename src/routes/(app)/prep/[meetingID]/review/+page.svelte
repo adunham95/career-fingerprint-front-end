@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useMeetingHighlightsQuery } from '$lib/API/highlights';
+	import { useGetAnswersByMeetingID } from '$lib/API/prep-answers';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import StepHeader from '../StepHeader.svelte';
 	import { format } from 'date-fns';
@@ -6,12 +8,10 @@
 	const { data } = $props();
 
 	console.log({ data });
-</script>
 
-<!-- 
-Questions
-Additional Notes
--->
+	const meetingHighlights = useMeetingHighlightsQuery(data.meetingID || '', data.meeting.higlights);
+	const prepAnswers = useGetAnswersByMeetingID(data.meetingID || '');
+</script>
 
 <PageContainer>
 	<StepHeader currentStep={3} meetingID={data.meetingID || ''} />
@@ -36,9 +36,9 @@ Additional Notes
 			{/if}
 		</div>
 		<div class="mt-4">
-			{#if data.meeting.highlights.length > 0}
+			{#if $meetingHighlights.data && $meetingHighlights.data.length > 0}
 				<h2 class="text-lg">Highlights</h2>
-				{#each data.meeting.highlights as highlight}
+				{#each $meetingHighlights.data as highlight}
 					<div
 						class="mb-2 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid-cols-3 print:grid-cols-3"
 					>
@@ -51,7 +51,7 @@ Additional Notes
 								<p>Note: {note.note}</p>
 							{/each}
 							<ul>
-								{#each highlight.achievement as ach}
+								{#each highlight.achievements as ach}
 									<li>{ach.myContribution}</li>
 								{/each}
 							</ul>
@@ -62,7 +62,7 @@ Additional Notes
 		</div>
 		<div class="mt-4">
 			<div class="grid grid-cols-3 gap-1">
-				{#each data.meeting.jobApp.prepAnswer as answer}
+				{#each $prepAnswers.data as answer}
 					<div
 						class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
 					>

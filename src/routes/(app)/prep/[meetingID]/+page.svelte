@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { useMeetingByID } from '$lib/API/meeting';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import MeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import StepHeader from './StepHeader.svelte';
 
 	const { data } = $props();
+
+	const meeting = useMeetingByID(data.meeting.id, data.meeting);
 
 	console.log(data);
 </script>
@@ -16,7 +19,7 @@
 			<MeetingForm
 				id="update-meeting"
 				meetingID={data.meetingID}
-				meeting={data.meeting}
+				meeting={$meeting.data || {}}
 				updateOnChange
 			/>
 		</div>

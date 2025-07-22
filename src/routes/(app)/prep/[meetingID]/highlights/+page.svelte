@@ -17,6 +17,10 @@
 		useMeetingHighlightsQuery,
 		useUpdateHighlightMutation
 	} from '$lib/API/highlights.js';
+	import { browser } from '$app/environment';
+	import UpdateMeetingAgenda from '$lib/Components/Forms/UpdateMeetingAgenda.svelte';
+	import { dataTagSymbol } from '@tanstack/svelte-query';
+	import { useMeetingByID } from '$lib/API/meeting.js';
 
 	const { data } = $props();
 	let editID = $state<string | undefined>();
@@ -29,6 +33,7 @@
 
 	console.log({ data });
 
+	const meeting = useMeetingByID(data.meeting.id, data.meeting);
 	const deleteHighlightMutation = useDeleteHighlightMutation(data.meetingID || '');
 	const meetingHighlights = useMeetingHighlightsQuery(data.meetingID || '', data.highlights);
 	const saveHighlightMutation = useCreateHighlightMutation(data.meetingID || '');
@@ -51,11 +56,15 @@
 	}
 
 	onMount(() => {
-		document.addEventListener('mouseup', handleMouseUp);
+		if (browser) {
+			document.addEventListener('mouseup', handleMouseUp);
+		}
 	});
 
 	onDestroy(() => {
-		document.removeEventListener('mouseup', handleMouseUp);
+		if (browser) {
+			document.removeEventListener('mouseup', handleMouseUp);
+		}
 	});
 
 	async function addHighlight(e: SubmitEvent) {
@@ -114,27 +123,60 @@
 	</div>
 	<div class="grid grid-cols-2 gap-4 pt-2">
 		<div>
-			<div class="pb-2">
-				<Toggle bind:checked={showEditJD} label="Edit Job Description" />
-			</div>
-			{#if showEditJD}
-				<UpdateJobDescription
-					jobAppID={data?.meeting?.jobApp?.id}
-					jobDescription={data?.meeting?.jobApp?.jobDescription}
-				/>
-			{:else}
-				<Card>
-					<p class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap" id="job-description-area">
-						{#if data.meeting?.jobApp?.jobDescription}
-							{data.meeting.jobApp.jobDescription}
-						{:else}
-							<InfoBlock
-								title="Job Description"
-								description="Add your job description before you can highlight"
-							/>
-						{/if}
-					</p>
-				</Card>
+			{#if $meeting.data?.type === 'Interview'}
+				<div class="pb-2">
+					<Toggle bind:checked={showEditJD} label="Edit Job Description" />
+				</div>
+				{#if showEditJD}
+					<UpdateJobDescription
+						jobAppID={$meeting.data?.jobApp?.id}
+						jobDescription={$meeting.data?.jobApp?.jobDescription}
+					/>
+				{:else}
+					<Card>
+						<div
+							class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap"
+							id="job-description-area"
+						>
+							{#if $meeting.data?.jobApp?.jobDescription}
+								<p>
+									{$meeting.data?.jobApp.jobDescription}
+								</p>
+							{:else}
+								<InfoBlock
+									title="Job Description"
+									description="Add your job description before you can highlight"
+								/>
+							{/if}
+						</div>
+					</Card>
+				{/if}
+			{:else if $meeting.data?.type === 'Internal'}
+				<div class="pb-2">
+					<Toggle bind:checked={showEditJD} label="Edit Meeting Agenda" />
+				</div>
+				{#if showEditJD}
+					<UpdateMeetingAgenda
+						meetingID={data.meetingID || ''}
+						agenda={$meeting.data?.agenda}
+						onSuccess={() => (showEditJD = false)}
+					/>
+				{:else}
+					<Card>
+						<div
+							class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap"
+							id="job-description-area"
+						>
+							{#if $meeting.data?.agenda}
+								<p>
+									{$meeting.data?.agenda}
+								</p>
+							{:else}
+								<InfoBlock title="Meeting Agenda" description="Add your meeting agenda" />
+							{/if}
+						</div>
+					</Card>
+				{/if}
 			{/if}
 		</div>
 		<form class="space-y-2" onsubmit={addHighlight}>

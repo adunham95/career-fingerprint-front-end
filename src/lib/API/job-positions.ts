@@ -3,7 +3,7 @@ import { createQuery } from '@tanstack/svelte-query';
 import type { JobPosition } from '../../app';
 
 export async function fetchMyJobPositions(): Promise<JobPosition[]> {
-	const resHighlights = await fetch(`${PUBLIC_API_URL}/job-applications/my`, {
+	const resHighlights = await fetch(`${PUBLIC_API_URL}/job-positions/my`, {
 		credentials: 'include'
 	});
 

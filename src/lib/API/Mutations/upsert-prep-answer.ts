@@ -2,8 +2,9 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 export interface NewPrepAnswer {
 	answer: string;
-	jobApplicationID: string;
+	jobApplicationID?: string;
 	questionID: string;
+	meetingID?: string;
 }
 
 export async function upsertPrepAnswer(
