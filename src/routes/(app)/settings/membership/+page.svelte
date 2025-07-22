@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { PUBLIC_STRIPE_API_KEY } from '$env/static/public';
+	import { useCreateCheckoutSession } from '$lib/API/subscription.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
+	import StripeCheckoutElement from '$lib/Components/Forms/StripeCheckout.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { centsToDollars } from '$lib/Utils/centsToDollars.js';
 	import type { StripeCheckout } from '@stripe/stripe-js';
 	import type { Stripe } from '@stripe/stripe-js';
 	import { loadStripe } from '@stripe/stripe-js';
@@ -11,10 +15,15 @@
 
 	let stripe: Stripe | null = null;
 	let stripeCheckout: StripeCheckout | null = null;
+	let priceID: string | null = $state(null);
+	const startCheckout = useCreateCheckoutSession();
+	onMount(async () => {
+		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
+	});
 
-	// onMount(async () => {
-	// 	stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
-	// 	if (stripe) {
+	// $effect(() => {
+	// 	console.log(priceID);
+	// 	if (stripe && priceID) {
 	// 		stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
 	// 			stripeCheckout = checkout;
 	// 			const paymentElement = checkout.createPaymentElement();
@@ -23,8 +32,38 @@
 	// 	}
 	// });
 
+	function updateStripe(newPriceID: string) {
+		priceID = newPriceID;
+		if (stripe) {
+			stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
+				stripeCheckout = checkout;
+				const paymentElement = checkout.createPaymentElement();
+				paymentElement.mount('#payment-element');
+				const button = document.getElementById('pay-button');
+				if (button) {
+					button.addEventListener('click', () => {
+						// Clear any validation errors
+						// errors.textContent = '';
+
+						checkout.confirm().then((result) => {
+							console.log(result);
+							if (result.type === 'error') {
+								// errors.textContent = result.error.message;
+							}
+						});
+					});
+				}
+			});
+		}
+	}
+
 	async function fetchClientSecret() {
-		await Promise.resolve('');
+		if (priceID) {
+			let response = await $startCheckout.mutateAsync({ priceID });
+			console.log({ response });
+			return response;
+		}
+		return '';
 	}
 
 	const { data } = $props();
@@ -58,25 +97,55 @@
 			</dl>
 		</Card>
 	</TwoColumn>
-	{#if data.membershipDetails?.plan.level === 0}
+	{#if data.availablePlans}
 		<TwoColumn title={'Upgrade'}>
-			<Card className="md:col-span-2">
-				<h1>Elevate Your Membership</h1>
+			<Card
+				className="md:col-span-2  rounded-2xl bg-gray-50  text-center ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
+			>
+				<div class={`px-8 ${priceID === null ? '' : 'hidden'}`}>
+					<p class="text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
+					<p class="text-base font-semibold text-gray-600">Select a billing type to get started</p>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="mt-6 flex items-baseline justify-center gap-x-2">
+								<span class="text-5xl font-semibold tracking-tight text-gray-900">
+									${centsToDollars(data.availablePlans.priceCentsYear)}
+								</span>
+								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/year</span>
+							</p>
+							{#if data.availablePlans.annualStripePriceID !== null}
+								<button
+									onclick={() => updateStripe(data.availablePlans?.annualStripePriceID || '')}
+									class="btn btn-text--primary btn-small mt-10 w-full">Upgrade</button
+								>
+							{/if}
+						</div>
+						<div>
+							<p class="mt-6 flex items-baseline justify-center gap-x-2">
+								<span class="text-5xl font-semibold tracking-tight text-gray-900">
+									${centsToDollars(data.availablePlans.priceCents)}
+								</span>
+								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/mo</span>
+							</p>
+							<button
+								onclick={() => updateStripe(data.availablePlans?.monthlyStripePriceID || '')}
+								class="btn btn--primary btn-small mt-10 w-full">Upgrade</button
+							>
+						</div>
+					</div>
+				</div>
+				<form id="payment-form">
+					<div id="payment-element">
+						<!-- Elements will create form elements here -->
+					</div>
+					<button id="pay-button" class={`btn btn--primary ${priceID === null ? 'hidden' : ''}`}
+						>Subscribe</button
+					>
+					<div id="error-message">
+						<!-- Display error message to your customers here -->
+					</div>
+				</form>
 			</Card>
 		</TwoColumn>
 	{/if}
-	<TwoColumn title={'Billing'}>
-		<Card className="md:col-span-2">
-			<h1>Billing details</h1>
-			<form id="payment-form">
-				<div id="payment-element">
-					<!-- Elements will create form elements here -->
-				</div>
-				<button id="submit">Subscribe</button>
-				<div id="error-message">
-					<!-- Display error message to your customers here -->
-				</div>
-			</form>
-		</Card>
-	</TwoColumn>
 </PageContainer>

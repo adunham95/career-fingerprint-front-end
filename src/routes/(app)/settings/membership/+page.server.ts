@@ -1,4 +1,4 @@
-import { getSubscriptionDetails } from '$lib/API/subscription.js';
+import { getPlansAvailableToUpgrade, getSubscriptionDetails } from '$lib/API/subscription.js';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
@@ -9,7 +9,8 @@ export const load = async (event) => {
 
 	try {
 		const membershipDetails = await getSubscriptionDetails(token);
-		return { membershipDetails };
+		const availablePlans = await getPlansAvailableToUpgrade(token);
+		return { membershipDetails, availablePlans };
 	} catch (error) {
 		console.error(error);
 	}
