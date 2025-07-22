@@ -9,8 +9,10 @@
 
 	console.log({ data });
 
-	const meetingHighlights = useMeetingHighlightsQuery(data.meetingID || '', data.meeting.higlights);
-	const prepAnswers = useGetAnswersByMeetingID(data.meetingID || '');
+	const meetingHighlights = useMeetingHighlightsQuery(
+		data.meetingID || '',
+		data.meeting.highlights
+	);
 </script>
 
 <PageContainer>
@@ -62,7 +64,7 @@
 		</div>
 		<div class="mt-4">
 			<div class="grid grid-cols-3 gap-1">
-				{#each $prepAnswers.data as answer}
+				{#each data.prepAnswers as answer}
 					<div
 						class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
 					>

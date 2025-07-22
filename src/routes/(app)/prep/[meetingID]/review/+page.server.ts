@@ -18,6 +18,12 @@ export const load = async (event) => {
 
 		console.log(res);
 
+		const resPrepAnswers = await fetch(`${PUBLIC_API_URL}/prep/answers/meeting/${meetingID}`, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		});
+
 		if (!res) {
 			error(404, {
 				message: 'Not found'
@@ -26,7 +32,8 @@ export const load = async (event) => {
 
 		if (res.ok) {
 			const meeting = await res.json();
-			return { meeting, meetingID };
+			const prepAnswers = await resPrepAnswers.json();
+			return { meeting, meetingID, prepAnswers };
 		}
 	} catch (error) {
 		console.error(error);
