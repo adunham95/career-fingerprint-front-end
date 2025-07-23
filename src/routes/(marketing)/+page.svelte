@@ -19,11 +19,11 @@
 					<h1
 						class="font-title text-5xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-7xl"
 					>
-						Build your custom career story
+						Highlight your your unique achievements
 					</h1>
 					<p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-						Track your accomplishments, craft standout resumes, and prepare for every opportunity
-						with confidence.
+						Career Fingerprint is a digital career journal and meeting tracker designed to support
+						professionals, students and job seekers in organizing their professional achievements.
 					</p>
 					<div class="mt-10 flex items-center gap-x-6">
 						<a href="/get-started" class="btn btn--primary">Build My Fingerprint</a>

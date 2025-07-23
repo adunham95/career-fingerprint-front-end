@@ -59,7 +59,7 @@ export async function getSubscriptionDetails(token?: string): Promise<Subscripti
 
 export async function getPlanDetailsByKey(id: string): Promise<SubscriptionPlan | null> {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/plan/${id}`, {
+		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/plans/${id}`, {
 			credentials: 'include'
 		});
 		console.log({ res });

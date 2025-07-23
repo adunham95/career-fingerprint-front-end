@@ -1,17 +1,24 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
+	import { useGetPlanByID } from '$lib/API/subscription';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { centsToDollars } from '$lib/Utils/centsToDollars';
 
 	function scrollToView(id: string) {
 		const elm = document.getElementById(id);
 		if (elm) elm.scrollIntoView({ behavior: 'smooth' });
 	}
+
+	let planKey = 'pro';
+
+	let proData = useGetPlanByID(planKey);
+
+	$inspect($proData);
 
 	let profile = $state({
 		lookingFor: '',
@@ -31,7 +38,7 @@
 		name: 'Pro Plan',
 		priceCents: 999,
 		interval: 'month',
-		stripePriceID: null
+		stripePriceID: 'price_1RncVuAmXvicwTzzvah0YuEX'
 	});
 
 	async function createAccount() {
@@ -86,7 +93,7 @@
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify({
-				priceID: proPlan.stripePriceID
+				priceID: $proData.data?.monthlyStripePriceID
 			})
 		});
 
@@ -257,9 +264,22 @@
 	<div id="account" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Create Your Account</h3>
 		<p class="pb-4">Save your progress and access it anytime.</p>
-		<div>
-			<TextInput id="email" label="Email" type="email" bind:value={profile.email} />
-			<TextInput id="password" label="Password" bind:value={profile.password} />
+		<div class=" flex w-full max-w-[300px] flex-col">
+			<TextInput
+				className="w-full"
+				inputClassName="w-full"
+				id="email"
+				label="Email"
+				type="email"
+				bind:value={profile.email}
+				autocomplete="email"
+			/>
+			<TextInput
+				id="password"
+				label="Password"
+				bind:value={profile.password}
+				autocomplete="new-password"
+			/>
 		</div>
 		<div class="flex justify-end pt-2">
 			<button class="btn btn--primary" onclick={createAccount}>Create Account</button>
@@ -280,7 +300,7 @@
 		</div>
 		<div class="flex w-full flex-col justify-end gap-1.5 pt-2 sm:flex-row">
 			<button class="btn btn-text--secondary" onclick={() => scrollToView('premium')}
-				>I dont want stickers</button
+				>I don't want stickers</button
 			>
 			<button class="btn btn--primary" onclick={() => scrollToView('premium')}
 				>Claim my stickers!</button
@@ -300,7 +320,7 @@
 				<p class="mt-6 flex items-baseline gap-x-1">
 					<span class="text-4xl font-semibold tracking-tight text-gray-900">Free</span>
 				</p>
-				<a href="/dashboard" class="btn btn-outline--primary mt-2 w-full"
+				<a href="/dashboard" class="btn btn-outline--primary mt-4 block w-full text-center"
 					>Continue with basic account</a
 				>
 				<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600">
@@ -338,12 +358,16 @@
 					</li>
 				</ul>
 			</div>
-			{#if proPlan.stripePriceID}
+			{#if $proData.data?.monthlyStripePriceID}
 				<div class="bg-secondary ring-primary rounded-3xl p-8 shadow-2xl ring-2">
-					<h3 id="tier-freelancer" class="text-lg/8 font-semibold text-gray-50">Elevate</h3>
+					<h3 id="tier-freelancer" class="text-lg/8 font-semibold text-gray-50">
+						{$proData.data?.name}
+					</h3>
 					<p class="mt-4 text-sm/6 text-gray-200">For active professionals and job switchers</p>
 					<p class="mt-6 flex items-baseline gap-x-1">
-						<span class="text-4xl font-semibold tracking-tight text-gray-100">$9.99</span>
+						<span class="text-4xl font-semibold tracking-tight text-gray-100"
+							>${centsToDollars($proData.data.priceCents)}</span
+						>
 						<span class="text-sm/6 font-semibold text-gray-200">/month</span>
 					</p>
 					<button class="btn btn--primary mt-2 w-full" onclick={startFreeTrial}
