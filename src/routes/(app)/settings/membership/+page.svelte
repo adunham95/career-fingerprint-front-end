@@ -4,6 +4,7 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import StripeCheckoutElement from '$lib/Components/Forms/StripeCheckout.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { centsToDollars } from '$lib/Utils/centsToDollars.js';
@@ -100,11 +101,13 @@
 	{#if data.availablePlans}
 		<TwoColumn title={'Upgrade'}>
 			<Card
-				className="md:col-span-2  rounded-2xl bg-gray-50  text-center ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
+				className="md:col-span-2  rounded-2xl bg-gray-50  ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
 			>
 				<div class={`px-8 ${priceID === null ? '' : 'hidden'}`}>
-					<p class="text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
-					<p class="text-base font-semibold text-gray-600">Select a billing type to get started</p>
+					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
+					<p class="text-center text-base font-semibold text-gray-600">
+						Select a billing type to get started
+					</p>
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<p class="mt-6 flex items-baseline justify-center gap-x-2">
@@ -116,7 +119,7 @@
 							{#if data.availablePlans.annualStripePriceID !== null}
 								<button
 									onclick={() => updateStripe(data.availablePlans?.annualStripePriceID || '')}
-									class="btn btn-text--primary btn-small mt-10 w-full">Upgrade</button
+									class="btn btn--secondary btn-small mt-10 w-full">Upgrade</button
 								>
 							{/if}
 						</div>
@@ -132,6 +135,10 @@
 								class="btn btn--primary btn-small mt-10 w-full">Upgrade</button
 							>
 						</div>
+					</div>
+					<div class="flex pt-4">
+						<TextInput id="coupon-code" label="Coupon Code" className="w-full" />
+						<button class="btn btn-text--primary ml-2">Apply</button>
 					</div>
 				</div>
 				<form id="payment-form">
