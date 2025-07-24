@@ -105,7 +105,7 @@
 			>
 				<div class={`px-8 ${priceID === null ? '' : 'hidden'}`}>
 					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
-					<ul role="list" class="mb-4 flex flex-col items-center space-y-3 text-sm/6 text-gray-600">
+					<!-- <ul role="list" class="mb-4 flex flex-col items-center space-y-3 text-sm/6 text-gray-600">
 						{#each data.availablePlans.featureList as feature}
 							<li class="flex gap-x-3">
 								<svg
@@ -124,7 +124,7 @@
 								{feature}
 							</li>
 						{/each}
-					</ul>
+					</ul> -->
 					<p class="text-center text-base font-semibold text-gray-600">
 						Select a billing type to get started
 					</p>

@@ -4,6 +4,7 @@
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { format, isFuture } from 'date-fns';
 
 	const { data } = $props();
@@ -31,7 +32,7 @@
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if isFuture(data.meeting.time)}
+					{#if isFuture(data.meeting.time) && useFeatureGate(1, data.user)}
 						<button type="button" class="btn btn-text--secondary">Prep for Meeting</button>
 						<button type="button" class="btn btn--primary">Start Meeting</button>
 					{/if}

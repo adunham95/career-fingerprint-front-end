@@ -118,7 +118,7 @@
 							d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
 						/>
 					</svg>
-					<p class="mx-1 text-sm">Unlock with Elevate</p>
+					<p class="mx-1 text-sm">Unlock with Premium</p>
 				</div>
 				<div class="flex flex-col items-center opacity-30">
 					<svg
@@ -189,7 +189,7 @@
 							d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
 						/>
 					</svg>
-					<p class="mx-1 text-sm">Unlock with Elevate</p>
+					<p class="mx-1 text-sm">Unlock with Premium</p>
 				</div>
 				<div class="flex flex-col items-center opacity-30">
 					<svg
@@ -264,7 +264,7 @@
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#each data.meetings || [] as meeting}
-					<UpcomingEventRow {...meeting} />
+					<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(1, data.user)} />
 				{/each}
 			</ol>
 		</div>

@@ -16,8 +16,6 @@ export const load = async (event) => {
 			}
 		);
 
-		console.log(res);
-
 		const resPrepAnswers = await fetch(`${PUBLIC_API_URL}/prep/answers/meeting/${meetingID}`, {
 			headers: {
 				Authorization: 'Bearer ' + token

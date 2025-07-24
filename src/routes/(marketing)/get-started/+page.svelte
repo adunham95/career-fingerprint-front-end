@@ -481,7 +481,7 @@
 			</div>
 			<div class="mt-2 flex w-full justify-end">
 				<a href="/dashboard" class=" text-small btn btn-text--secondary btn-small"
-					>Continue without Elevate Benefits</a
+					>Continue without Premium Benefits</a
 				>
 			</div>
 		{/if}
