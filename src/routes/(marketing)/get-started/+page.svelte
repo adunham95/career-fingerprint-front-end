@@ -432,15 +432,15 @@
 				class="bg-surface-50 mx-auto mt-16 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none"
 			>
 				<div class="p-8 sm:p-10 lg:flex-auto">
-					<h3 class="text-3xl font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
+					<h3 class="text-3 font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
 					<p class="mt-6 text-base/7 text-gray-600">
 						{$proData.data.description}
 					</p>
 					<div class="mt-5 flex items-center gap-x-4">
-						<h4 class="text-primary flex-none text-sm/6 font-semibold">What’s included</h4>
+						<h4 class="text-primary flex-none font-semibold">What’s included</h4>
 						<div class="h-px flex-auto bg-gray-300"></div>
 					</div>
-					<ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-sm/6 text-gray-600 sm:gap-6">
+					<ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-gray-600 sm:gap-6">
 						{#each $proData.data.featureList as feature}
 							<li class="flex gap-x-3">
 								<svg
@@ -467,10 +467,10 @@
 					>
 						<div class="mx-auto max-w-xs px-8">
 							<p class="mt-6 flex items-baseline justify-center gap-x-2">
-								<span class="text-5xl font-semibold tracking-tight text-gray-900"
+								<span class="text-1 font-semibold tracking-tight text-gray-900"
 									>${centsToDollars($proData.data.priceCents)}</span
 								>
-								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/month</span>
+								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
 							</p>
 							<button onclick={startFreeTrial} class="btn btn--primary mt-10 block w-full"
 								>Start my free trial</button
@@ -480,7 +480,7 @@
 				</div>
 			</div>
 			<div class="mt-2 flex w-full justify-end">
-				<a href="/dashboard" class=" text-sm">Continue without Elevate Benefits</a>
+				<a href="/dashboard" class=" text-small">Continue without Elevate Benefits</a>
 			</div>
 		{/if}
 	</div>
