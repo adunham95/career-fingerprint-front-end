@@ -311,7 +311,7 @@
 	<!-- Step 7 -->
 	<div id="premium" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
-		<p class="pb-4">Unlock additional features when building your fingerprint</p>
+		<p class="pb-1">Unlock additional features when building your fingerprint</p>
 
 		<!-- <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2"> -->
 		<!-- <div class="bg-surface-100 rounded-3xl p-8 ring-1 ring-gray-200">
@@ -429,7 +429,7 @@
 		</div>-->
 		{#if $proData.data?.monthlyStripePriceID}
 			<div
-				class="bg-surface-50 mx-auto mt-16 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none"
+				class="bg-surface-50 mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
 			>
 				<div class="p-8 sm:p-10 lg:flex-auto">
 					<h3 class="text-3 font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
@@ -480,7 +480,9 @@
 				</div>
 			</div>
 			<div class="mt-2 flex w-full justify-end">
-				<a href="/dashboard" class=" text-small">Continue without Elevate Benefits</a>
+				<a href="/dashboard" class=" text-small btn btn-text--secondary btn-small"
+					>Continue without Elevate Benefits</a
+				>
 			</div>
 		{/if}
 	</div>
