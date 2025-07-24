@@ -1,11 +1,19 @@
 import { PUBLIC_API_URL } from '$env/static/public';
+import { useFeatureGate } from '$lib/Utils/featureGate';
+import { redirect } from '@sveltejs/kit';
 import type { Education, JobPosition } from '../../../../app';
 
 export const load = async (event) => {
 	const id = event.params.meetingId;
 	const token = event.cookies.get('accessToken');
 
-	console.log('meetingID', id);
+	const featureEnabled = useFeatureGate(1, event.locals.user);
+
+	if (!featureEnabled) {
+		redirect(307, '/settings/membership');
+	}
+
+	console.log(event);
 
 	try {
 		const resInterview = await fetch(`${PUBLIC_API_URL}/meetings/${id}`, {
@@ -48,7 +56,8 @@ export const load = async (event) => {
 			interviewData,
 			meetingID: id,
 			relatedNotes,
-			highlights
+			highlights,
+			featureEnabled
 		};
 	} catch (error) {
 		console.error(error);

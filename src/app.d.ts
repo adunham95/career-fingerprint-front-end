@@ -3,7 +3,9 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			user: CurrentUser | null;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
@@ -108,6 +110,29 @@ interface PrepQuestion {
 	prepAnswers: { answer: string }[];
 }
 
+interface CurrentUser {
+	id: string;
+	firstName: string;
+	lastName: string;
+	accountStatus: string;
+	email: string;
+	profileImage: string | null;
+	stripeCustomerID: string | null;
+	planLevel: number;
+	subscription: {
+		id: string;
+		status: string;
+		stripeSubId: string | null;
+		trialEndsAt: string | null;
+		currentPeriodEnd: string | null;
+		plan: {
+			id: string;
+			key: string;
+			level: number;
+		};
+	};
+}
+
 export {
 	JobPosition,
 	Education,
@@ -116,5 +141,6 @@ export {
 	Achievement,
 	Meeting,
 	PrepQuestion,
-	MeetingHighlight
+	MeetingHighlight,
+	CurrentUser
 };
