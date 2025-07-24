@@ -105,6 +105,26 @@
 			>
 				<div class={`px-8 ${priceID === null ? '' : 'hidden'}`}>
 					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
+					<ul role="list" class="mb-4 flex flex-col items-center space-y-3 text-sm/6 text-gray-600">
+						{#each data.availablePlans.featureList as feature}
+							<li class="flex gap-x-3">
+								<svg
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									data-slot="icon"
+									aria-hidden="true"
+									class="text-primary h-6 w-5 flex-none"
+								>
+									<path
+										d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+										clip-rule="evenodd"
+										fill-rule="evenodd"
+									/>
+								</svg>
+								{feature}
+							</li>
+						{/each}
+					</ul>
 					<p class="text-center text-base font-semibold text-gray-600">
 						Select a billing type to get started
 					</p>

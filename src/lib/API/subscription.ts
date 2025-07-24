@@ -15,6 +15,8 @@ interface SubscriptionPlan {
 	};
 	monthlyStripePriceID: string | null;
 	annualStripePriceID: string | null;
+	description: string | null;
+	featureList: string[];
 }
 
 interface SubscriptionDetails {
