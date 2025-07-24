@@ -120,7 +120,7 @@
 	$inspect(profile);
 </script>
 
-<div class="mx-auto max-w-2xl px-3 py-3">
+<div class="mx-auto max-w-4xl px-3 py-3">
 	<!-- Step 1 -->
 	<div id="step-1" class="flex min-h-screen flex-col items-center justify-center">
 		<h2 class="font-title pb-2 text-3xl">Welcome to Career Fingerprint!</h2>
@@ -313,8 +313,8 @@
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-4">Unlock additional features when building your fingerprint</p>
 
-		<div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2">
-			<div class="bg-surface-100 rounded-3xl p-8 ring-1 ring-gray-200">
+		<!-- <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2"> -->
+		<!-- <div class="bg-surface-100 rounded-3xl p-8 ring-1 ring-gray-200">
 				<h3 id="tier-hobby" class="text-lg/8 font-semibold text-gray-900">Starter</h3>
 				<p class="mt-4 text-sm/6 text-gray-600">Perfect for students and early professionals</p>
 				<p class="mt-6 flex items-baseline gap-x-1">
@@ -425,6 +425,63 @@
 					</ul>
 				</div>
 			{/if}
-		</div>
+		</div> 
+		</div>-->
+		{#if $proData.data?.monthlyStripePriceID}
+			<div
+				class="bg-surface-50 mx-auto mt-16 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none"
+			>
+				<div class="p-8 sm:p-10 lg:flex-auto">
+					<h3 class="text-3xl font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
+					<p class="mt-6 text-base/7 text-gray-600">
+						{$proData.data.description}
+					</p>
+					<div class="mt-5 flex items-center gap-x-4">
+						<h4 class="text-primary flex-none text-sm/6 font-semibold">What’s included</h4>
+						<div class="h-px flex-auto bg-gray-300"></div>
+					</div>
+					<ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-sm/6 text-gray-600 sm:gap-6">
+						{#each $proData.data.featureList as feature}
+							<li class="flex gap-x-3">
+								<svg
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									data-slot="icon"
+									aria-hidden="true"
+									class="text-primary h-6 w-5 flex-none"
+								>
+									<path
+										d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+										clip-rule="evenodd"
+										fill-rule="evenodd"
+									/>
+								</svg>
+								{feature}
+							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-sm lg:shrink-0">
+					<div
+						class="bg-surface-200 h-full rounded-2xl py-10 text-center ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center lg:py-16"
+					>
+						<div class="mx-auto max-w-xs px-8">
+							<p class="mt-6 flex items-baseline justify-center gap-x-2">
+								<span class="text-5xl font-semibold tracking-tight text-gray-900"
+									>${centsToDollars($proData.data.priceCents)}</span
+								>
+								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/month</span>
+							</p>
+							<button onclick={startFreeTrial} class="btn btn--primary mt-10 block w-full"
+								>Start my free trial</button
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="mt-2 flex w-full justify-end">
+				<a href="/dashboard" class=" text-sm">Continue without Elevate Benefits</a>
+			</div>
+		{/if}
 	</div>
 </div>
