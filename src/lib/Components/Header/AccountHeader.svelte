@@ -1,4 +1,7 @@
 <script lang="ts">
+	import TextArea from '../FormElements/TextArea.svelte';
+	import Modal from '../Overlays/Modal.svelte';
+
 	interface Props {
 		appTitle?: string;
 		showNotification?: boolean;
@@ -11,8 +14,10 @@
 		profileRoutes?: { title: string; path: string }[];
 	}
 
+	let feedbackModalOpen = $state(false);
+
 	const {
-		appTitle = 'Planner Bee',
+		appTitle = 'Career Fingerprint',
 		logoURL,
 		firstName,
 		lastName,
@@ -233,7 +238,6 @@
 			</div>
 		</div>
 		<nav class="hidden lg:flex lg:space-x-8 lg:py-2" aria-label="Global">
-			<!-- Current: "bg-gray-100 text-gray-900", Default: "text-gray-900 hover:bg-gray-50 hover:text-gray-900" -->
 			{#each routes as route}
 				<a
 					href={route.path}
@@ -242,6 +246,10 @@
 					{route.title}
 				</a>
 			{/each}
+			<button
+				class="btn btn-text--primary ml-auto self-end"
+				onclick={() => (feedbackModalOpen = true)}>Feedback</button
+			>
 		</nav>
 	</div>
 
@@ -375,3 +383,12 @@
 		</div>
 	</div>
 </header>
+
+<Modal title="Feedback" bind:isOpen={feedbackModalOpen}>
+	<TextArea id="feedback" placeholder="Type feedback here....." />
+	{#snippet actions()}
+		<div class="flex justify-end">
+			<button class="btn btn-text--primary">Submit</button>
+		</div>
+	{/snippet}
+</Modal>

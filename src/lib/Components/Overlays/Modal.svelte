@@ -16,9 +16,11 @@
 
 		if (isOpen) {
 			element.showModal();
+			isOpen = true;
 			// const event = new Event('open');
 			// if (onopen) onopen(event);
 		} else {
+			isOpen = false;
 			element.close();
 		}
 	});
@@ -35,7 +37,7 @@
 			<button
 				onclick={() => (isOpen = false)}
 				type="button"
-				class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
+				class="focus:ring-primary rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
 			>
 				<span class="sr-only">Close</span>
 				<svg
@@ -57,8 +59,10 @@
 				{@render children()}
 			</div>
 		</div>
-		<div class="mt-5 sm:mt-6">
-			{@render actions?.()}
-		</div>
+		{#if actions}
+			<div class="mt-5 sm:mt-6">
+				{@render actions?.()}
+			</div>
+		{/if}
 	</div>
 </dialog>
