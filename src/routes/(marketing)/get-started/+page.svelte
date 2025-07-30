@@ -56,12 +56,14 @@
 			})
 		});
 
+		console.log(res);
+
 		if (res.ok) {
 			const data = await res.json();
 
-			if (data?.plan) {
-				proPlan = data.plan;
-			}
+			// if (data?.plan) {
+			// 	proPlan = data.plan;
+			// }
 
 			toastStore.show({
 				type: 'success',

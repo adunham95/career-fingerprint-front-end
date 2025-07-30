@@ -119,6 +119,7 @@ interface CurrentUser {
 	profileImage: string | null;
 	stripeCustomerID: string | null;
 	planLevel: number;
+	pitch: string;
 	subscription: {
 		id: string;
 		status: string;

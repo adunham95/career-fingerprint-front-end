@@ -3,6 +3,7 @@
 	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import AutogrowTextInput from '$lib/Components/FormElements/AutogrowTextInput.svelte';
 	import DateInput from '$lib/Components/FormElements/DateInput.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
@@ -10,6 +11,7 @@
 	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import type { Education, JobPosition } from '../../../../app.js';
 
 	const { data } = $props();
@@ -331,24 +333,31 @@
 					{/each}
 				</div>
 			</Accordion>
-			<p class="mt-4 text-gray-600">Download PDF version or print this resume</p>
-			<button class="btn btn--primary mt-2">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="mr-2 inline h-5 w-5"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-					/>
-				</svg>
-				Download Resume
-			</button>
+			{#if useFeatureGate(1, data.user)}
+				<p class="mt-4 text-gray-600">Download PDF version or print this resume</p>
+				<button class="btn btn--primary mt-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="mr-2 inline h-5 w-5"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+						/>
+					</svg>
+					Download Resume
+				</button>
+			{:else}
+				<FeatureBlock
+					title="Download Resume"
+					description="To download your resume, upgrade to the pro plan"
+				/>
+			{/if}
 		</div>
 		<div class="md:col-span-2">
 			<BasicResume {personalInfo} experience={jobs} {education} showIncomplete />
