@@ -60,6 +60,9 @@ interface Achievement {
 	endDate: string | null;
 	myContribution: string;
 	description: string;
+	result: string;
+	jobPosition: JobPosition;
+	education: Education;
 }
 
 interface Meeting {

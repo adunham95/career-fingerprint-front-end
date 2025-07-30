@@ -21,16 +21,7 @@
 		</div>
 	</div>
 	<div class="grid grid-cols-2">
-		<ExpandedTimeline
-			dates={data.achievements?.map((ach) => {
-				return {
-					title: 'Achievement',
-					date: ach.startDate ? new Date(ach.startDate) : new Date(),
-					description: ach.myContribution,
-					type: 'achievement'
-				};
-			}) || []}
-		/>
+		<ExpandedTimeline dates={data.achievements || []} />
 	</div>
 </PageContainer>
 
