@@ -5,8 +5,6 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import StripeCheckoutElement from '$lib/Components/Forms/StripeCheckout.svelte';
-	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { centsToDollars } from '$lib/Utils/centsToDollars.js';
 	import type { StripeCheckout } from '@stripe/stripe-js';
 	import type { Stripe } from '@stripe/stripe-js';
@@ -21,17 +19,6 @@
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
 	});
-
-	// $effect(() => {
-	// 	console.log(priceID);
-	// 	if (stripe && priceID) {
-	// 		stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
-	// 			stripeCheckout = checkout;
-	// 			const paymentElement = checkout.createPaymentElement();
-	// 			paymentElement.mount('#payment-element');
-	// 		});
-	// 	}
-	// });
 
 	function updateStripe(newPriceID: string) {
 		priceID = newPriceID;

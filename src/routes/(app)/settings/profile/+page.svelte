@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { useDeleteUserMutation } from '$lib/API/user.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
@@ -13,6 +15,8 @@
 
 	let newPassword = $state(null);
 	let confirmPassword = $state(null);
+
+	const deleteUserMutation = useDeleteUserMutation();
 
 	function getUserData(saveType: 'profile' | 'password' | 'account') {
 		switch (saveType) {
@@ -61,6 +65,16 @@
 				type: 'error',
 				message: `Error updating User`
 			});
+		}
+	}
+
+	async function deleteUserFunc() {
+		try {
+			await $deleteUserMutation.mutateAsync();
+			toastStore.show({ message: 'User deleted', type: 'success' });
+			goto('/logout');
+		} catch (error) {
+			toastStore.show({ message: 'Cant delete user', type: 'error' });
 		}
 	}
 </script>
@@ -191,7 +205,7 @@
 		<Card>
 			<p class="pb-2">If you no longer want to use our service</p>
 			{#snippet actions()}
-				<button class="btn btn--error">Delete Account</button>
+				<button class="btn btn--error" onclick={deleteUserFunc}>Delete Account</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
