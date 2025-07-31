@@ -4,6 +4,7 @@
 		useMyJobApplicationsQuery,
 		useUpdateJobApplicationMutation
 	} from '$lib/API/job-applications.js';
+	import { useCreateJobPositionFromApp } from '$lib/API/job-positions.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
@@ -22,12 +23,17 @@
 	let location = $state<string | null>(null);
 	let jobDescription = $state<string | null>(null);
 	let jobStatus = $state(AppStatusEnum.APPLIED);
+	let hasMigrated = $state(false);
+
+	let isMigrating = $state(false);
 
 	const { data } = $props();
 
 	let applications = useMyJobApplicationsQuery(data.applications);
 	let createJobApp = useCreateJobApplicationMutation();
 	let updateJobApp = useUpdateJobApplicationMutation();
+
+	let migrateJobApp = useCreateJobPositionFromApp();
 
 	function setJobDetails(id: string) {
 		let selectedApp = $applications.data?.find((app) => app.id === id);
@@ -38,12 +44,28 @@
 		jobStatus = selectedApp?.status || AppStatusEnum.APPLIED;
 		jobDescription = selectedApp?.jobDescription || null;
 		isOpen = true;
+		hasMigrated = selectedApp?.migrated || false;
+	}
+
+	async function loadMigrateJobApp() {
+		isMigrating = true;
+		if (!jobID || jobID === null) {
+			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+		}
+		try {
+			await $migrateJobApp.mutateAsync(jobID || '');
+			toastStore.show({ message: 'Added to resume', type: 'success' });
+			isMigrating = false;
+		} catch (error) {
+			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+			isMigrating = false;
+		}
 	}
 
 	async function saveNewJobApplication() {
 		try {
 			if (jobID) {
-				$updateJobApp.mutateAsync({
+				await $updateJobApp.mutateAsync({
 					id: jobID,
 					title: jobTitle,
 					company,
@@ -53,7 +75,7 @@
 					jobDescription
 				});
 			} else {
-				$createJobApp.mutateAsync({
+				await $createJobApp.mutateAsync({
 					title: jobTitle,
 					company,
 					companyURL,
@@ -211,5 +233,34 @@
 				{ id: AppStatusEnum.ARCHIVE, label: 'Archived' }
 			]}
 		/>
+		{#if jobStatus === AppStatusEnum.ACCEPTED}
+			<div class=" bg-surface-500 border-success-400 border-2 sm:rounded-lg">
+				<div class="px-4 py-5 sm:p-6">
+					<h3 class="text-base font-semibold text-gray-900">Congratulations!</h3>
+					<div class="mt-2 max-w-xl text-sm text-gray-500">
+						{#if hasMigrated}
+							<p>You have successfully gotten a job! You have already added this to your resume.</p>
+						{:else}
+							<p>
+								You have successfully gotten a job! Would you like to add this job to your resume
+								now?
+							</p>
+						{/if}
+					</div>
+					{#if !hasMigrated}
+						<div class="mt-5">
+							<button
+								type="button"
+								class="btn btn-outline--primary inline-flex"
+								disabled={isMigrating}
+								onclick={loadMigrateJobApp}
+							>
+								Add to Resume
+							</button>
+						</div>
+					{/if}
+				</div>
+			</div>
+		{/if}
 	</div>
 </Drawer>

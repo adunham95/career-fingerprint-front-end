@@ -51,6 +51,7 @@ interface JobApplication {
 	location?: string;
 	status?: AppStatusEnum;
 	title?: string;
+	migrated: boolean;
 	_count?: { notes: int; meetings: int };
 }
 

@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { createQuery } from '@tanstack/svelte-query';
+import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { JobPosition } from '../../app';
 
 export async function fetchMyJobPositions(): Promise<JobPosition[]> {
@@ -8,6 +8,31 @@ export async function fetchMyJobPositions(): Promise<JobPosition[]> {
 	});
 
 	return resHighlights.json();
+}
+
+export async function addJobAppToJobPosition(appID: string): Promise<JobPosition[] | null> {
+	const url = `${PUBLIC_API_URL}/job-positions/application`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ appID })
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to patch meeting: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error('Failed to migrate the job application');
+	}
 }
 
 export const jobPositionKeys = {
@@ -22,5 +47,22 @@ export const useMyJobPositionsQuery = (initialData?: JobPosition[]) => {
 		queryKey: jobPositionKeys.my,
 		queryFn: fetchMyJobPositions,
 		initialData
+	});
+};
+
+// Mutations
+
+export const useCreateJobPositionFromApp = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: addJobAppToJobPosition,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: jobPositionKeys.all
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to merge job application:', error);
+		}
 	});
 };
