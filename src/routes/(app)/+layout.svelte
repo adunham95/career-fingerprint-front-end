@@ -12,6 +12,7 @@
 <QueryClientProvider client={queryClient}>
 	<SvelteQueryDevtools buttonPosition="bottom-left" />
 	<AccountHeader
+		userID={data.user.id || 0}
 		appTitle="Career Fingerprint"
 		routes={[
 			{ title: 'Dashboard', path: '/dashboard' },

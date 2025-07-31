@@ -1,5 +1,6 @@
 <script lang="ts">
 	import TextArea from '../FormElements/TextArea.svelte';
+	import FeedbackForm from '../Forms/FeedbackForm.svelte';
 	import Modal from '../Overlays/Modal.svelte';
 
 	interface Props {
@@ -10,6 +11,7 @@
 		lastName?: string | null;
 		profileImageURL?: string | null;
 		email?: string | null;
+		userID: number;
 		routes: { title: string; path: string }[];
 		profileRoutes?: { title: string; path: string }[];
 	}
@@ -25,7 +27,8 @@
 		email,
 		routes,
 		profileRoutes = [],
-		showNotification = false
+		showNotification = false,
+		userID
 	}: Props = $props();
 
 	$inspect(routes);
@@ -385,10 +388,10 @@
 </header>
 
 <Modal title="Feedback" bind:isOpen={feedbackModalOpen}>
-	<TextArea id="feedback" placeholder="Type feedback here....." />
+	<FeedbackForm formID="beta-feedback" {userID} onSuccess={() => (feedbackModalOpen = false)} />
 	{#snippet actions()}
 		<div class="flex justify-end">
-			<button class="btn btn-text--primary">Submit</button>
+			<button type="submit" form="beta-feedback" class="btn btn-text--primary">Submit</button>
 		</div>
 	{/snippet}
 </Modal>

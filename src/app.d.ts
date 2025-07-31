@@ -115,7 +115,7 @@ interface PrepQuestion {
 }
 
 interface CurrentUser {
-	id: string;
+	id: number;
 	firstName: string;
 	lastName: string;
 	accountStatus: string;
