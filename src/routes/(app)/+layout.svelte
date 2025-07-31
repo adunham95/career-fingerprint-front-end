@@ -10,7 +10,7 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
-	<!-- <SvelteQueryDevtools buttonPosition="bottom-left" /> -->
+	<SvelteQueryDevtools buttonPosition="bottom-left" />
 	<AccountHeader
 		appTitle="Career Fingerprint"
 		routes={[

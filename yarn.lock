@@ -926,6 +926,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tailwindplus/elements@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@tailwindplus/elements@npm:1.0.3"
+  checksum: 10c0/0383ee5cbf079ab394fbf021c2e27ebf27ef9196c38a0c9139054965fdd702a8d912c81bdc3120b86ce1ad616f5d84c97376930e7bfa74620a73bac380ea7e66
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:5.81.5":
   version: 5.81.5
   resolution: "@tanstack/query-core@npm:5.81.5"
@@ -1870,6 +1877,7 @@ __metadata:
     "@tailwindcss/forms": "npm:^0.5.9"
     "@tailwindcss/typography": "npm:^0.5.15"
     "@tailwindcss/vite": "npm:^4.0.0"
+    "@tailwindplus/elements": "npm:^1.0.3"
     "@tanstack/svelte-query": "npm:^5.81.5"
     "@tanstack/svelte-query-devtools": "npm:^5.81.5"
     date-fns: "npm:^4.1.0"

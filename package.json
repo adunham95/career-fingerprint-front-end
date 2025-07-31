@@ -39,6 +39,7 @@
 	"dependencies": {
 		"@stripe/stripe-js": "^7.5.0",
 		"@sveltejs/adapter-auto": "^6.0.1",
+		"@tailwindplus/elements": "^1.0.3",
 		"@tanstack/svelte-query": "^5.81.5",
 		"@tanstack/svelte-query-devtools": "^5.81.5",
 		"date-fns": "^4.1.0",

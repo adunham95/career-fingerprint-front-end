@@ -63,6 +63,7 @@ interface Achievement {
 	result: string;
 	jobPosition: JobPosition;
 	education: Education;
+	tags: { name: string; color: string }[];
 }
 
 interface Meeting {

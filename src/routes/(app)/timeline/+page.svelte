@@ -1,9 +1,12 @@
 <script>
+	import { useMyAchievements } from '$lib/API/achievements.js';
 	import ExpandedTimeline from '$lib/Components/Calender/ExpandedTimeline.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	const { data } = $props();
+
+	let myAchievements = useMyAchievements(data.achievements);
 
 	console.log({ data });
 
@@ -21,7 +24,7 @@
 		</div>
 	</div>
 	<div class="grid grid-cols-2">
-		<ExpandedTimeline dates={data.achievements || []} />
+		<ExpandedTimeline dates={$myAchievements.data || []} />
 	</div>
 </PageContainer>
 

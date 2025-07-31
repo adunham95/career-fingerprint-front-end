@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDistanceToNow, formatDate } from 'date-fns';
+	import { formatDate } from 'date-fns';
 	import type { Achievement } from '../../../app';
 	import TimelineCategory from './TimelineCategory.svelte';
 
@@ -49,7 +49,7 @@
 										{formatDate(day.startDate, 'PPP')}
 									</p>
 								{/if}
-								<div class="my-2 flex justify-start">
+								<div class="my-2 flex justify-start gap-1">
 									{#if day.jobPosition}
 										<TimelineCategory
 											color="gray"
@@ -64,6 +64,9 @@
 											icon={schoolBuildingIcon}
 										/>
 									{/if}
+									{#each day.tags as tag}
+										<TimelineCategory color={tag.color} text={tag.name} />
+									{/each}
 								</div>
 							</div>
 							<div class="flex items-center">
