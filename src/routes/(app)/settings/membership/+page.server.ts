@@ -10,6 +10,7 @@ export const load = async (event) => {
 	try {
 		const membershipDetails = await getSubscriptionDetails(token);
 		const availablePlans = await getPlansAvailableToUpgrade(token);
+		console.log({ membershipDetails, availablePlans });
 		return { membershipDetails, availablePlans };
 	} catch (error) {
 		console.error(error);

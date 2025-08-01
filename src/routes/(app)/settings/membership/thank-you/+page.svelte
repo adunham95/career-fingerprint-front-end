@@ -1,5 +1,11 @@
 <script>
+	import { invalidateAll } from '$app/navigation';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		invalidateAll();
+	});
 </script>
 
 <PageContainer>

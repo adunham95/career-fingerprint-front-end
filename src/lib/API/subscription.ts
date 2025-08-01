@@ -17,6 +17,9 @@ interface SubscriptionPlan {
 	annualStripePriceID: string | null;
 	description: string | null;
 	featureList: string[];
+	plan?: {
+		level: number;
+	};
 }
 
 interface SubscriptionDetails {
@@ -45,7 +48,6 @@ export async function getSubscriptionDetails(token?: string): Promise<Subscripti
 
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/details`, options);
-		console.log({ res });
 		if (res.ok) {
 			return res.json();
 		} else {
@@ -64,7 +66,6 @@ export async function getPlanDetailsByKey(id: string): Promise<SubscriptionPlan 
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/plans/${id}`, {
 			credentials: 'include'
 		});
-		console.log({ res });
 		if (res.ok) {
 			return res.json();
 		}
@@ -86,11 +87,44 @@ export async function getPlansAvailableToUpgrade(token?: string): Promise<Subscr
 			}
 		};
 	}
+
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/plans/available`, options);
-		console.log({ res });
+		// TODO why is this failing on pro plans
 		if (res.ok) {
-			return res.json();
+			const data = await res.json();
+			console.log(data);
+			return data;
+		}
+		return null;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function validateSubscription(
+	checkoutID: string,
+	token?: string
+): Promise<SubscriptionPlan | null> {
+	let options: RequestInit = {
+		credentials: 'include'
+	};
+	if (token) {
+		options = {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		};
+	}
+
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/stripe/validate/${checkoutID}`, options);
+		// TODO why is this failing on pro plans
+		if (res.ok) {
+			const data = await res.json();
+			console.log(data);
+			return data;
 		}
 		return null;
 	} catch (error) {
@@ -122,6 +156,53 @@ export async function createCheckoutSession(newCheckout: { priceID: string }): P
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to create meeting`);
+	}
+}
+
+export async function cancelSubscription(subscriptionID: string) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/cancel/${subscriptionID}`, {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		if (res.ok) {
+			const data = await res.json();
+			return data;
+		}
+		throw new Error(`Failed to create cancel subscription`);
+	} catch (error) {
+		console.log({ error });
+		throw new Error(`Failed to create cancel subscription`);
+	}
+}
+
+export async function createSubscription({
+	priceID,
+	sessionID
+}: {
+	priceID: string;
+	sessionID: string;
+}) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/subscriptions`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ priceID, sessionID })
+		});
+		if (res.ok) {
+			const data = await res.json();
+			return data;
+		}
+		throw new Error(`Failed to create cancel subscription`);
+	} catch (error) {
+		console.log({ error });
+		throw new Error(`Failed to create cancel subscription`);
 	}
 }
 
@@ -161,6 +242,26 @@ export const useCreateCheckoutSession = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create checkout session:', error);
+		}
+	});
+};
+
+export const useCancelSubscription = () => {
+	return createMutation({
+		mutationFn: cancelSubscription,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to cancel subscription:', error);
+		}
+	});
+};
+
+export const useCreateSubscription = () => {
+	return createMutation({
+		mutationFn: createSubscription,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create subscription:', error);
 		}
 	});
 };
