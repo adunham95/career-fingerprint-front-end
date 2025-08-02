@@ -99,9 +99,28 @@ export async function getAchievementTags() {
 	}
 }
 
-export async function getAchievements() {
+export async function getAchievements(
+	includeLinked: boolean | null = null,
+	jobPositionID: string | null = null,
+	educationID: string | null = null
+) {
+	const url = new URL('/achievement/my', PUBLIC_API_URL);
+	const params = url.searchParams;
+
+	if (includeLinked) {
+		params.append('includeLinked', 'true');
+	}
+
+	if (jobPositionID) {
+		params.append('jobPositionID', jobPositionID);
+	}
+
+	if (educationID) {
+		params.append('educationID', educationID);
+	}
+
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/achievement/my?includeLinked=true`, {
+		const res = await fetch(url, {
 			credentials: 'include'
 		});
 		return res.json();
@@ -114,7 +133,12 @@ export async function getAchievements() {
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
-	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const
+	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
+	allWithOptions: (
+		includedDetails: boolean | null = false,
+		jobPositionID: string | null = null,
+		educationID: string | null = null
+	) => [...achievementKeys.all, includedDetails, jobPositionID, educationID] as const
 };
 
 export const useCreateAchievementMutation = () => {
@@ -164,10 +188,15 @@ export const useAchievementTags = () => {
 	});
 };
 
-export const useMyAchievements = (initialData?: Achievement[]) => {
+export const useMyAchievements = (
+	initialData: Achievement[] = [],
+	includeLinked: null | boolean = null,
+	jobPositionID: () => string | null,
+	educationID: () => string | null
+) => {
 	return createQuery({
-		queryKey: achievementKeys.all,
-		queryFn: getAchievements,
+		queryKey: achievementKeys.allWithOptions(includeLinked, jobPositionID(), educationID()),
+		queryFn: () => getAchievements(includeLinked, jobPositionID(), educationID()),
 		initialData
 	});
 };
