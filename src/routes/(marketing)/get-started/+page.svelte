@@ -69,7 +69,8 @@
 				type: 'success',
 				message: `User saved`
 			});
-			scrollToView('stickers');
+			// scrollToView('stickers');
+			scrollToView('premium');
 		} else {
 			toastStore.show({
 				type: 'error',
@@ -289,7 +290,7 @@
 	</div>
 
 	<!-- Step 6 -->
-	<div id="stickers" class="flex min-h-screen flex-col items-center justify-center">
+	<!-- <div id="stickers" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Want free Career Fingerprint stickers?</h3>
 		<p class="pb-4">
 			Drop your mailing address and we’ll send you a small pack to celebrate your career journey!
@@ -308,7 +309,7 @@
 				>Claim my stickers!</button
 			>
 		</div>
-	</div>
+	</div> -->
 
 	<!-- Step 7 -->
 	<div id="premium" class="flex min-h-screen flex-col items-center justify-center">
@@ -474,9 +475,10 @@
 								>
 								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
 							</p>
-							<button onclick={startFreeTrial} class="btn btn--primary mt-10 block w-full"
-								>Start my free trial</button
-							>
+							<a href="/dashboard" class="btn btn--primary mt-10 block w-full">Go To My Account</a>
+							<!-- <button onclick={startFreeTrial} class="btn btn--primary mt-10 block w-full">
+								Start my free trial
+							</button> -->
 						</div>
 					</div>
 				</div>
