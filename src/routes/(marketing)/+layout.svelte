@@ -171,7 +171,7 @@
 						A smart system for tracking your career, wins, and next big move
 					</p>
 					<div class="flex gap-x-6">
-						<a href="#" class="text-gray-400 hover:text-gray-300">
+						<a href="/" class="text-gray-400 hover:text-gray-300">
 							<span class="sr-only">Facebook</span>
 							<svg class="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path
@@ -181,7 +181,7 @@
 								/>
 							</svg>
 						</a>
-						<a href="#" class="text-gray-400 hover:text-gray-300">
+						<a href="/" class="text-gray-400 hover:text-gray-300">
 							<span class="sr-only">Instagram</span>
 							<svg class="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path
@@ -191,7 +191,7 @@
 								/>
 							</svg>
 						</a>
-						<a href="#" class="text-gray-400 hover:text-gray-300">
+						<a href="/" class="text-gray-400 hover:text-gray-300">
 							<span class="sr-only">X</span>
 							<svg class="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path
@@ -199,7 +199,7 @@
 								/>
 							</svg>
 						</a>
-						<a href="#" class="text-gray-400 hover:text-gray-300">
+						<a href="/" class="text-gray-400 hover:text-gray-300">
 							<span class="sr-only">GitHub</span>
 							<svg class="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path
@@ -209,7 +209,7 @@
 								/>
 							</svg>
 						</a>
-						<a href="#" class="text-gray-400 hover:text-gray-300">
+						<a href="/" class="text-gray-400 hover:text-gray-300">
 							<span class="sr-only">YouTube</span>
 							<svg class="size-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path
@@ -227,27 +227,27 @@
 							<h3 class="text-sm/6 font-semibold text-white">Solutions</h3>
 							<ul role="list" class="mt-6 space-y-4">
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Current Professionals</a
 									>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Students & Recent Grads</a
 									>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Switching Careers</a
 									>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Educators (coming soon)</a
 									>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Education Institutions(coming soon)</a
 									>
 								</li>
@@ -257,13 +257,13 @@
 							<h3 class="text-sm/6 font-semibold text-white">Support</h3>
 							<ul role="list" class="mt-6 space-y-4">
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Submit ticket</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Submit ticket</a>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Documentation</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Documentation</a>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Guides</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Guides</a>
 								</li>
 							</ul>
 						</div>
@@ -276,10 +276,10 @@
 									<a href="/about" class="text-sm/6 text-gray-400 hover:text-gray-300">About</a>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Blog</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Blog</a>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Jobs</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Jobs</a>
 								</li>
 							</ul>
 						</div>
@@ -287,15 +287,15 @@
 							<h3 class="text-sm/6 font-semibold text-white">Legal</h3>
 							<ul role="list" class="mt-6 space-y-4">
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300"
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300"
 										>Terms of service</a
 									>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">Privacy policy</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">Privacy policy</a>
 								</li>
 								<li>
-									<a href="#" class="text-sm/6 text-gray-400 hover:text-gray-300">License</a>
+									<a href="/" class="text-sm/6 text-gray-400 hover:text-gray-300">License</a>
 								</li>
 							</ul>
 						</div>
