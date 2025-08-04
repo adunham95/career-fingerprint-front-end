@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: app-frontend
+    runtime: 'node'
+    plan: starter
+    buildCommand: yarn install && yarn build
+    startCommand: node build
+    envVars:
+      - key: API_URL
+        value: https://career-fingerprint-api-z7eh.onrender.com # replace with your actual NestJS URL
+      - key: NODE_ENV
+        value: production
