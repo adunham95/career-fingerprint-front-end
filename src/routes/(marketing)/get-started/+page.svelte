@@ -316,120 +316,6 @@
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-1">Unlock additional features when building your fingerprint</p>
 
-		<!-- <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2"> -->
-		<!-- <div class="bg-surface-100 rounded-3xl p-8 ring-1 ring-gray-200">
-				<h3 id="tier-hobby" class="text-lg/8 font-semibold text-gray-900">Starter</h3>
-				<p class="mt-4 text-sm/6 text-gray-600">Perfect for students and early professionals</p>
-				<p class="mt-6 flex items-baseline gap-x-1">
-					<span class="text-4xl font-semibold tracking-tight text-gray-900">Free</span>
-				</p>
-				<a href="/dashboard" class="btn btn-outline--primary mt-4 block w-full text-center"
-					>Continue with basic account</a
-				>
-				<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600">
-					<li class="flex gap-x-3">
-						<svg
-							class="text-primary h-6 w-5 flex-none"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-						Basic Resume
-					</li>
-					<li class="flex gap-x-3">
-						<svg
-							class="text-primary h-6 w-5 flex-none"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
-						Manual Achievement Entry
-					</li>
-				</ul>
-			</div>
-			{#if $proData.data?.monthlyStripePriceID}
-				<div class="bg-secondary ring-primary rounded-3xl p-8 shadow-2xl ring-2">
-					<h3 id="tier-freelancer" class="text-lg/8 font-semibold text-gray-50">
-						{$proData.data?.name}
-					</h3>
-					<p class="mt-4 text-sm/6 text-gray-200">For active professionals and job switchers</p>
-					<p class="mt-6 flex items-baseline gap-x-1">
-						<span class="text-4xl font-semibold tracking-tight text-gray-100"
-							>${centsToDollars($proData.data.priceCents)}</span
-						>
-						<span class="text-sm/6 font-semibold text-gray-200">/month</span>
-					</p>
-					<button class="btn btn--primary mt-2 w-full" onclick={startFreeTrial}
-						>Start Your Free Trial</button
-					>
-					<ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-200">
-						<li class="flex gap-x-3">
-							<svg
-								class="text-primary h-6 w-5 flex-none"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-								data-slot="icon"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-							Resume Editor
-						</li>
-						<li class="flex gap-x-3">
-							<svg
-								class="text-primary h-6 w-5 flex-none"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-								data-slot="icon"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-							Weekly Achievement Reminders
-						</li>
-						<li class="flex gap-x-3">
-							<svg
-								class="text-primary h-6 w-5 flex-none"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-								data-slot="icon"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-							Interview Prep Tools
-						</li>
-					</ul>
-				</div>
-			{/if}
-		</div> 
-		</div>-->
 		{#if $proData.data?.monthlyStripePriceID}
 			<div
 				class="bg-surface-50 mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
@@ -488,6 +374,8 @@
 					>Continue without Premium Benefits</a
 				>
 			</div>
+		{:else}
+			<a href="/dashboard" class="btn btn--primary mt-10 block w-full">Go to my account</a>
 		{/if}
 	</div>
 </div>
