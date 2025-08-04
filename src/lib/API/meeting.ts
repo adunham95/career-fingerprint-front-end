@@ -106,11 +106,19 @@ export async function getMeetingByID(id: string): Promise<Meeting | null> {
 	}
 }
 
-export async function getUpcomingMeeting(): Promise<Meeting[] | null> {
+export async function getUpcomingMeeting(token?: string): Promise<Meeting[] | null> {
+	let options: RequestInit = {
+		credentials: 'include'
+	};
+	if (token) {
+		options = {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		};
+	}
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/meetings/my/upcoming`, {
-			credentials: 'include'
-		});
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/my/upcoming`, options);
 		return res.json();
 	} catch (error) {
 		console.error(error);
@@ -145,6 +153,9 @@ export const useCreateMeetingMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: meetingKeys.all
+			});
+			queryClient.invalidateQueries({
+				queryKey: meetingKeys.upcomingMeetings
 			});
 		},
 		onError: (error) => {

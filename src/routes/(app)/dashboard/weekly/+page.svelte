@@ -3,19 +3,20 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
+	import { useUpcomingMeetings } from '$lib/API/meeting.js';
 
 	const { data } = $props();
-</script>
 
-<!-- <div aria-hidden="true" class="relative">
-	<img src="/images/pexels-jplenio-1119973.jpg" alt="" class="h-52 w-full object-cover" />
-	<div class="from-background absolute inset-0 bg-linear-to-t"></div>
-</div> -->
+	let isNewMeetingOpen = $state(false);
+
+	let meetings = useUpcomingMeetings(data.meetings || []);
+</script>
 
 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
 	<div class="mx-auto max-w-2xl text-center lg:max-w-4xl">
 		<h2 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Weekly Check In</h2>
-		<!-- <p class="mt-4 text-gray-500">Add your achievements and prep for upcoming meetings</p> -->
 	</div>
 </div>
 
@@ -30,10 +31,12 @@
 		<div>
 			<div class="flex justify-between">
 				<h3 class="font-title pb-4 text-xl">Upcoming Meetings</h3>
-				<button class="btn btn-text--primary">Add Meeting</button>
+				<button class="btn btn-text--primary" onclick={() => (isNewMeetingOpen = true)}
+					>Add Meeting</button
+				>
 			</div>
 			<ul class="space-y-2">
-				{#each data.meetings || [] as meeting}
+				{#each $meetings.data || [] as meeting}
 					<li>
 						<Card size="sm">
 							<UpcomingEventRow {...meeting} />
@@ -44,3 +47,12 @@
 		</div>
 	</div>
 </PageContainer>
+
+<Drawer
+	bind:isOpen={isNewMeetingOpen}
+	title="Add New Meeting"
+	subTitle="Create a new interview, or internal meeting"
+	saveFormID="newMeeting"
+>
+	<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
+</Drawer>
