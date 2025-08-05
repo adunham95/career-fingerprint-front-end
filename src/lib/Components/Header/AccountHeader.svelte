@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import TextArea from '../FormElements/TextArea.svelte';
 	import FeedbackForm from '../Forms/FeedbackForm.svelte';
 	import Modal from '../Overlays/Modal.svelte';
+	import { toastStore } from '../Toasts/toast';
 
 	interface Props {
 		appTitle?: string;
@@ -17,6 +20,19 @@
 	}
 
 	let feedbackModalOpen = $state(false);
+
+	async function logout() {
+		try {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/logout`, { credentials: 'include' });
+			const user = await res.json();
+
+			if (res.ok) {
+				goto('/');
+			}
+		} catch (error) {
+			toastStore.show({ message: 'Error logging out', type: 'error' });
+		}
+	}
 
 	const {
 		appTitle = 'Career Fingerprint',
@@ -225,16 +241,18 @@
 								</a>
 							{/each}
 							<div class="my-2 w-full border-t border-gray-300"></div>
-							<a
-								href={'/logout'}
-								onclick={() => (profileOpen = !profileOpen)}
+							<button
+								onclick={() => {
+									profileOpen = !profileOpen;
+									logout();
+								}}
 								class="m-1 block rounded px-4 py-2 text-base text-gray-700 hover:bg-gray-200"
 								role="menuitem"
 								tabindex="-1"
 								id="logout"
 							>
 								Log out
-							</a>
+							</button>
 						</div>
 					</div>
 				{/if}
@@ -379,13 +397,15 @@
 									{route.title}
 								</a>
 							{/each}
-							<a
-								href={'/logout'}
-								onclick={() => (profileOpen = !profileOpen)}
+							<button
+								onclick={() => {
+									profileOpen = !profileOpen;
+									logout();
+								}}
 								class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
 							>
 								Log out
-							</a>
+							</button>
 						</div>
 					</div>
 				{/if}
