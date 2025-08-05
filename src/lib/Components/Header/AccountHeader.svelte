@@ -304,11 +304,9 @@
 			<div class="divide-y divide-gray-200 rounded-lg bg-white shadow-lg ring-1 ring-black/5">
 				<div class="pt-3 pb-2">
 					<div class="flex items-center justify-between px-4">
-						<div>
-							{#if logoURL}
-								<img src={logoURL} alt="Company Logo" />
-							{/if}
-							<h2>{appTitle}</h2>
+						<div class="flex justify-center">
+							<img class="h-8 w-auto" src="/logo-brand.svg" alt="Career Fingerprint Logo" />
+							<span class="ml-2 text-2xl">Career Fingerprint</span>
 						</div>
 						<div class="-mr-2">
 							<button
@@ -348,11 +346,28 @@
 					<div class="pt-4 pb-2">
 						<div class="flex items-center px-5">
 							<div class="shrink-0">
-								<img
-									class="size-10 rounded-full"
-									src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-									alt=""
-								/>
+								{#if profileImageURL}
+									<img
+										class="size-10 rounded-full"
+										src={profileImageURL}
+										alt={`${firstName}'s Profile`}
+									/>
+								{:else}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="size-10"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+										/>
+									</svg>
+								{/if}
 							</div>
 							<div class="ml-3 min-w-0 flex-1">
 								<div class="truncate text-base font-medium text-gray-800">
