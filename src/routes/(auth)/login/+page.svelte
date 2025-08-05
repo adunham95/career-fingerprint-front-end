@@ -3,6 +3,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast';
 
 	let email = $state('');
 	let password = $state('');
@@ -29,7 +30,7 @@
 				})
 			});
 			if (res.ok) {
-				// toastStore.show({ message: 'Successfully logged in', type: 'success' });
+				toastStore.show({ message: 'Successfully logged in', type: 'success' });
 				const data = await res.json();
 				console.log(data);
 				await goto('/dashboard');
@@ -37,11 +38,11 @@
 			} else {
 				const data = await res.json();
 				console.log(res, data);
-				// toastStore.show({ message: 'Error logging in', type: 'error' });
+				toastStore.show({ message: 'Error logging in', type: 'error' });
 				isLoading = false;
 			}
 		} catch (error) {
-			// toastStore.show({ message: 'Error logging in', type: 'error' });
+			toastStore.show({ message: 'Error logging in', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
 			isLoading = false;
 		}

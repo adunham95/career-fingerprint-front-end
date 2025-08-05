@@ -44,6 +44,10 @@
 	async function createAccount() {
 		const url = `${PUBLIC_API_URL}/register`;
 
+		if (!profile.email || !profile.firstName) {
+			toastStore.show({ message: 'Missing account elements', type: 'error' });
+		}
+
 		const res = await fetch(url, {
 			method: 'POST',
 			credentials: 'include',

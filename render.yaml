@@ -7,6 +7,6 @@ services:
     startCommand: node build
     envVars:
       - key: PUBLIC_API_URL
-        value: https://career-fingerprint-api-z7eh.onrender.com # replace with your actual NestJS URL
+        value: https://api.careerfingerprint.app # replace with your actual NestJS URL
       - key: NODE_ENV
         value: production
