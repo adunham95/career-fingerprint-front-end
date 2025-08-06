@@ -1,5 +1,16 @@
 <script lang="ts">
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { goto } from '$app/navigation';
+	import { useMyEducationQuery } from '$lib/API/education.js';
+	import { useMyJobPositionsQuery } from '$lib/API/job-positions.js';
+	import {
+		resumeObjectTypeMap,
+		useAddResumeObjectMutation,
+		useDeleteResumeObjectMutation,
+		useDuplicateResumeQuery,
+		useGetResumeByIDQuery,
+		useUpdateResumeMutation,
+		useUpdateResumeObjectMutation
+	} from '$lib/API/resume.js';
 	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -18,7 +29,8 @@
 
 	console.log(data);
 
-	let resumeName = $state(data.resume.name);
+	let resume = useGetResumeByIDQuery(data.resume.id, data.resume);
+	let resumeName = $state($resume.data.name);
 
 	let personalInfo = $state({
 		firstName: data.resume.firstName || data.user.firstName,
@@ -33,137 +45,81 @@
 		summary: data.resume.summary || data.user.pitch || ''
 	});
 
-	let jobs = $state(data.jobs || []);
-	let education = $state(data.education || []);
+	let jobs = useMyJobPositionsQuery(data.jobs);
+	let education = useMyEducationQuery(data.education);
+
+	let updateResumeMutation = useUpdateResumeMutation(data.resume.id);
+	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume.id);
+
+	let updateResumeObject = useUpdateResumeObjectMutation();
+	let deleteResumeObject = useDeleteResumeObjectMutation();
+	let addResumeObject = useAddResumeObjectMutation();
 
 	async function updateResumeName() {
-		const url = `${PUBLIC_API_URL}/resume/${data.resume.id}`;
-
-		const res = await fetch(url, {
-			method: 'PATCH',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				name: resumeName
-			})
-		});
-
-		if (res.ok) {
+		try {
+			await $updateResumeMutation.mutateAsync({ id: data.resume.id, name: resumeName });
 			toastStore.show({
 				type: 'success',
 				message: `Resume Updated`
+			});
+		} catch (error) {
+			toastStore.show({
+				type: 'error',
+				message: `Failed to update resume`
 			});
 		}
 	}
 
 	async function updateResume() {
-		const url = `${PUBLIC_API_URL}/resume/${data.resume.id}`;
-
-		const res = await fetch(url, {
-			method: 'PATCH',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(personalInfo)
-		});
-
-		if (res.ok) {
+		try {
+			await $updateResumeMutation.mutateAsync({ id: data.resume.id, ...personalInfo });
 			toastStore.show({
 				type: 'success',
 				message: `Resume Updated`
 			});
-		}
-	}
-
-	const typeMap = {
-		education: 'Education',
-		'job-positions': 'Job'
-	};
-
-	async function addObject(type: keyof typeof typeMap) {
-		const url = `${PUBLIC_API_URL}/${type}`;
-
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			}
-		});
-
-		if (res.ok) {
-			toastStore.show({
-				type: 'success',
-				message: `${typeMap[type]} Added`
-			});
-			switch (type) {
-				case 'job-positions':
-					const newJob: JobPosition = await res.json();
-
-					jobs?.push(newJob);
-
-					break;
-				case 'education':
-					const newDegree: Education = await res.json();
-
-					education?.push(newDegree);
-
-					break;
-				default:
-					break;
-			}
-		} else {
+		} catch (error) {
 			toastStore.show({
 				type: 'error',
-				message: `${typeMap[type]} Added`
+				message: `Failed to update resume`
 			});
 		}
 	}
 
-	async function deleteObject(type: keyof typeof typeMap, id: string) {
-		const url = `${PUBLIC_API_URL}/${type}/${id}`;
+	async function addObject(type: keyof typeof resumeObjectTypeMap) {
+		try {
+			$addResumeObject.mutateAsync({ type });
 
-		const res = await fetch(url, {
-			method: 'DELETE',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			}
-		});
-
-		if (res.ok) {
 			toastStore.show({
 				type: 'success',
-				message: `${typeMap[type]} Deleted`
+				message: `${resumeObjectTypeMap[type]} Added`
 			});
-			switch (type) {
-				case 'job-positions':
-					const newJob: JobPosition = await res.json();
-
-					jobs = jobs?.filter((j) => j.id !== newJob.id);
-
-					break;
-				case 'education':
-					const newDegree: Education = await res.json();
-
-					education = education?.filter((e) => e.id !== newDegree.id);
-
-					break;
-				default:
-					break;
-			}
-		} else {
+		} catch (error) {
 			toastStore.show({
 				type: 'error',
-				message: `${typeMap[type]} Added`
+				message: `${resumeObjectTypeMap[type]} Added`
 			});
 		}
 	}
 
-	function getObjectData(type: keyof typeof typeMap, item: JobPosition | Education) {
+	async function deleteObject(type: keyof typeof resumeObjectTypeMap, id: string) {
+		try {
+			await $deleteResumeObject.mutateAsync({ type, itemID: id });
+			toastStore.show({
+				type: 'success',
+				message: `${resumeObjectTypeMap[type]} Deleted`
+			});
+		} catch (error) {
+			toastStore.show({
+				type: 'error',
+				message: `Failed to delete ${resumeObjectTypeMap[type]}`
+			});
+		}
+	}
+
+	function getObjectData(
+		type: keyof typeof resumeObjectTypeMap,
+		item: JobPosition | Education
+	): JobPosition | Education {
 		switch (type) {
 			case 'job-positions':
 				if ('name' in item) {
@@ -176,9 +132,9 @@
 						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
 						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
 						currentPosition: item.currentPosition
-					};
+					} as JobPosition;
 				}
-				return {};
+				return {} as JobPosition;
 			case 'education':
 				if ('degree' in item) {
 					item as Education;
@@ -189,48 +145,47 @@
 						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
 						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
 						currentPosition: item.currentPosition
-					};
+					} as Education;
 				}
-				return {};
+				return {} as Education;
 			default:
-				return {};
+				return {} as JobPosition;
 		}
 	}
 
-	async function saveObject(type: keyof typeof typeMap, item: JobPosition | Education) {
-		const url = `${PUBLIC_API_URL}/${type}/${item.id}`;
-
-		const res = await fetch(url, {
-			method: 'PATCH',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(getObjectData(type, item))
-		});
-
-		if (res.ok) {
+	async function saveObject(type: keyof typeof resumeObjectTypeMap, item: JobPosition | Education) {
+		try {
+			await $updateResumeObject.mutateAsync({
+				type,
+				itemID: item.id,
+				item: getObjectData(type, item)
+			});
 			toastStore.show({
 				type: 'success',
-				message: `${typeMap[type]} saved`
+				message: `${resumeObjectTypeMap[type]} saved`
 			});
-			switch (type) {
-				case 'job-positions':
-					break;
-				default:
-					break;
-			}
-		} else {
+		} catch (error) {
 			toastStore.show({
 				type: 'error',
-				message: `Error updating ${typeMap[type]}`
+				message: `Error updating ${resumeObjectTypeMap[type]}`
+			});
+		}
+	}
+
+	async function duplicateResume() {
+		try {
+			const newResume = await $duplicateResumeMutation.refetch();
+			goto(`/resumes`);
+		} catch (error) {
+			toastStore.show({
+				message: 'Error duplicating resume'
 			});
 		}
 	}
 </script>
 
 <PageContainer>
-	<div class="pt-6">
+	<div class="flex justify-between pt-6">
 		<AutogrowTextInput
 			label="Resume Name"
 			id="resumeName"
@@ -239,6 +194,40 @@
 			textSize="text-3xl"
 			onblur={updateResumeName}
 		/>
+		<el-dropdown class="inline-block">
+			<button
+				class="focus-visible:ring-primary flex items-center rounded-full text-gray-400 hover:text-gray-600 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100"
+			>
+				<span class="sr-only">Open options</span>
+				<svg
+					viewBox="0 0 20 20"
+					fill="currentColor"
+					data-slot="icon"
+					aria-hidden="true"
+					class="size-8"
+				>
+					<path
+						d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"
+					/>
+				</svg>
+			</button>
+
+			<el-menu
+				anchor="bottom end"
+				popover
+				class="w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+			>
+				<div class="py-1">
+					<button
+						onclick={duplicateResume}
+						type="button"
+						class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-200 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden"
+					>
+						Duplicate Resume
+					</button>
+				</div>
+			</el-menu>
+		</el-dropdown>
 	</div>
 	<div class="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">
 		<div class="col-span-1">
@@ -270,7 +259,7 @@
 					>
 				{/snippet}
 				<div class="space-y-4">
-					{#each jobs || [] as job, idx}
+					{#each $jobs.data || [] as job, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<TextInput id={'title' + idx} label="Title" bind:value={job.name} />
 							<TextInput id={'company' + idx} label="Company" bind:value={job.company} />
@@ -307,7 +296,7 @@
 					>
 				{/snippet}
 				<div class="space-y-2">
-					{#each education as edu, idx}
+					{#each $education.data || [] as edu, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<TextInput id="degree" label="Degree" bind:value={edu.degree} />
 							<TextInput id="institution" label="Institution" bind:value={edu.institution} />
@@ -360,7 +349,12 @@
 			{/if}
 		</div>
 		<div class="md:col-span-2">
-			<BasicResume {personalInfo} experience={jobs} {education} showIncomplete />
+			<BasicResume
+				{personalInfo}
+				experience={$jobs.data}
+				education={$education.data}
+				showIncomplete
+			/>
 		</div>
 	</div>
 </PageContainer>
