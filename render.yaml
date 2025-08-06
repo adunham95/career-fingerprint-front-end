@@ -10,3 +10,11 @@ services:
         value: https://api.careerfingerprint.app # replace with your actual NestJS URL
       - key: NODE_ENV
         value: production
+      - key: SENTRY_DSN
+        sync: false
+      - key: PUBLIC_STRIPE_API_KEY
+        sync: false
+      - key: CLOUDFLARE_ACCOUNT_ID
+        sync: false
+      - key: CLOUDFLARE_API_TOKEN
+        sync: false
