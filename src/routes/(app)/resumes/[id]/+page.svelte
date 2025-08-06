@@ -23,6 +23,7 @@
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
+	import { add } from 'date-fns';
 	import type { Education, JobPosition } from '../../../../app.js';
 
 	const { data } = $props();
@@ -45,8 +46,11 @@
 		summary: data.resume.summary || data.user.pitch || ''
 	});
 
-	let jobs = useMyJobPositionsQuery(data.jobs);
-	let education = useMyEducationQuery(data.education);
+	// let jobs = useMyJobPositionsQuery(data.jobs);
+	// let education = useMyEducationQuery(data.education);
+
+	let jobs = $state(data.jobs || []);
+	let education = $state(data.education || []);
 
 	let updateResumeMutation = useUpdateResumeMutation(data.resume.id);
 	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume.id);
@@ -87,7 +91,21 @@
 
 	async function addObject(type: keyof typeof resumeObjectTypeMap) {
 		try {
-			$addResumeObject.mutateAsync({ type });
+			let addedObject = await $addResumeObject.mutateAsync({ type });
+
+			console.log(addedObject, 'type', type);
+
+			switch (type) {
+				case 'job-positions':
+					jobs.push(addedObject as JobPosition);
+					break;
+				case 'education':
+					education.push(addedObject as Education);
+					break;
+
+				default:
+					break;
+			}
 
 			toastStore.show({
 				type: 'success',
@@ -103,7 +121,19 @@
 
 	async function deleteObject(type: keyof typeof resumeObjectTypeMap, id: string) {
 		try {
-			await $deleteResumeObject.mutateAsync({ type, itemID: id });
+			let deletedObject = await $deleteResumeObject.mutateAsync({ type, itemID: id });
+
+			switch (type) {
+				case 'job-positions':
+					jobs = jobs?.filter((j) => j.id !== deletedObject?.id);
+					break;
+				case 'education':
+					education = education?.filter((j) => j.id !== deletedObject?.id);
+					break;
+
+				default:
+					break;
+			}
 			toastStore.show({
 				type: 'success',
 				message: `${resumeObjectTypeMap[type]} Deleted`
@@ -259,7 +289,8 @@
 					>
 				{/snippet}
 				<div class="space-y-4">
-					{#each $jobs.data || [] as job, idx}
+					<!-- {#each $jobs.data || [] as job, idx} -->
+					{#each jobs || [] as job, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<TextInput id={'title' + idx} label="Title" bind:value={job.name} />
 							<TextInput id={'company' + idx} label="Company" bind:value={job.company} />
@@ -296,7 +327,7 @@
 					>
 				{/snippet}
 				<div class="space-y-2">
-					{#each $education.data || [] as edu, idx}
+					{#each education || [] as edu, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<TextInput id="degree" label="Degree" bind:value={edu.degree} />
 							<TextInput id="institution" label="Institution" bind:value={edu.institution} />
@@ -349,12 +380,7 @@
 			{/if}
 		</div>
 		<div class="md:col-span-2">
-			<BasicResume
-				{personalInfo}
-				experience={$jobs.data}
-				education={$education.data}
-				showIncomplete
-			/>
+			<BasicResume {personalInfo} experience={jobs} {education} showIncomplete />
 		</div>
 	</div>
 </PageContainer>

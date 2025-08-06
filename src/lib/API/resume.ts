@@ -155,7 +155,7 @@ export async function addResumeObject({
 	type
 }: {
 	type: keyof typeof resumeObjectTypeMap;
-}): Promise<Resume | null> {
+}): Promise<JobPosition | Education | null> {
 	const url = `${PUBLIC_API_URL}/${type}`;
 
 	try {
@@ -168,7 +168,7 @@ export async function addResumeObject({
 		});
 
 		if (res.ok) {
-			return await res.json();
+			return res.json();
 		} else {
 			const message = await res.text();
 			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
