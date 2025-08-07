@@ -5,6 +5,8 @@
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import mixpanel from 'mixpanel-browser';
+	import { userInfo } from 'os';
 	import { onMount } from 'svelte';
 
 	let email = $state('');
@@ -39,6 +41,10 @@
 				toastStore.show({ message: 'Successfully logged in', type: 'success' });
 				const data = await res.json();
 				console.log(data);
+				mixpanel.identify(data.user.id);
+				mixpanel.people.set({
+					$email: data.user.email
+				});
 				await goto('/dashboard');
 				isLoading = false;
 			} else {
