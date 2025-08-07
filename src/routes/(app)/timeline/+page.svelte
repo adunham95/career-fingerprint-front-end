@@ -5,6 +5,7 @@
 	import ExpandedTimeline from '$lib/Components/Calender/ExpandedTimeline.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
@@ -51,6 +52,11 @@
 			>
 		</div>
 	</div>
+
+	<InfoBlock
+		title="What is an achievement?"
+		description="An achievement is anything you accomplish, big or small, that you document for future use in performance reviews, 1:1 meetings, job interviews, building your resume or reviewing your professional growth."
+	/>
 
 	<div class="pb-5">
 		<div class="flex items-center justify-end">
