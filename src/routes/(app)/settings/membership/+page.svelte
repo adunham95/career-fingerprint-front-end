@@ -139,13 +139,13 @@
 					</p>
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<p class="mt-6 flex items-baseline justify-center gap-x-2">
-								<span class="text-5xl font-semibold tracking-tight text-gray-900">
-									${centsToDollars(data.availablePlans.priceCentsYear)}
-								</span>
-								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/year</span>
-							</p>
 							{#if data.availablePlans.annualStripePriceID !== null}
+								<p class="mt-6 flex items-baseline justify-center gap-x-2">
+									<span class="text-5xl font-semibold tracking-tight text-gray-900">
+										${centsToDollars(data.availablePlans.priceCentsYear)}
+									</span>
+									<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/year</span>
+								</p>
 								<button
 									onclick={() => {
 										updateStripe(data.availablePlans?.annualStripePriceID || '');
@@ -159,22 +159,24 @@
 							{/if}
 						</div>
 						<div>
-							<p class="mt-6 flex items-baseline justify-center gap-x-2">
-								<span class="text-5xl font-semibold tracking-tight text-gray-900">
-									${centsToDollars(data.availablePlans.priceCents)}
-								</span>
-								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/mo</span>
-							</p>
-							<button
-								onclick={() => {
-									updateStripe(data.availablePlans?.monthlyStripePriceID || '');
-									trackingStore.trackAction('Upgrade Plan', {
-										type: 'Monthly',
-										planKey: data.availablePlans?.key || ''
-									});
-								}}
-								class="btn btn--primary btn-small mt-10 w-full">Upgrade</button
-							>
+							{#if data.availablePlans.monthlyStripePriceID}
+								<p class="mt-6 flex items-baseline justify-center gap-x-2">
+									<span class="text-5xl font-semibold tracking-tight text-gray-900">
+										${centsToDollars(data.availablePlans.priceCents)}
+									</span>
+									<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/mo</span>
+								</p>
+								<button
+									onclick={() => {
+										updateStripe(data.availablePlans?.monthlyStripePriceID || '');
+										trackingStore.trackAction('Upgrade Plan', {
+											type: 'Monthly',
+											planKey: data.availablePlans?.key || ''
+										});
+									}}
+									class="btn btn--primary btn-small mt-10 w-full">Upgrade</button
+								>
+							{/if}
 						</div>
 					</div>
 					<div class="flex pt-4">
