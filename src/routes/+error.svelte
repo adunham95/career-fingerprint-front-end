@@ -1,5 +1,11 @@
 <script>
 	import { page } from '$app/state';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		trackingStore.pageViewEvent('404', { page: page.url.href });
+	});
 </script>
 
 <main class="relative isolate flex h-screen items-center justify-center overflow-hidden">
