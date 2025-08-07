@@ -43,21 +43,39 @@
 					class="order-last flex w-full gap-x-8 text-sm/6 font-semibold sm:order-0 sm:w-auto sm:border-l sm:border-gray-200 sm:pl-6 sm:text-sm/7"
 				>
 					<button
-						onclick={() => (meetingType = 'previous')}
+						onclick={() => {
+							meetingType = 'previous';
+							trackingStore.trackAction('Meeting Type Click', {
+								tab: 'Previous'
+							});
+						}}
 						class={`${meetingType === 'previous' ? 'text-primary' : ''}`}>Previous</button
 					>
 					<button
-						onclick={() => (meetingType = 'all')}
+						onclick={() => {
+							meetingType = 'all';
+							trackingStore.trackAction('Meeting Type Click', {
+								tab: 'All'
+							});
+						}}
 						class={`${meetingType === 'all' ? 'text-primary' : ''}`}>All</button
 					>
 					<button
-						onclick={() => (meetingType = 'upcoming')}
+						onclick={() => {
+							meetingType = 'upcoming';
+							trackingStore.trackAction('Meeting Type Click', {
+								tab: 'Upcoming'
+							});
+						}}
 						class={`${meetingType === 'upcoming' ? 'text-primary' : ''}`}>Upcoming</button
 					>
 				</div>
 				<button
 					type="button"
-					onclick={() => (isNewMeetingOpen = true)}
+					onclick={() => {
+						isNewMeetingOpen = true;
+						trackingStore.trackAction('Create New Meeting Click');
+					}}
 					class="btn btn--primary ml-auto"
 				>
 					Create New Meeting
@@ -112,7 +130,15 @@
 							</td>
 							<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
 							<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
-								<a href={`/meetings/${meeting.id}`} class="btn btn-text--primary"> View </a>
+								<a
+									href={`/meetings/${meeting.id}`}
+									onclick={() => {
+										trackingStore.trackAction('View Meeting Click');
+									}}
+									class="btn btn-text--primary"
+								>
+									View
+								</a>
 							</td>
 						</tr>
 					{/each}

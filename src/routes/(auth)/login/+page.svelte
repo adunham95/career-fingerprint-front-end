@@ -6,7 +6,6 @@
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import mixpanel from 'mixpanel-browser';
-	import { userInfo } from 'os';
 	import { onMount } from 'svelte';
 
 	let email = $state('');
@@ -19,6 +18,7 @@
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
+		trackingStore.trackAction('Login Click');
 
 		console.log({ email, password });
 

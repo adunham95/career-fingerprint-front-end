@@ -109,7 +109,10 @@
 	<ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 		<li>
 			<button
-				onclick={() => (isOpen = true)}
+				onclick={() => {
+					isOpen = true;
+					trackingStore.trackAction('New Job Application Click');
+				}}
 				class="focus:ring-primary-500 relative block w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
 			>
 				<svg
@@ -132,7 +135,13 @@
 		</li>
 		{#each $applications.data || [] as app}
 			<li>
-				<button class="w-full" onclick={() => setJobDetails(app.id)}>
+				<button
+					class="w-full"
+					onclick={() => {
+						setJobDetails(app.id);
+						trackingStore.pageViewEvent('View Job');
+					}}
+				>
 					{@render JobCard(
 						app.title,
 						app.companyURL,
@@ -259,7 +268,10 @@
 								type="button"
 								class="btn btn-outline--primary inline-flex"
 								disabled={isMigrating}
-								onclick={loadMigrateJobApp}
+								onclick={() => {
+									trackingStore.trackAction('Migrate Job Application Click');
+									loadMigrateJobApp();
+								}}
 							>
 								Add to Resume
 							</button>

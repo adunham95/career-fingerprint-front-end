@@ -77,7 +77,10 @@
 
 		{#if useFeatureGate(1, data.user)}
 			<button
-				onclick={createNewMeeting}
+				onclick={() => {
+					createNewMeeting();
+					trackingStore.trackAction('Start Meeting Click');
+				}}
 				disabled={isLoadingNewMeeting}
 				class="border-pastel-blue-600 bg-pastel-blue-600/10 hover:border-pastel-blue-900 hover:bg-pastel-blue-600/50 focus:ring-patel-blue-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:opacity-30 md:aspect-video"
 			>
@@ -109,6 +112,9 @@
 		{:else}
 			<a
 				href="/settings/membership"
+				onclick={() => {
+					trackingStore.trackAction('Add Achievement Click', { unlockPremium: 'true' });
+				}}
 				class="relative flex aspect-square w-full items-center justify-center rounded-lg border-2 border-gray-600/30 bg-gray-600/10 p-2 text-center transition focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 			>
 				<div
@@ -155,6 +161,9 @@
 		{#if useFeatureGate(1, data.user)}
 			<a
 				href="/prep"
+				onclick={() => {
+					trackingStore.trackAction('Prepare Click');
+				}}
 				class="border-pastel-purple-600 bg-pastel-purple-600/10 hover:border-pastel-purple-900 hover:bg-pastel-purple-600/50 focus:ring-pastel-purple-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 			>
 				<div class="flex flex-col items-center">
@@ -180,6 +189,9 @@
 		{:else}
 			<a
 				href="/settings/membership"
+				onclick={() => {
+					trackingStore.trackAction('Prepare Click', { unlockPremium: 'true' });
+				}}
 				class="relative flex aspect-square w-full items-center justify-center rounded-lg border-2 border-gray-600/30 bg-gray-600/10 p-2 text-center transition focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 			>
 				<div
@@ -225,6 +237,9 @@
 
 		<a
 			href="/meetings"
+			onclick={() => {
+				trackingStore.trackAction('Previous Meetings Click');
+			}}
 			class="border-pastel-orange-600 bg-pastel-orange-600/10 hover:border-pastel-orange-900 hover:bg-pastel-orange-600/50 focus:ring-pastel-orange-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">
@@ -269,7 +284,10 @@
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
 				<button
 					class="btn btn-outline--secondary flex items-center py-1"
-					onclick={() => (isNewMeetingOpen = true)}>Add Meeting</button
+					onclick={() => {
+						isNewMeetingOpen = true;
+						trackingStore.trackAction('Add Meeting Click');
+					}}>Add Meeting</button
 				>
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">

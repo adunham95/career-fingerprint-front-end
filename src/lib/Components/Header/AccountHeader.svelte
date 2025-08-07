@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import TextArea from '../FormElements/TextArea.svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 	import FeedbackForm from '../Forms/FeedbackForm.svelte';
 	import Modal from '../Overlays/Modal.svelte';
 	import { toastStore } from '../Toasts/toast';
@@ -231,7 +231,13 @@
 							{#each profileRoutes as route}
 								<a
 									href={route.path}
-									onclick={() => (profileOpen = !profileOpen)}
+									onclick={() => {
+										profileOpen = !profileOpen;
+										trackingStore.trackAction('Nav Item Click', {
+											tab: route.title,
+											container: 'profile'
+										});
+									}}
 									class="m-1 block rounded px-4 py-2 text-base text-gray-700 hover:bg-gray-200"
 									role="menuitem"
 									tabindex="-1"
@@ -244,6 +250,10 @@
 							<button
 								onclick={() => {
 									profileOpen = !profileOpen;
+									trackingStore.trackAction('Nav Item Click', {
+										tab: 'Logout',
+										container: 'profile'
+									});
 									logout();
 								}}
 								class="m-1 block rounded px-4 py-2 text-base text-gray-700 hover:bg-gray-200"
@@ -262,6 +272,12 @@
 			{#each routes as route}
 				<a
 					href={route.path}
+					onclick={() => {
+						trackingStore.trackAction('Nav Item Click', {
+							tab: route.title,
+							container: 'nav-item'
+						});
+					}}
 					class="hover:bg-primary-300 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900"
 				>
 					{route.title}
@@ -269,7 +285,13 @@
 			{/each}
 			<button
 				class="btn btn-text--primary ml-auto self-end"
-				onclick={() => (feedbackModalOpen = true)}>Feedback</button
+				onclick={() => {
+					feedbackModalOpen = true;
+					trackingStore.trackAction('Nav Item Click', {
+						tab: 'Feedback',
+						container: 'feedback'
+					});
+				}}>Feedback</button
 			>
 		</nav>
 	</div>
@@ -334,7 +356,13 @@
 						{#each routes as route}
 							<a
 								href={route.path}
-								onclick={() => (mobileNabOpen = !mobileNabOpen)}
+								onclick={() => {
+									mobileNabOpen = !mobileNabOpen;
+									trackingStore.trackAction('Nav Item Click', {
+										tab: route.title,
+										container: 'nav-item'
+									});
+								}}
 								class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
 							>
 								{route.title}
@@ -407,6 +435,12 @@
 							{#each profileRoutes as route}
 								<a
 									href={route.path}
+									onclick={() => {
+										trackingStore.trackAction('Nav Item Click', {
+											tab: route.title,
+											container: 'profile'
+										});
+									}}
 									class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
 								>
 									{route.title}
@@ -415,6 +449,10 @@
 							<button
 								onclick={() => {
 									profileOpen = !profileOpen;
+									trackingStore.trackAction('Nav Item Click', {
+										tab: 'Logout',
+										container: 'profile'
+									});
 									logout();
 								}}
 								class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
@@ -433,7 +471,12 @@
 	<FeedbackForm formID="beta-feedback" {userID} onSuccess={() => (feedbackModalOpen = false)} />
 	{#snippet actions()}
 		<div class="flex justify-end">
-			<button type="submit" form="beta-feedback" class="btn btn-text--primary">Submit</button>
+			<button
+				type="submit"
+				form="beta-feedback"
+				class="btn btn-text--primary"
+				onclick={() => trackingStore.trackAction('Save Feedback Click')}>Submit</button
+			>
 		</div>
 	{/snippet}
 </Modal>

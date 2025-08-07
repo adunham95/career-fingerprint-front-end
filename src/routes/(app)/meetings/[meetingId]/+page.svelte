@@ -39,14 +39,23 @@
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
 					{#if isFuture(data.meeting.time) && useFeatureGate(1, data.user)}
-						<button type="button" class="btn btn-text--secondary">Prep for Meeting</button>
-						<button type="button" class="btn btn--primary">Start Meeting</button>
+						<button
+							type="button"
+							class="btn btn-text--secondary"
+							onclick={() =>
+								trackingStore.trackAction('Prep Meeting', { component: 'Meeting Details Page' })}
+							>Prep for Meeting</button
+						>
+						<button
+							type="button"
+							class="btn btn--primary"
+							onclick={() => {
+								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
+							}}>Start Meeting</button
+						>
 					{/if}
 				</div>
 			</div>
-		</div>
-		<div class="mt-6 hidden min-w-0 flex-1 sm:block md:hidden">
-			<h1 class="truncate text-2xl font-bold text-gray-900">Ricardo Cooper</h1>
 		</div>
 	</div>
 </div>
@@ -207,6 +216,7 @@
 							<dd class="text-sm/6">
 								<a
 									href={data.meeting.link}
+									onclick={() => trackingStore.trackAction('Meeting Link Click')}
 									target="_blank"
 									class="text-primary hover:text-primary-700">Meeting Link</a
 								>

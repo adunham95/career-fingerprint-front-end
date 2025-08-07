@@ -27,7 +27,10 @@ function createTrackingStore() {
 		});
 	}
 
-	function trackAction(actionName: string, options: { [key: string]: string } = {}) {
+	function trackAction(
+		actionName: string,
+		options: { [key: string]: string | null | boolean } = {}
+	) {
 		const { pageName } = get({ subscribe }); // get current store value
 
 		console.log('Tracking Action', { actionName, pageName, options });

@@ -22,6 +22,7 @@
 	let stripe: Stripe | null = null;
 	let stripeCheckout: StripeCheckout | null = null;
 	let priceID: string | null = $state(null);
+	let couponCode: string | null = $state(null);
 	const startCheckout = useCreateCheckoutSession();
 	const cancelMembershipMutation = useCancelSubscription();
 
@@ -111,7 +112,15 @@
 			</dl>
 			{#snippet actions()}
 				{#if (data.membershipDetails?.plan.level || 0) > 0}
-					<button class="btn btn--error" onclick={cancelMembership}>Cancel Membership</button>
+					<button
+						class="btn btn--error"
+						onclick={() => {
+							cancelMembership();
+							trackingStore.trackAction('Cancel Membership Click', {
+								plan: data.membershipDetails?.plan.name || ''
+							});
+						}}>Cancel Membership</button
+					>
 				{:else}
 					<button class="btn btn--disabled" disabled>Cancel Membership</button>
 				{/if}
@@ -138,7 +147,13 @@
 							</p>
 							{#if data.availablePlans.annualStripePriceID !== null}
 								<button
-									onclick={() => updateStripe(data.availablePlans?.annualStripePriceID || '')}
+									onclick={() => {
+										updateStripe(data.availablePlans?.annualStripePriceID || '');
+										trackingStore.trackAction('Upgrade Plan', {
+											type: 'Yearly',
+											planKey: data.availablePlans?.key || ''
+										});
+									}}
 									class="btn btn--secondary btn-small mt-10 w-full">Upgrade</button
 								>
 							{/if}
@@ -151,14 +166,32 @@
 								<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/mo</span>
 							</p>
 							<button
-								onclick={() => updateStripe(data.availablePlans?.monthlyStripePriceID || '')}
+								onclick={() => {
+									updateStripe(data.availablePlans?.monthlyStripePriceID || '');
+									trackingStore.trackAction('Upgrade Plan', {
+										type: 'Monthly',
+										planKey: data.availablePlans?.key || ''
+									});
+								}}
 								class="btn btn--primary btn-small mt-10 w-full">Upgrade</button
 							>
 						</div>
 					</div>
 					<div class="flex pt-4">
-						<TextInput id="coupon-code" label="Coupon Code" className="w-full" />
-						<button class="btn btn-text--primary ml-2">Apply</button>
+						<TextInput
+							id="coupon-code"
+							label="Coupon Code"
+							className="w-full"
+							bind:value={couponCode}
+						/>
+						<button
+							class="btn btn-text--primary ml-2"
+							onclick={() => {
+								trackingStore.trackAction('Applied Coupon Code', {
+									code: couponCode
+								});
+							}}>Apply</button
+						>
 					</div>
 				</div>
 				<form id="payment-form">
@@ -167,7 +200,10 @@
 					</div>
 					<button
 						id="pay-button"
-						class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}>Subscribe</button
+						class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
+						onclick={() => {
+							trackingStore.trackAction('Subscribe Click');
+						}}>Subscribe</button
 					>
 					<div id="error-message">
 						<!-- Display error message to your customers here -->

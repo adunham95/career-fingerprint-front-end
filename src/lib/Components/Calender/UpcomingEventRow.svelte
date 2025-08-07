@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trackingStore } from '$lib/Stores/tracking';
 	import type { Meeting } from '../../../app';
 	import { formatDistanceToNow } from 'date-fns';
 
@@ -29,7 +30,12 @@
 <li class="relative flex gap-x-6 py-6 xl:static">
 	<div class="flex-auto">
 		<div class="flex justify-start">
-			<a href={`/meetings/${id}`} class=" pr-10 text-xl font-semibold text-gray-900 xl:pr-0">
+			<a
+				href={`/meetings/${id}`}
+				onclick={() =>
+					trackingStore.trackAction('Go To Meeting', { component: 'UpcomingEventRow' })}
+				class=" pr-10 text-xl font-semibold text-gray-900 xl:pr-0"
+			>
 				{title}
 			</a>
 		</div>
@@ -83,8 +89,17 @@
 	</div>
 	{#if !hideActions}
 		<div class="flex flex-col justify-end">
-			<a href={`/prep/${id}`} class="btn btn-text--primary btn-small">Prep</a>
-			<a href={`/cheatsheet/${id}`} class="btn btn-text--secondary btn-small">Start</a>
+			<a
+				href={`/prep/${id}`}
+				onclick={() => trackingStore.trackAction('Prep Meeting', { component: 'UpcomingEventRow' })}
+				class="btn btn-text--primary btn-small">Prep</a
+			>
+			<a
+				href={`/cheatsheet/${id}`}
+				onclick={() =>
+					trackingStore.trackAction('Start Meeting', { component: 'UpcomingEventRow' })}
+				class="btn btn-text--secondary btn-small">Start</a
+			>
 		</div>
 	{/if}
 </li>

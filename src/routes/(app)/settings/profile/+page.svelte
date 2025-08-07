@@ -119,8 +119,13 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('account')}
-					>Update</button
+				<button
+					type="submit"
+					class="btn btn--primary"
+					onclick={() => {
+						updateAccount('account');
+						trackingStore.trackAction('Update Account Click', { type: 'account' });
+					}}>Update</button
 				>
 			{/snippet}
 		</Card>
@@ -144,8 +149,13 @@
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('password')}
-					>Update</button
+				<button
+					type="submit"
+					class="btn btn--primary"
+					onclick={() => {
+						updateAccount('password');
+						trackingStore.trackAction('Update Account Click', { type: 'password' });
+					}}>Update</button
 				>
 			{/snippet}
 		</Card>
@@ -170,7 +180,7 @@
 						]}
 						bind:value={data.user.lookingFor}
 					/>
-					<Select
+					<!-- <Select
 						id="timezone"
 						label="What timezone"
 						className="sm:col-span-3"
@@ -197,12 +207,17 @@
 							{ id: 'sast', label: 'South Africa Standard Time' }
 						]}
 						bind:value={data.user.timezone}
-					/>
+					/> -->
 				</div>
 			</form>
 			{#snippet actions()}
-				<button type="submit" class="btn btn--primary" onclick={() => updateAccount('profile')}
-					>Save</button
+				<button
+					type="submit"
+					class="btn btn--primary"
+					onclick={() => {
+						updateAccount('profile');
+						trackingStore.trackAction('Update Account Click', { type: 'profile' });
+					}}>Save</button
 				>
 			{/snippet}
 		</Card>
@@ -211,7 +226,13 @@
 		<Card>
 			<p class="pb-2">If you no longer want to use our service</p>
 			{#snippet actions()}
-				<button class="btn btn--error" onclick={deleteUserFunc}>Delete Account</button>
+				<button
+					class="btn btn--error"
+					onclick={() => {
+						deleteUserFunc();
+						trackingStore.trackAction('Delete Account Click');
+					}}>Delete Account</button
+				>
 			{/snippet}
 		</Card>
 	</TwoColumn>

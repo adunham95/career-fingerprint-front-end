@@ -1,7 +1,5 @@
 <script lang="ts">
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import StepList from '$lib/Components/StepList.svelte';
-	import { getSteps } from '../steps.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import CheckCards from '$lib/Components/FormElements/CheckCards.svelte';
 	import { onDestroy, onMount } from 'svelte';
@@ -19,9 +17,9 @@
 	} from '$lib/API/highlights.js';
 	import { browser } from '$app/environment';
 	import UpdateMeetingAgenda from '$lib/Components/Forms/UpdateMeetingAgenda.svelte';
-	import { dataTagSymbol } from '@tanstack/svelte-query';
 	import { useMeetingByID } from '$lib/API/meeting.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import StepHeader from '../StepHeader.svelte';
 
 	const { data } = $props();
 	let editID = $state<string | undefined>();
@@ -60,7 +58,9 @@
 		if (browser) {
 			document.addEventListener('mouseup', handleMouseUp);
 		}
-		trackingStore.pageViewEvent('Meeting Prep - Highlights');
+		trackingStore.pageViewEvent('Meeting Prep - Highlights', {
+			type: $meeting.data?.type || ''
+		});
 	});
 
 	onDestroy(() => {
@@ -115,14 +115,7 @@
 <!-- Highlights -->
 
 <PageContainer>
-	<StepList currentStep={1} steps={getSteps(data.meetingID)} />
-	<div class="mt-8 flex justify-between">
-		<h1 class="font-title text-2xl">Relevant Achievements</h1>
-		<div>
-			<a href={`/prep/${data.meetingID}`} class="btn btn-text--primary">Prev Step</a>
-			<a href={`/prep/${data.meetingID}/research`} class="btn btn-text--primary">Next Step</a>
-		</div>
-	</div>
+	<StepHeader meetingID={data.meetingID || ''} currentStep={1} />
 	<div class="grid grid-cols-2 gap-4 pt-2">
 		<div>
 			{#if $meeting.data?.type === 'Interview'}

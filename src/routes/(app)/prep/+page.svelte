@@ -24,7 +24,14 @@
 				<p class="mt-2 text-sm text-gray-700">Select a meeting to make a cheatsheet.</p>
 			</div>
 			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button type="button" onclick={() => (isNewMeetingOpen = true)} class="btn btn--primary">
+				<button
+					type="button"
+					onclick={() => {
+						isNewMeetingOpen = true;
+						trackingStore.trackAction('Create New Meeting Click');
+					}}
+					class="btn btn--primary"
+				>
 					Create New Meeting
 				</button>
 			</div>
@@ -77,7 +84,11 @@
 							</td>
 							<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
 							<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
-								<a href={`/prep/${meeting.id}`} class="text-primary hover:text-primary-900">
+								<a
+									href={`/prep/${meeting.id}`}
+									onclick={() => trackingStore.trackAction('Start Meeting Click')}
+									class="text-primary hover:text-primary-900"
+								>
 									Start
 								</a>
 							</td>

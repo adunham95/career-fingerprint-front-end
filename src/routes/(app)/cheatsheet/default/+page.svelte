@@ -5,7 +5,9 @@
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { formatDate } from '$lib/Utils/formatDate';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
@@ -14,6 +16,10 @@
 	let selectedCompany = $state<string | null>(null);
 
 	let current = $state('resume');
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Cheatsheet', { type: 'default' });
+	});
 </script>
 
 <PageContainer className="py-2">

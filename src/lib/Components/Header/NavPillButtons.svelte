@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { trackingStore } from '$lib/Stores/tracking';
+
 	interface Props {
 		currentTab: string;
 		tabs: { id: string; label: string }[];
@@ -23,7 +25,10 @@
 		<nav class="flex space-x-4" aria-label="Tabs">
 			{#each tabs as tab}
 				<button
-					onclick={() => (currentTab = tab.id)}
+					onclick={() => {
+						currentTab = tab.id;
+						trackingStore.trackAction('Tab Click', { tab: tab.label });
+					}}
 					class={`rounded-md px-3 py-2 text-sm font-medium ${tab.id === currentTab ? 'bg-primary-300 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
 					>{tab.label}
 				</button>

@@ -35,9 +35,19 @@
 	<div class="align-center mt-5 mb-5 flex justify-between border-b border-gray-200 pb-5">
 		<h1 class="text-2xl font-semibold text-gray-900">My Achievement Timeline</h1>
 		<div>
-			<button class="btn btn-text--primary">Print Timeline</button>
-			<button class="btn btn--primary" onclick={() => (isAchievementOpen = true)}
-				>Add Achievement</button
+			<!-- TODO Link to printer -->
+			<button
+				class="btn btn-text--primary"
+				onclick={() => {
+					trackingStore.trackAction('Print Achievement Click');
+				}}>Print Timeline</button
+			>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					isAchievementOpen = true;
+					trackingStore.trackAction('Add Achievement Click');
+				}}>Add Achievement</button
 			>
 		</div>
 	</div>

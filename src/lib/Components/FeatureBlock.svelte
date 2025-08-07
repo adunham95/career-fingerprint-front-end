@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { trackingStore } from '$lib/Stores/tracking';
+
 	interface Props {
 		title: string;
 		description: string;
@@ -33,6 +35,7 @@
 				<div class="flex justify-end">
 					<a
 						href="/setting/membership/"
+						onclick={() => trackingStore.trackAction('Upgrade Membership Click')}
 						class=" rounded p-1 hover:bg-amber-900 hover:text-amber-200">Upgrade</a
 					>
 				</div>

@@ -125,6 +125,7 @@ interface CurrentUser {
 	stripeCustomerID: string | null;
 	planLevel: number;
 	pitch: string;
+	lookingFor: string;
 	subscription: {
 		id: string;
 		status: string;

@@ -45,7 +45,10 @@
 				type="button"
 				class="relative block w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
 				disabled={isLoading}
-				onclick={createNewResume}
+				onclick={(e) => {
+					createNewResume(e);
+					trackingStore.trackAction('Create a new resume');
+				}}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +71,10 @@
 		{#each data.resumes as resume}
 			{@const date = new Date(resume.updatedAt)}
 			<li class=" aspect-square">
-				<a href={`/resumes/${resume.id}`}>
+				<a
+					href={`/resumes/${resume.id}`}
+					onclick={() => trackingStore.trackAction('View My Resume')}
+				>
 					<Card className="h-full">
 						<p>{resume.name}</p>
 						<p class="text-xs text-gray-400">

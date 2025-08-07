@@ -31,14 +31,22 @@
 		<Card headline="Add New Achievement">
 			<NewAchievementForm id="checkin" />
 			<div class="flex justify-end pt-2">
-				<button type="submit" class="btn btn--primary">Add Achievement</button>
+				<button
+					type="submit"
+					class="btn btn--primary"
+					onclick={() => trackingStore.trackAction('Add Achievement Click')}>Add Achievement</button
+				>
 			</div>
 		</Card>
 		<div>
 			<div class="flex justify-between">
 				<h3 class="font-title pb-4 text-xl">Upcoming Meetings</h3>
-				<button class="btn btn-text--primary" onclick={() => (isNewMeetingOpen = true)}
-					>Add Meeting</button
+				<button
+					class="btn btn-text--primary"
+					onclick={() => {
+						isNewMeetingOpen = true;
+						trackingStore.trackAction('Add Meeting Click');
+					}}>Add Meeting</button
 				>
 			</div>
 			<ul class="space-y-2">

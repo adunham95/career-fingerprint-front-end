@@ -141,8 +141,12 @@
 			We’re here to help you build your unique career story — and we’re glad you’re here
 		</h3>
 		<div class="flex justify-end py-2">
-			<button class="btn btn--primary" onclick={() => scrollToView('current-situation')}
-				>Lets Get Started</button
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					scrollToView('current-situation');
+					trackingStore.trackAction('Next Step Click', { step: 'Get Started' });
+				}}>Lets Get Started</button
 			>
 		</div>
 	</div>
@@ -161,7 +165,15 @@
 			bind:value={profile.lookingFor}
 		/>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary" onclick={() => scrollToView('introduction')}>Continue</button
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					scrollToView('introduction');
+					trackingStore.trackAction('Next Step Click', {
+						step: 'Current Situation',
+						currentSituation: profile.lookingFor
+					});
+				}}>Continue</button
 			>
 		</div>
 	</div>
@@ -250,7 +262,23 @@
 		</p>
 		<!-- {/if} -->
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary" onclick={() => scrollToView('achievement')}>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					scrollToView('achievement');
+					trackingStore.trackAction('Next Step Click', {
+						step: 'Introduction',
+						currentSituation: profile.lookingFor,
+						firstNameFilledOut: profile.firstName !== '',
+						companyFilledOut: profile.companyName !== '',
+						titleFilledOut: profile.title !== '',
+						startDateFilledOut: profile.startDate !== '',
+						endDateFilledOut: profile.endDate !== '',
+						degreeFilledOut: profile.degree !== '',
+						institutionFilledOut: profile.institution !== ''
+					});
+				}}
+			>
 				Continue</button
 			>
 		</div>
@@ -269,7 +297,16 @@
 			bind:value={profile.achievement}
 		/>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary" onclick={() => scrollToView('account')}>Continue</button>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					scrollToView('account');
+					trackingStore.trackAction('Next Step Click', {
+						step: 'Achievement',
+						achievementFilledOut: profile.achievement !== ''
+					});
+				}}>Continue</button
+			>
 		</div>
 	</div>
 
@@ -295,7 +332,15 @@
 			/>
 		</div>
 		<div class="flex justify-end pt-2">
-			<button class="btn btn--primary" onclick={createAccount}>Create Account</button>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					createAccount();
+					trackingStore.trackAction('Next Step Click', {
+						step: 'Create Account'
+					});
+				}}>Create Account</button
+			>
 		</div>
 	</div>
 
@@ -371,8 +416,18 @@
 								>
 								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
 							</p>
-							<a href="/dashboard" class="btn btn--primary mt-10 block w-full">Go To My Account</a>
-							<!-- <button onclick={startFreeTrial} class="btn btn--primary mt-10 block w-full">
+							<a
+								href="/dashboard"
+								class="btn btn--primary mt-10 block w-full"
+								onclick={() =>
+									trackingStore.trackAction('Next Step Click', {
+										step: 'Go To Account'
+									})}
+							>
+								Go To My Account
+							</a>
+							<!-- <button onclick={() => {startFreeTrial;
+							 trackingStore.trackAction('Start Free Trial Click')}}} class="btn btn--primary mt-10 block w-full">
 								Start my free trial
 							</button> -->
 						</div>
@@ -380,12 +435,24 @@
 				</div>
 			</div>
 			<div class="mt-2 flex w-full justify-end">
-				<a href="/dashboard" class=" text-small btn btn-text--secondary btn-small"
-					>Continue without Premium Benefits</a
+				<a
+					href="/dashboard"
+					onclick={() =>
+						trackingStore.trackAction('Next Step Click', {
+							step: 'Go To Account'
+						})}
+					class=" text-small btn btn-text--secondary btn-small">Continue without Premium Benefits</a
 				>
 			</div>
 		{:else}
-			<a href="/dashboard" class="btn btn--primary mt-10 block w-full">Go to my account</a>
+			<a
+				href="/dashboard"
+				class="btn btn--primary mt-10 block w-full"
+				onclick={() =>
+					trackingStore.trackAction('Next Step Click', {
+						step: 'Go To Account'
+					})}>Go to my account</a
+			>
 		{/if}
 	</div>
 </div>

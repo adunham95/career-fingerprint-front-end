@@ -3,6 +3,7 @@
 	import { fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import type { Snippet } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	type DrawerPosition = 'left' | 'right' | 'top' | 'bottom';
 
@@ -142,14 +143,33 @@
 				</div>
 			</div>
 			<div class="flex shrink-0 justify-end px-4 py-4">
-				<button type="button" class="btn btn-text--error" onclick={() => (isOpen = false)}
-					>Cancel</button
+				<button
+					type="button"
+					class="btn btn-text--error"
+					onclick={() => {
+						isOpen = false;
+						trackingStore.trackAction('Close Drawer', { title });
+					}}>Cancel</button
 				>
 				{#if onSave}
-					<button type="submit" class="btn btn-text--primary" onclick={onSave}>Save</button>
+					<button
+						type="submit"
+						class="btn btn-text--primary"
+						onclick={() => {
+							trackingStore.pageViewEvent('Save Drawer', { title });
+							onSave();
+						}}>Save</button
+					>
 				{/if}
 				{#if saveFormID}
-					<button type="submit" class="btn btn-text--primary" form={saveFormID}>Save</button>
+					<button
+						type="submit"
+						class="btn btn-text--primary"
+						form={saveFormID}
+						onclick={() => {
+							trackingStore.trackAction('Submit Drawer', { title, formID: saveFormID });
+						}}>Save</button
+					>
 				{/if}
 			</div>
 		</form>

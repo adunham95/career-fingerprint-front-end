@@ -255,7 +255,10 @@
 			>
 				<div class="py-1">
 					<button
-						onclick={duplicateResume}
+						onclick={() => {
+							duplicateResume();
+							trackingStore.trackAction('Duplicate resume');
+						}}
 						type="button"
 						class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-200 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden"
 					>
@@ -291,7 +294,10 @@
 				{#snippet actions()}
 					<button
 						class="btn btn-outline--accent btn-small"
-						onclick={() => addObject('job-positions')}>Add Job</button
+						onclick={() => {
+							addObject('job-positions');
+							trackingStore.trackAction('Add Resume Object', { objectType: 'job-position' });
+						}}>Add Job</button
 					>
 				{/snippet}
 				<div class="space-y-4">
@@ -328,8 +334,12 @@
 			</Accordion>
 			<Accordion title="Education">
 				{#snippet actions()}
-					<button class="btn btn-outline--accent btn-small" onclick={() => addObject('education')}
-						>Add Education</button
+					<button
+						class="btn btn-outline--accent btn-small"
+						onclick={() => {
+							addObject('education');
+							trackingStore.trackAction('Add Resume Object', { objectType: 'education' });
+						}}>Add Education</button
 					>
 				{/snippet}
 				<div class="space-y-2">
@@ -361,7 +371,10 @@
 			</Accordion>
 			{#if useFeatureGate(1, data.user)}
 				<p class="mt-4 text-gray-600">Download PDF version or print this resume</p>
-				<button class="btn btn--primary mt-2">
+				<button
+					class="btn btn--primary mt-2"
+					onclick={() => trackingStore.trackAction('Download Resume')}
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						class="mr-2 inline h-5 w-5"

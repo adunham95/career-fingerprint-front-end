@@ -20,7 +20,7 @@
 	let showMeetingDetails = $state(false);
 
 	onMount(() => {
-		trackingStore.pageViewEvent('Cheatsheet');
+		trackingStore.pageViewEvent('Cheatsheet', { type: data.interviewData.type });
 	});
 
 	async function saveNote() {
@@ -45,6 +45,7 @@
 	}
 
 	function finishMeeting() {
+		trackingStore.trackAction('Finish Meeting Click');
 		showMeetingDetails = true;
 		saveNote();
 	}
@@ -77,7 +78,13 @@
 				bind:value={currentNote}
 			/>
 			<div class="flex justify-end">
-				<button class="btn btn-text--primary" onclick={saveNote}>Add Note</button>
+				<button
+					class="btn btn-text--primary"
+					onclick={() => {
+						saveNote();
+						trackingStore.trackAction('Add  Note Click');
+					}}>Add Note</button
+				>
 			</div>
 		</div>
 		<div class="  row-span-2">
