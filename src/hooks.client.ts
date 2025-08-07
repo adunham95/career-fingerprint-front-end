@@ -1,9 +1,10 @@
+import { PUBLIC_SENTRY_DSN } from '$env/static/public';
 import { handleErrorWithSentry, replayIntegration } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 
 Sentry.init({
-	dsn: process.env.SENTRY_DSN,
-	enabled: process.env.NODE_ENV === 'production',
+	dsn: PUBLIC_SENTRY_DSN,
+	enabled: process.env.NODE_ENV === 'production' || false,
 
 	tracesSampleRate: 1.0,
 

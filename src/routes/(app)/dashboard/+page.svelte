@@ -10,6 +10,8 @@
 	import { goto } from '$app/navigation';
 	import Loader from '$lib/Components/Loader.svelte';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
+	import { onMount } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 
 	let { data } = $props();
 
@@ -18,6 +20,11 @@
 	let isAchievementOpen = $state(false);
 	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
+
+	onMount(() => {
+		console.log('Hello World');
+		trackingStore.pageViewEvent('Dashboard', { user: 'adunham95' });
+	});
 
 	const createNewMeetingMutation = useCreateMeetingMutation();
 
