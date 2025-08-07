@@ -6,6 +6,8 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { onMount } from 'svelte';
 	const { data } = $props();
 
 	let jobPositionID = $state<string | null>(null);
@@ -23,6 +25,10 @@
 	console.log({ data });
 
 	let isAchievementOpen = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Achievement Timeline');
+	});
 </script>
 
 <PageContainer>

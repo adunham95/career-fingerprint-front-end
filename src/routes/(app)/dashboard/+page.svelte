@@ -23,7 +23,7 @@
 
 	onMount(() => {
 		console.log('Hello World');
-		trackingStore.pageViewEvent('Dashboard', { user: 'adunham95' });
+		trackingStore.pageViewEvent('Dashboard');
 	});
 
 	const createNewMeetingMutation = useCreateMeetingMutation();
@@ -48,7 +48,10 @@
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
 		<button
-			onclick={() => (isAchievementOpen = true)}
+			onclick={() => {
+				isAchievementOpen = true;
+				trackingStore.trackAction('Add Achievement Click');
+			}}
 			class="border-pastel-green-600 hover:border-pastel-green-900 hover:bg-pastel-green-600/40 bg-pastel-green-600/10 focus:ring-pastel-gree-500 relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
 		>
 			<div class="flex flex-col items-center">

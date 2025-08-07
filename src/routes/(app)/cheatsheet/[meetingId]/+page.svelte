@@ -9,13 +9,19 @@
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { formatDate } from '$lib/Utils/formatDate';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
 	console.log({ data });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Cheatsheet');
+	});
 
 	async function saveNote() {
 		const url = `${PUBLIC_API_URL}/notes`;

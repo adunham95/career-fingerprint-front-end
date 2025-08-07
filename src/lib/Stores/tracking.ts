@@ -1,5 +1,5 @@
 import mixpanel from 'mixpanel-browser';
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 
 interface TrackingObject {
 	pageName?: string;
@@ -27,9 +27,23 @@ function createTrackingStore() {
 		});
 	}
 
+	function trackAction(actionName: string, options: { [key: string]: string } = {}) {
+		const { pageName } = get({ subscribe }); // get current store value
+
+		console.log('Tracking Action', { actionName, pageName, options });
+
+		if (process.env.NODE_ENV === 'production') {
+			mixpanel.track(actionName, {
+				pageName,
+				...options
+			});
+		}
+	}
+
 	return {
 		subscribe,
-		pageViewEvent
+		pageViewEvent,
+		trackAction
 	};
 }
 

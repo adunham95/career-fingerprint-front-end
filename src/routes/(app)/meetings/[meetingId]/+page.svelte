@@ -4,13 +4,19 @@
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { format, isFuture } from 'date-fns';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 	let current = $state('notes');
 
 	console.log({ data });
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Meeting Details');
+	});
 </script>
 
 <div>

@@ -2,13 +2,19 @@
 	import { useMeetingByID } from '$lib/API/meeting';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import MeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
+	import { onMount } from 'svelte';
 	import StepHeader from './StepHeader.svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	const { data } = $props();
 
 	const meeting = useMeetingByID(data.meeting.id, data.meeting);
 
 	console.log(data);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Meeting Prep - Confirm Details');
+	});
 </script>
 
 <PageContainer>

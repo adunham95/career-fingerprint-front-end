@@ -13,7 +13,9 @@
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { AppStatusEnum } from '$lib/Utils/AppStatusTypes.js';
+	import { onMount } from 'svelte';
 
 	let isOpen = $state(false);
 	let jobID = $state<string | null>(null);
@@ -28,6 +30,10 @@
 	let isMigrating = $state(false);
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('My Job Applications');
+	});
 
 	let applications = useMyJobApplicationsQuery(data.applications);
 	let createJobApp = useCreateJobApplicationMutation();

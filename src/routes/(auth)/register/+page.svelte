@@ -3,12 +3,18 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
 
 	let email = $state();
 	let password = $state();
 	let firstName = $state();
 	let lastName = $state();
 	let isLoading = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Register');
+	});
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();

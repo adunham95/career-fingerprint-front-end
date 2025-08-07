@@ -3,12 +3,18 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
 
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
 	let showError = $state(false);
 	let showSuccess = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Forgot Password');
+	});
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();

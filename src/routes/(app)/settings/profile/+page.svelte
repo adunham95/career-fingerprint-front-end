@@ -10,6 +10,8 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
@@ -17,6 +19,10 @@
 	let confirmPassword = $state(null);
 
 	const deleteUserMutation = useDeleteUserMutation();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Profile Settings');
+	});
 
 	function getUserData(saveType: 'profile' | 'password' | 'account') {
 		switch (saveType) {

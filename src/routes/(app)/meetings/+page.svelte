@@ -3,7 +3,9 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { format } from 'date-fns';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
@@ -26,6 +28,10 @@
 	});
 
 	console.log({ data });
+
+	onMount(() => {
+		trackingStore.pageViewEvent('My Meetings');
+	});
 </script>
 
 <PageContainer className="py-4">

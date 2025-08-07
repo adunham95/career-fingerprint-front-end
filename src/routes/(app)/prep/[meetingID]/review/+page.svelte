@@ -2,8 +2,10 @@
 	import { useMeetingHighlightsQuery } from '$lib/API/highlights';
 	import { useGetAnswersByMeetingID } from '$lib/API/prep-answers';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { onMount } from 'svelte';
 	import StepHeader from '../StepHeader.svelte';
 	import { format } from 'date-fns';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	const { data } = $props();
 
@@ -13,6 +15,10 @@
 		data.meetingID || '',
 		data.meeting.highlights
 	);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Meeting Prep - Review');
+	});
 </script>
 
 <PageContainer>

@@ -7,7 +7,9 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking';
 	import { centsToDollars } from '$lib/Utils/centsToDollars';
+	import { onMount } from 'svelte';
 
 	function scrollToView(id: string) {
 		const elm = document.getElementById(id);
@@ -17,6 +19,10 @@
 	let planKey = 'pro';
 
 	let proData = useGetPlanByID(planKey);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Get Started');
+	});
 
 	$inspect($proData);
 

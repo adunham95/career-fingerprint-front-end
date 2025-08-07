@@ -4,10 +4,16 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
 
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Login');
+	});
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();

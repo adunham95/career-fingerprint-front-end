@@ -3,9 +3,15 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { getMonthName } from '$lib/Utils/formatDate';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Resumes');
+	});
 
 	console.log(data);
 

@@ -17,6 +17,7 @@
 	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 
 	let stripe: Stripe | null = null;
 	let stripeCheckout: StripeCheckout | null = null;
@@ -26,6 +27,7 @@
 
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
+		trackingStore.pageViewEvent('Membership Settings');
 	});
 
 	function updateStripe(newPriceID: string) {

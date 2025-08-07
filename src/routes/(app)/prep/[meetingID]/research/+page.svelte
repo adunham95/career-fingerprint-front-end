@@ -1,11 +1,17 @@
 <script lang="ts">
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { onMount } from 'svelte';
 	import StepHeader from '../StepHeader.svelte';
 	import SaveAsType from './saveAsType.svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	const { data } = $props();
 
 	console.log({ data });
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Meeting Prep - Research');
+	});
 </script>
 
 <!-- 

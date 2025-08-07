@@ -6,12 +6,18 @@
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import { useUpcomingMeetings } from '$lib/API/meeting.js';
+	import { onMount } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 
 	const { data } = $props();
 
 	let isNewMeetingOpen = $state(false);
 
 	let meetings = useUpcomingMeetings(data.meetings || []);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Weekly Check-in Dashboard');
+	});
 </script>
 
 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">

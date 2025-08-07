@@ -21,6 +21,7 @@
 	import UpdateMeetingAgenda from '$lib/Components/Forms/UpdateMeetingAgenda.svelte';
 	import { dataTagSymbol } from '@tanstack/svelte-query';
 	import { useMeetingByID } from '$lib/API/meeting.js';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 
 	const { data } = $props();
 	let editID = $state<string | undefined>();
@@ -59,6 +60,7 @@
 		if (browser) {
 			document.addEventListener('mouseup', handleMouseUp);
 		}
+		trackingStore.pageViewEvent('Meeting Prep - Highlights');
 	});
 
 	onDestroy(() => {

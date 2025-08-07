@@ -1,10 +1,12 @@
 <script>
 	import { invalidateAll } from '$app/navigation';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
 		invalidateAll();
+		trackingStore.pageViewEvent('Membership Sign Up Thank You');
 	});
 </script>
 

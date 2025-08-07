@@ -25,8 +25,14 @@
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { add } from 'date-fns';
 	import type { Education, JobPosition } from '../../../../app.js';
+	import { onMount } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Single Resume');
+	});
 
 	console.log(data);
 
