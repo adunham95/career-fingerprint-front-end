@@ -23,7 +23,6 @@
 	let isLoadingNewMeeting = $state(false);
 
 	onMount(() => {
-		console.log('Hello World');
 		trackingStore.pageViewEvent('Dashboard');
 	});
 
