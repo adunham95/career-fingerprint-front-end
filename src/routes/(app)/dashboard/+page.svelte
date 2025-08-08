@@ -12,6 +12,7 @@
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { onMount } from 'svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 
 	let { data } = $props();
 
@@ -267,16 +268,23 @@
 	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 row-span-2 rounded border border-gray-200 p-4 md:col-span-2">
 			<h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>
-			<Timeline
-				dates={data.achievements?.map((ach) => {
-					return {
-						title: 'Achievement',
-						date: ach.startDate ? new Date(ach.startDate) : new Date(),
-						description: ach.myContribution,
-						type: 'achievement'
-					};
-				}) || []}
-			/>
+			{#if (data.achievements || []).length > 0}
+				<Timeline
+					dates={data.achievements?.map((ach) => {
+						return {
+							title: 'Achievement',
+							date: ach.startDate ? new Date(ach.startDate) : new Date(),
+							description: ach.myContribution,
+							type: 'achievement'
+						};
+					}) || []}
+				/>
+			{:else}
+				<InfoBlock
+					title="Achievements"
+					description="To add a new achievement click Add Achievement"
+				/>
+			{/if}
 		</div>
 
 		<div class="bg-surface-100 rounded border border-gray-200 p-4 md:col-span-2">
@@ -291,9 +299,16 @@
 				>
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
-				{#each data.meetings || [] as meeting}
-					<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(1, data.user)} />
-				{/each}
+				{#if (data.meetings || []).length > 0}
+					{#each data.meetings || [] as meeting}
+						<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(1, data.user)} />
+					{/each}
+				{:else}
+					<InfoBlock
+						title="Upcoming Meetings"
+						description="To add a new achievement click Add Meeting"
+					/>
+				{/if}
 			</ol>
 		</div>
 		<div class="bg-surface-100 rounded border border-gray-200 p-6 md:col-span-2">
