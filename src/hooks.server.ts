@@ -16,7 +16,12 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 	const path = event.url.pathname;
 	const ip = event.getClientAddress();
 
-	if (blacklistedPaths.includes(path) || path.startsWith('/wp-') || path.startsWith('/wordpress')) {
+	if (
+		blacklistedPaths.includes(path) ||
+		path.endsWith('.php') ||
+		path.startsWith('/wp-') ||
+		path.startsWith('/wordpress')
+	) {
 		console.warn(`Blocked bot at ${ip} trying to access ${path}`);
 		return new Response('Forbidden', { status: 403 });
 	}
