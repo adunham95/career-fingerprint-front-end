@@ -256,7 +256,7 @@
 									});
 									logout();
 								}}
-								class="m-1 block rounded px-4 py-2 text-base text-gray-700 hover:bg-gray-200"
+								class="m-1 block w-full rounded px-4 py-2 text-base text-gray-700 hover:bg-gray-200"
 								role="menuitem"
 								tabindex="-1"
 								id="logout"
