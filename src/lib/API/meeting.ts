@@ -138,10 +138,23 @@ export async function getPreviousMeeting(): Promise<Meeting[] | null> {
 	}
 }
 
+export async function getJobApplicationMeetings(jobAppID: string): Promise<Meeting[] | null> {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/meetings/job-application/${jobAppID}`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const meetingKeys = {
 	all: ['meeting'] as const,
 	meeting: (id: string) => [...meetingKeys.all, id] as const,
 	meetingsByPage: (page: number) => [...meetingKeys.all, page] as const,
+	meetingsByJobApp: (jobApp: string) => [...meetingKeys.all, jobApp] as const,
 	previousMeetings: ['meeting', 'previous-meeting'] as const,
 	upcomingMeetings: ['meeting', 'upcoming-meeting'] as const
 };
@@ -210,6 +223,14 @@ export const usePreviousMeetings = (initialData?: Meeting[]) => {
 	return createQuery({
 		queryKey: meetingKeys.previousMeetings,
 		queryFn: () => getPreviousMeeting(),
+		initialData
+	});
+};
+
+export const useJobApplicationMeetings = (jobAppID: string, initialData?: Meeting[]) => {
+	return createQuery({
+		queryKey: meetingKeys.meetingsByJobApp(jobAppID),
+		queryFn: () => getJobApplicationMeetings(jobAppID),
 		initialData
 	});
 };

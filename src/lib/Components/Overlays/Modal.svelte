@@ -17,8 +17,6 @@
 		if (isOpen) {
 			element.showModal();
 			isOpen = true;
-			// const event = new Event('open');
-			// if (onopen) onopen(event);
 		} else {
 			isOpen = false;
 			element.close();
@@ -28,7 +26,7 @@
 
 <dialog
 	bind:this={element}
-	class="bg-surface-50 mx-2 my-5 max-w-md min-w-lg rounded backdrop:bg-gray-700/30 sm:mx-auto"
+	class="bg-surface-50 mx-2 my-5 w-full max-w-md rounded backdrop:bg-gray-700/30 sm:mx-auto md:min-w-lg"
 >
 	<div
 		class="relative transform overflow-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:w-full sm:max-w-lg sm:p-6"
@@ -53,14 +51,14 @@
 				</svg>
 			</button>
 		</div>
-		<div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+		<div class="mt-3 text-center sm:mt-0 sm:text-left">
 			<h3 class="font-title text-lg text-gray-900" id="dialog-title">{title}</h3>
 			<div class="mt-2">
 				{@render children()}
 			</div>
 		</div>
 		{#if actions}
-			<div class="mt-5 sm:mt-6">
+			<div class="mt-5 flex justify-end sm:mt-6">
 				{@render actions?.()}
 			</div>
 		{/if}

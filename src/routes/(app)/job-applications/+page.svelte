@@ -11,6 +11,7 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
@@ -18,6 +19,7 @@
 	import { onMount } from 'svelte';
 
 	let isOpen = $state(false);
+	let isCoverLetterOpen = $state(false);
 	let jobID = $state<string | null>(null);
 	let jobTitle = $state('');
 	let company = $state<string>('');
@@ -133,25 +135,19 @@
 				New Job Application
 			</button>
 		</li>
-		{#each $applications.data || [] as app}
+		{#each $applications.data || [] as app, idx}
 			<li>
-				<button
-					class="w-full"
-					onclick={() => {
-						setJobDetails(app.id);
-						trackingStore.pageViewEvent('View Job');
-					}}
-				>
+				<a href={`/job-applications/${app.id}`}>
 					{@render JobCard(
 						app.title,
 						app.companyURL,
 						app.company,
 						app.location,
 						app.status,
-						app?._count?.notes,
-						app?._count?.meetings
+						app?._count?.meetings,
+						app.coverLetter !== null
 					)}
-				</button>
+				</a>
 			</li>
 		{/each}
 	</ul>
@@ -163,8 +159,8 @@
 	company?: string,
 	location?: string,
 	status?: AppStatusEnum,
-	notes: number = 0,
-	interviews: number = 0
+	interviews: number = 0,
+	hasCoverLetter: boolean = true
 )}
 	<Card contentClassName="px-4 py-4">
 		<div class="flex">
@@ -189,25 +185,23 @@
 				<StatusBadge {status} />
 			{/if}
 		</div>
-		<div class="mt-1 flex justify-end gap-1 text-gray-500">
-			<div class="ml-1 flex text-xs">
+		<div class="mt-2 flex w-full items-center justify-end gap-1 text-gray-500">
+			<div class="flex-1"></div>
+			<div class={`ml-1 flex text-xs ${hasCoverLetter ? ' text-green-700' : 'text-red-700'}`}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
+					viewBox="0 0 20 20"
+					fill="currentColor"
 					class="size-3"
 				>
 					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+						d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Z"
 					/>
 				</svg>
-				<span class="ml-0.5">{notes}</span>
+
+				<span class=" sr-only">{hasCoverLetter ? 'Has Cover Letter' : 'Missing Cover Letter'}</span>
 			</div>
-			<div class="ml-1 flex text-xs">
+			<div class="ml-1 flex items-center text-xs">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
@@ -226,6 +220,13 @@
 		</div>
 	</Card>
 {/snippet}
+
+<Modal title="Edit Cover Letter" bind:isOpen={isCoverLetterOpen}>
+	<TextArea id="coverLetter" rows={10} />
+	{#snippet actions()}
+		<button class="btn btn--primary">Save</button>
+	{/snippet}
+</Modal>
 
 <Drawer bind:isOpen title="Add Job Application" onSave={saveNewJobApplication}>
 	<div class="space-y-2">

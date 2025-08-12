@@ -53,6 +53,7 @@ interface JobApplication {
 	title?: string;
 	migrated: boolean;
 	_count?: { notes: int; meetings: int };
+	coverLetter?: null | { id: string };
 }
 
 interface Achievement {
