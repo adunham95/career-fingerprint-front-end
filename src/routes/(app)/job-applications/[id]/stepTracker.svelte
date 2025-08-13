@@ -17,7 +17,7 @@
 	let currentStep = $derived(steps.findIndex((s) => s === currentStepName));
 </script>
 
-<nav aria-label="Progress" class="py-2">
+<div aria-label="Progress" class="py-2">
 	<ol
 		role="list"
 		class="divide-y divide-gray-300 rounded-md border border-gray-300 md:flex md:divide-y-0"
@@ -57,4 +57,4 @@
 			</li>
 		{/each}
 	</ol>
-</nav>
+</div>

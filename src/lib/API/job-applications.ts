@@ -11,6 +11,14 @@ export async function fetchMyJobApplications(): Promise<JobApplication[]> {
 	return resHighlights.json();
 }
 
+export async function fetchJobApplicationByID(id: string): Promise<JobApplication> {
+	const resHighlights = await fetch(`${PUBLIC_API_URL}/job-applications/${id}`, {
+		credentials: 'include'
+	});
+
+	return resHighlights.json();
+}
+
 interface NewJobApp {
 	title: string;
 	company: string;
@@ -84,7 +92,8 @@ export async function patchJobApplication(updateJobApp: UpdateJobApp) {
 
 export const jobApplicationKeys = {
 	all: ['job-apps'] as const,
-	my: ['my-jobs', 'job-apps'] as const
+	my: ['my-jobs', 'job-apps'] as const,
+	byId: (id: string) => [...jobApplicationKeys.all, id] as const
 };
 
 // Queries
@@ -93,6 +102,14 @@ export const useMyJobApplicationsQuery = (initialData?: JobApplication[]) => {
 	return createQuery({
 		queryKey: jobApplicationKeys.my,
 		queryFn: fetchMyJobApplications,
+		initialData
+	});
+};
+
+export const useJobApplicationByIDQuery = (id: string, initialData?: JobApplication) => {
+	return createQuery({
+		queryKey: jobApplicationKeys.byId(id),
+		queryFn: () => fetchJobApplicationByID(id),
 		initialData
 	});
 };
@@ -113,7 +130,7 @@ export const useCreateJobApplicationMutation = () => {
 	});
 };
 
-export const useUpdateJobApplicationMutation = () => {
+export const useUpdateJobApplicationMutation = (id?: string) => {
 	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: patchJobApplication,
@@ -121,6 +138,11 @@ export const useUpdateJobApplicationMutation = () => {
 			queryClient.invalidateQueries({
 				queryKey: jobApplicationKeys.my
 			});
+			if (id) {
+				queryClient.invalidateQueries({
+					queryKey: jobApplicationKeys.byId(id)
+				});
+			}
 		},
 		onError: (error) => {
 			console.error('Failed to create job application:', error);
