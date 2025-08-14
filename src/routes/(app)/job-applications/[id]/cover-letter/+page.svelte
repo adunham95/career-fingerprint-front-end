@@ -1,8 +1,13 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useUpdateCoverLetterMutation, type NewCoverLetter } from '$lib/API/cover-letters';
+	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import { debounce } from '$lib/Utils/debounce.js';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 
 	const { data } = $props();
 
@@ -29,7 +34,32 @@
 	}, 500);
 </script>
 
-<div>
+<div class="flex items-center justify-between">
+	<h2>Cover Letter</h2>
+	{#if useFeatureGate(1, data.user)}
+		<a
+			href="{PUBLIC_API_URL}/cover-letters/jobApp/{data.application?.id}/pdf"
+			target="_blank"
+			download
+			rel="noopener noreferrer"
+			class="btn btn--primary relative ml-4"
+		>
+			<span>Download Cover Letter</span>
+			<PremiumBadge />
+		</a>
+	{/if}
+</div>
+
+{#if !useFeatureGate(1, data.user)}
+	<div class="my-2">
+		<FeatureBlock
+			title="Download Cover Letter"
+			description="To download your cover letter, upgrade to the pro plan"
+		/>
+	</div>
+{/if}
+
+<div class="mt-4">
 	<p>{data.user.firstName} {data.user.lastName}</p>
 	<br />
 	<p>{data.application?.company}</p>

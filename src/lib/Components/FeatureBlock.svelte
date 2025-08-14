@@ -26,7 +26,7 @@
 				/>
 			</svg>
 		</div>
-		<div class="ml-3">
+		<div class="ml-3 w-full">
 			<h3 class="text-sm font-medium text-amber-800">{title}</h3>
 			<div class="mt-2 text-sm text-amber-700">
 				<p>
