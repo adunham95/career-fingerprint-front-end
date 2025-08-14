@@ -33,13 +33,16 @@
 </script>
 
 <PageContainer>
-	<div class="align-center mt-5 mb-5 flex justify-between border-b border-gray-200 pb-5">
+	<div
+		class="align-center mt-5 mb-5 flex justify-between border-b border-gray-200 pb-5 print:hidden"
+	>
 		<h1 class="text-2xl font-semibold text-gray-900">My Achievement Timeline</h1>
 		<div>
 			<!-- TODO Link to printer -->
 			<button
 				class="btn btn-text--primary"
 				onclick={() => {
+					window.print();
 					trackingStore.trackAction('Print Achievement Click');
 				}}>Print Timeline</button
 			>
@@ -53,12 +56,14 @@
 		</div>
 	</div>
 
-	<InfoBlock
-		title="What is an achievement?"
-		description="An achievement is anything you accomplish, big or small, that you document for future use in performance reviews, 1:1 meetings, job interviews, building your resume or reviewing your professional growth."
-	/>
+	<div class="print:hidden">
+		<InfoBlock
+			title="What is an achievement?"
+			description="An achievement is anything you accomplish, big or small, that you document for future use in performance reviews, 1:1 meetings, job interviews, building your resume or reviewing your professional growth."
+		/>
+	</div>
 
-	<div class="pb-5">
+	<div class="pb-5 print:hidden">
 		<div class="flex items-center justify-end">
 			<el-dropdown class="relative inline-block text-left">
 				<button
