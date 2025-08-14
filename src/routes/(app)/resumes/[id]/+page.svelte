@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { useMyEducationQuery } from '$lib/API/education.js';
-	import { useMyJobPositionsQuery } from '$lib/API/job-positions.js';
 	import {
 		resumeObjectTypeMap,
 		useAddResumeObjectMutation,
@@ -23,10 +21,10 @@
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
-	import { add } from 'date-fns';
 	import type { Education, JobPosition } from '../../../../app.js';
 	import { onMount } from 'svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	const { data } = $props();
 
@@ -370,9 +368,12 @@
 				</div>
 			</Accordion>
 			{#if useFeatureGate(1, data.user)}
-				<p class="mt-4 text-gray-600">Download PDF version or print this resume</p>
-				<button
-					class="btn btn--primary relative mt-2 w-full"
+				<p class="mt-4 text-gray-600">Download a PDF version this resume</p>
+				<a
+					target="_blank"
+					href={`${PUBLIC_API_URL}/resume/${data.resume.id}/pdf`}
+					download
+					class="btn btn--primary relative mt-2 flex w-full justify-center"
 					onclick={() => trackingStore.trackAction('Download Resume')}
 				>
 					<svg
@@ -408,7 +409,7 @@
 
 						<span class="sr-only">Included with Premium</span>
 					</div>
-				</button>
+				</a>
 			{:else}
 				<FeatureBlock
 					title="Download Resume"
