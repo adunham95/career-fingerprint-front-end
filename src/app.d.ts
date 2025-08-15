@@ -28,6 +28,9 @@ interface JobPosition {
 interface BulletPoint {
 	id: string;
 	text: string | null;
+	jobPositionID?: string;
+	resumeID?: string;
+	educationID?: string;
 }
 
 interface Project {
@@ -46,6 +49,7 @@ interface Education {
 	currentPosition: boolean | null;
 	description: string | null;
 	achievements: Achievement[];
+	bulletPoints: BulletPoint[];
 }
 
 interface JobApplication {

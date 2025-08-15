@@ -27,10 +27,8 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
-	import {
-		useCreateJobPositionBulletPoint,
-		useDeleteJobPositionBulletPoint
-	} from '$lib/API/job-positions.js';
+	import { useDeleteJobPositionBulletPoint } from '$lib/API/job-positions.js';
+	import { useCreateBulletPoint, useDeleteBulletPoint } from '$lib/API/bullet-points.js';
 
 	const { data } = $props();
 
@@ -65,8 +63,8 @@
 	let updateResumeObject = useUpdateResumeObjectMutation();
 	let deleteResumeObject = useDeleteResumeObjectMutation();
 	let addResumeObject = useAddResumeObjectMutation();
-	let addBulletPointMutation = useCreateJobPositionBulletPoint();
-	let deleteBulletPointMutation = useDeleteJobPositionBulletPoint();
+	let addBulletPointMutation = useCreateBulletPoint();
+	let deleteBulletPointMutation = useDeleteBulletPoint();
 
 	async function updateResumeName() {
 		try {
@@ -184,7 +182,8 @@
 						description: item.description,
 						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
 						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
-						currentPosition: item.currentPosition
+						currentPosition: item.currentPosition,
+						bulletPoints: item.bulletPoints
 					} as Education;
 				}
 				return {} as Education;
@@ -223,26 +222,44 @@
 		}
 	}
 
-	async function addBulletPoint(jobPositionID: string, text?: string) {
+	async function addBulletPoint(newBulletPointData: {
+		jobPositionID?: string;
+		educationID?: string;
+		text?: string;
+	}) {
 		try {
 			let newBulletPoint = await $addBulletPointMutation.mutateAsync({
-				text: text || '',
-				jobPositionID,
+				...newBulletPointData,
 				resumeID: data.resume.id
 			});
 
-			let jobPosition = jobs.find((j) => j.id === jobPositionID);
-			jobPosition?.bulletPoints.push(newBulletPoint);
+			if (newBulletPointData.jobPositionID) {
+				let jobPosition = jobs.find((j) => j.id === newBulletPointData.jobPositionID);
+				jobPosition?.bulletPoints.push(newBulletPoint);
+			}
+			if (newBulletPointData.educationID) {
+				let eduPosition = education.find((j) => j.id === newBulletPointData.educationID);
+				eduPosition?.bulletPoints.push(newBulletPoint);
+			}
 		} catch (error) {}
 	}
 
-	async function deleteBulletPoint(jobPositionID: string, bulletPointID: string) {
+	async function deleteBulletPoint(bulletPointID: string) {
 		try {
-			let deletedBulletPoint = $deleteBulletPointMutation.mutateAsync({ bulletPointID });
-			const job = jobs.find((j) => j.id === jobPositionID);
-			if (!job) return;
-			job.bulletPoints = job.bulletPoints.filter((bp) => bp.id !== bulletPointID);
-		} catch (error) {}
+			let deletedBulletPoint = await $deleteBulletPointMutation.mutateAsync({ bulletPointID });
+			if (deletedBulletPoint.jobPositionID) {
+				const job = jobs.find((j) => j.id === deletedBulletPoint.jobPositionID);
+				if (!job) return;
+				job.bulletPoints = job.bulletPoints.filter((bp) => bp.id !== bulletPointID);
+			}
+			if (deletedBulletPoint?.educationID) {
+				const edu = education.find((j) => j.id === deletedBulletPoint?.educationID);
+				if (!edu) return;
+				edu.bulletPoints = edu.bulletPoints.filter((bp) => bp.id !== bulletPointID);
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	}
 </script>
 
@@ -355,7 +372,11 @@
 												<li class="text-sm text-gray-600">
 													<button
 														class="group/ach relative w-full rounded px-2 py-1 text-start"
-														onclick={() => addBulletPoint(job.id, achievement.myContribution)}
+														onclick={() =>
+															addBulletPoint({
+																jobPositionID: job.id,
+																text: achievement.myContribution
+															})}
 													>
 														<span>
 															{achievement.myContribution}
@@ -388,7 +409,7 @@
 												/>
 												<button
 													class="btn btn-text--error"
-													onclick={() => deleteBulletPoint(job.id, bulletPoint.id)}
+													onclick={() => deleteBulletPoint(bulletPoint.id)}
 												>
 													<svg
 														xmlns="http://www.w3.org/2000/svg"
@@ -410,7 +431,7 @@
 										{/each}
 										<button
 											class="btn btn-text--success btn-small w-full text-start"
-											onclick={() => addBulletPoint(job.id)}
+											onclick={() => addBulletPoint({ jobPositionID: job.id })}
 										>
 											Add Bullet Point
 										</button>
@@ -466,6 +487,81 @@
 							{#if !edu.currentPosition}
 								<DateInput id={'endDate' + idx} label="End Date" bind:value={edu.endDate} />
 							{/if}
+							<div>
+								<Label id="" label="Achievements" />
+								<div class=" max-h-24 min-h-6 overflow-y-scroll">
+									{#if edu.achievements?.length > 0}
+										<ul class=" space-y-1">
+											{#each edu.achievements as achievement, idx}
+												<li class="text-sm text-gray-600">
+													<button
+														class="group/ach relative w-full rounded px-2 py-1 text-start"
+														onclick={() =>
+															addBulletPoint({
+																educationID: edu.id,
+																text: achievement.myContribution
+															})}
+													>
+														<span>
+															{achievement.myContribution}
+														</span>
+														<span
+															class="bg-pastel-green-600/90 absolute inset-0 hidden items-center justify-end rounded px-1 group-hover/ach:flex"
+														>
+															Add Achievement Bullet Point
+														</span>
+													</button>
+												</li>
+											{/each}
+										</ul>
+									{:else}
+										<p class="text-sm text-gray-400 italic">No achievements added yet</p>
+									{/if}
+								</div>
+							</div>
+							<div>
+								<Label id="" label="Bullet Points" />
+								<div class=" max-h-24 min-h-6 overflow-y-scroll">
+									<ul class=" space-y-1">
+										{#each edu.bulletPoints as bulletPoint, idx}
+											<li class="flex items-center text-sm text-gray-600">
+												<TextInput
+													className="flex-1"
+													id={'bulletPoint' + idx}
+													label=""
+													bind:value={bulletPoint.text}
+												/>
+												<button
+													class="btn btn-text--error"
+													onclick={() => deleteBulletPoint(bulletPoint.id)}
+												>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke-width="1.5"
+														stroke="currentColor"
+														class="size-6"
+													>
+														<path
+															stroke-linecap="round"
+															stroke-linejoin="round"
+															d="M6 18 18 6M6 6l12 12"
+														/>
+													</svg>
+													<span class="sr-only">Delete {bulletPoint.text}</span>
+												</button>
+											</li>
+										{/each}
+										<button
+											class="btn btn-text--success btn-small w-full text-start"
+											onclick={() => addBulletPoint({ educationID: edu.id })}
+										>
+											Add Bullet Point
+										</button>
+									</ul>
+								</div>
+							</div>
 							{#snippet actions()}
 								<button
 									class="btn btn-text--error btn-small"

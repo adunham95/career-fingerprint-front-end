@@ -122,10 +122,14 @@ interface JobPositionUpdate extends JobPosition {
 	bulletPointsOptions?: string[];
 }
 
+interface EducationUpdate extends Education {
+	bulletPointsOptions?: string[];
+}
+
 interface ResumeObject {
 	type: keyof typeof resumeObjectTypeMap;
 	itemID: string;
-	item: JobPositionUpdate | Education;
+	item: JobPositionUpdate | EducationUpdate;
 }
 
 export async function updateResumeObject({
@@ -156,8 +160,6 @@ export async function updateResumeObject({
 		throw new Error(`Failed to patch resume`);
 	}
 }
-
-export async function addResumeBulletPoint() {}
 
 export async function addResumeObject({
 	type

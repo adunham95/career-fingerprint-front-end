@@ -184,6 +184,15 @@
 						</div>
 						<div class="mb-2 text-gray-700">{edu.institution}</div>
 						<p class="text-gray-600">{edu.description}</p>
+						<ul class="list-inside list-disc pl-4 text-gray-700">
+							{#each edu.bulletPoints as bulletPoint}
+								{#if showIncomplete}
+									<li class="mb-1">{bulletPoint.text}</li>
+								{:else if bulletPoint.text !== ''}
+									<li class="mb-1">{bulletPoint.text}</li>
+								{/if}
+							{/each}
+						</ul>
 					</div>
 				{/if}
 			{/each}
