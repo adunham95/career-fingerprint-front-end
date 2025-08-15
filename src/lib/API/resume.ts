@@ -118,15 +118,21 @@ export async function duplicateResume(id: string): Promise<Resume | null> {
 	}
 }
 
+interface JobPositionUpdate extends JobPosition {
+	bulletPointsOptions?: string[];
+}
+
+interface ResumeObject {
+	type: keyof typeof resumeObjectTypeMap;
+	itemID: string;
+	item: JobPositionUpdate | Education;
+}
+
 export async function updateResumeObject({
 	type,
 	item,
 	itemID
-}: {
-	type: keyof typeof resumeObjectTypeMap;
-	itemID: string;
-	item: JobPosition | Education;
-}): Promise<Resume | null> {
+}: ResumeObject): Promise<Resume | null> {
 	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
 
 	try {
@@ -150,6 +156,8 @@ export async function updateResumeObject({
 		throw new Error(`Failed to patch resume`);
 	}
 }
+
+export async function addResumeBulletPoint() {}
 
 export async function addResumeObject({
 	type

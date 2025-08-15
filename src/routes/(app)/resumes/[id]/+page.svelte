@@ -26,6 +26,11 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
+	import Label from '$lib/Components/FormElements/Label.svelte';
+	import {
+		useCreateJobPositionBulletPoint,
+		useDeleteJobPositionBulletPoint
+	} from '$lib/API/job-positions.js';
 
 	const { data } = $props();
 
@@ -51,10 +56,7 @@
 		summary: data.resume.summary || data.user.pitch || ''
 	});
 
-	// let jobs = useMyJobPositionsQuery(data.jobs);
-	// let education = useMyEducationQuery(data.education);
-
-	let jobs = $state(data.jobs || []);
+	let jobs = $state<JobPosition[]>(data.jobs || []);
 	let education = $state(data.education || []);
 
 	let updateResumeMutation = useUpdateResumeMutation(data.resume.id);
@@ -63,6 +65,8 @@
 	let updateResumeObject = useUpdateResumeObjectMutation();
 	let deleteResumeObject = useDeleteResumeObjectMutation();
 	let addResumeObject = useAddResumeObjectMutation();
+	let addBulletPointMutation = useCreateJobPositionBulletPoint();
+	let deleteBulletPointMutation = useDeleteJobPositionBulletPoint();
 
 	async function updateResumeName() {
 		try {
@@ -166,7 +170,8 @@
 						description: item.description,
 						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
 						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
-						currentPosition: item.currentPosition
+						currentPosition: item.currentPosition,
+						bulletPoints: item.bulletPoints
 					} as JobPosition;
 				}
 				return {} as JobPosition;
@@ -209,13 +214,35 @@
 
 	async function duplicateResume() {
 		try {
-			const newResume = await $duplicateResumeMutation.refetch();
+			await $duplicateResumeMutation.refetch();
 			goto(`/resumes`);
 		} catch (error) {
 			toastStore.show({
 				message: 'Error duplicating resume'
 			});
 		}
+	}
+
+	async function addBulletPoint(jobPositionID: string, text?: string) {
+		try {
+			let newBulletPoint = await $addBulletPointMutation.mutateAsync({
+				text: text || '',
+				jobPositionID,
+				resumeID: data.resume.id
+			});
+
+			let jobPosition = jobs.find((j) => j.id === jobPositionID);
+			jobPosition?.bulletPoints.push(newBulletPoint);
+		} catch (error) {}
+	}
+
+	async function deleteBulletPoint(jobPositionID: string, bulletPointID: string) {
+		try {
+			let deletedBulletPoint = $deleteBulletPointMutation.mutateAsync({ bulletPointID });
+			const job = jobs.find((j) => j.id === jobPositionID);
+			if (!job) return;
+			job.bulletPoints = job.bulletPoints.filter((bp) => bp.id !== bulletPointID);
+		} catch (error) {}
 	}
 </script>
 
@@ -285,7 +312,13 @@
 					<TextInput id="linkedin" label="Linkedin" bind:value={personalInfo.linkedin} />
 					<TextArea id="summary" label="Summary" bind:value={personalInfo.summary} />
 					{#snippet actions()}
-						<button class="btn btn-text--success btn-small" onclick={updateResume}>Save</button>
+						<button
+							class="btn btn-text--success btn-small"
+							onclick={() => {
+								updateResume();
+								trackingStore.trackAction('Updated Resume', { section: 'Profile' });
+							}}>Save</button
+						>
 					{/snippet}
 				</Card>
 			</Accordion>
@@ -311,20 +344,100 @@
 							{#if !job.currentPosition}
 								<DateInput id={'endDate' + idx} label="End Date" bind:value={job.endDate} />
 							{/if}
-							<TextArea
-								id={'description' + idx}
-								label="Basic Description"
-								bind:value={job.description}
+							<TextArea id={'description' + idx} label="Summary" bind:value={job.description}
 							></TextArea>
+							<div>
+								<Label id="" label="Achievements" />
+								<div class=" max-h-24 min-h-6 overflow-y-scroll">
+									{#if job.achievements?.length > 0}
+										<ul class=" space-y-1">
+											{#each job.achievements as achievement, idx}
+												<li class="text-sm text-gray-600">
+													<button
+														class="group/ach relative w-full rounded px-2 py-1 text-start"
+														onclick={() => addBulletPoint(job.id, achievement.myContribution)}
+													>
+														<span>
+															{achievement.myContribution}
+														</span>
+														<span
+															class="bg-pastel-green-600/90 absolute inset-0 hidden items-center justify-end rounded px-1 group-hover/ach:flex"
+														>
+															Add Achievement Bullet Point
+														</span>
+													</button>
+												</li>
+											{/each}
+										</ul>
+									{:else}
+										<p class="text-sm text-gray-400 italic">No achievements added yet</p>
+									{/if}
+								</div>
+							</div>
+							<div>
+								<Label id="" label="Bullet Points" />
+								<div class=" max-h-24 min-h-6 overflow-y-scroll">
+									<ul class=" space-y-1">
+										{#each job.bulletPoints as bulletPoint, idx}
+											<li class="flex items-center text-sm text-gray-600">
+												<TextInput
+													className="flex-1"
+													id={'bulletPoint' + idx}
+													label=""
+													bind:value={bulletPoint.text}
+												/>
+												<button
+													class="btn btn-text--error"
+													onclick={() => deleteBulletPoint(job.id, bulletPoint.id)}
+												>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke-width="1.5"
+														stroke="currentColor"
+														class="size-6"
+													>
+														<path
+															stroke-linecap="round"
+															stroke-linejoin="round"
+															d="M6 18 18 6M6 6l12 12"
+														/>
+													</svg>
+													<span class="sr-only">Delete {bulletPoint.text}</span>
+												</button>
+											</li>
+										{/each}
+										<button
+											class="btn btn-text--success btn-small w-full text-start"
+											onclick={() => addBulletPoint(job.id)}
+										>
+											Add Bullet Point
+										</button>
+									</ul>
+								</div>
+							</div>
 							{#snippet actions()}
 								<button
 									class="btn btn-text--error btn-small"
-									onclick={() => deleteObject('job-positions', job.id)}>Delete</button
+									onclick={() => {
+										deleteObject('job-positions', job.id);
+										trackingStore.trackAction('Updated Resume', {
+											section: 'Job Position',
+											button: 'Delete'
+										});
+									}}>Delete</button
 								>
 								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
 								<button
 									class="btn btn-text--success btn-small"
-									onclick={() => saveObject('job-positions', job)}>Save</button
+									onclick={() => {
+										saveObject('job-positions', job);
+										trackingStore.trackAction('Updated Resume', {
+											section: 'Job Position',
+											button: 'Save'
+										});
+									}}>Save</button
 								>
 							{/snippet}
 						</Card>

@@ -22,6 +22,12 @@ interface JobPosition {
 	endDate: string | null;
 	currentPosition: boolean | null;
 	achievements: Achievement[];
+	bulletPoints: BulletPoint[];
+}
+
+interface BulletPoint {
+	id: string;
+	text: string | null;
 }
 
 interface Project {
@@ -150,5 +156,6 @@ export {
 	Meeting,
 	PrepQuestion,
 	MeetingHighlight,
-	CurrentUser
+	CurrentUser,
+	BulletPoint
 };

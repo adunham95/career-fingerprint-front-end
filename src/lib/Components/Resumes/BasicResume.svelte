@@ -152,11 +152,15 @@
 						</div>
 						<div class="mb-2 text-gray-600">{job.location}</div>
 						<p class="mb-3 whitespace-pre-wrap text-gray-700">{job.description}</p>
-						<!-- <ul class="list-inside list-disc pl-4 text-gray-700">
-					{#each job.achievements as achievement}
-						<li class="mb-1">{achievement}</li>
-					{/each}
-				</ul> -->
+						<ul class="list-inside list-disc pl-4 text-gray-700">
+							{#each job.bulletPoints as bulletPoint}
+								{#if showIncomplete}
+									<li class="mb-1">{bulletPoint.text}</li>
+								{:else if bulletPoint.text !== ''}
+									<li class="mb-1">{bulletPoint.text}</li>
+								{/if}
+							{/each}
+						</ul>
 					</div>
 				{/if}
 			{/each}

@@ -18,13 +18,13 @@
 	}: Props = $props();
 </script>
 
-<details class={`group w-full ${className}`}>
+<details class={`group/accordion w-full ${className}`}>
 	<summary
 		class="btn btn-text--primary flex w-full cursor-pointer list-none items-center justify-between gap-4"
 	>
 		<div class="flex items-center justify-start">
 			<svg
-				class="rotate-0 transform transition-all duration-300 group-open:rotate-180"
+				class="rotate-0 transform transition-all duration-300 group-open/accordion:rotate-180"
 				fill="none"
 				height="20"
 				width="20"
