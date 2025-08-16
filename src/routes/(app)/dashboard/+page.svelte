@@ -46,7 +46,7 @@
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
-	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
+	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<button
 			onclick={() => {
 				isAchievementOpen = true;

@@ -7,9 +7,15 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { AppStatusEnum } from '$lib/Utils/AppStatusTypes';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Job Application', { tab: 'Details' });
+	});
 
 	let currentJob = useJobApplicationByIDQuery(data.application?.id || '', data.application);
 	let editType = $state<string | null>(null);

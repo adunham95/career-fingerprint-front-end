@@ -192,6 +192,11 @@
 		</div>
 	</TwoColumn>
 	<TwoColumn title={'My Education'}>
+		{#snippet subSection()}
+			<button class="btn btn--primary" onclick={() => addObject('education')}>
+				Add New Education
+			</button>
+		{/snippet}
 		{#each education || [] as edu, idx}
 			<Card contentClassName="space-y-2 px-4 py-4">
 				<EducationDetails bind:education={education[idx]} {idx} />

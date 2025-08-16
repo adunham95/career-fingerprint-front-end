@@ -6,10 +6,16 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { debounce } from '$lib/Utils/debounce.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Job Application', { tab: 'Cover Letter' });
+	});
 
 	let isSaving = $state<string | null>(null);
 
