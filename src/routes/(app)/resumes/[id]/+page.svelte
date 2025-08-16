@@ -27,8 +27,9 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
-	import { useDeleteJobPositionBulletPoint } from '$lib/API/job-positions.js';
 	import { useCreateBulletPoint, useDeleteBulletPoint } from '$lib/API/bullet-points.js';
+	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
+	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
 
 	const { data } = $props();
 
@@ -155,25 +156,31 @@
 
 	function getObjectData(
 		type: keyof typeof resumeObjectTypeMap,
-		item: JobPosition | Education
+		id: string
 	): JobPosition | Education {
 		switch (type) {
 			case 'job-positions':
-				if ('name' in item) {
-					item as JobPosition;
+				let jobData = jobs.find((j) => j.id === id);
+				if (!jobData) throw 'missing job';
+				let job = { ...jobData };
+				console.log({ job });
+				if ('name' in job) {
+					job as JobPosition;
 					return {
-						name: item.name,
-						company: item.company,
-						location: item.company,
-						description: item.description,
-						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
-						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
-						currentPosition: item.currentPosition,
-						bulletPoints: item.bulletPoints
+						name: job.name,
+						company: job.company,
+						location: job.location,
+						description: job.description,
+						startDate: job.startDate ? new Date(job.startDate).toISOString() : null,
+						endDate: job.endDate ? new Date(job.endDate).toISOString() : null,
+						currentPosition: job.currentPosition,
+						bulletPoints: job.bulletPoints
 					} as JobPosition;
 				}
 				return {} as JobPosition;
 			case 'education':
+				let item = education.find((j) => j.id === id);
+				if (!item) throw 'missing education';
 				if ('degree' in item) {
 					item as Education;
 					return {
@@ -192,12 +199,14 @@
 		}
 	}
 
-	async function saveObject(type: keyof typeof resumeObjectTypeMap, item: JobPosition | Education) {
+	async function saveObject(type: keyof typeof resumeObjectTypeMap, id: string) {
 		try {
+			let item = getObjectData(type, id);
+			console.log({ item });
 			await $updateResumeObject.mutateAsync({
 				type,
-				itemID: item.id,
-				item: getObjectData(type, item)
+				itemID: id,
+				item: getObjectData(type, id)
 			});
 			toastStore.show({
 				type: 'success',
@@ -261,6 +270,8 @@
 			console.log(error);
 		}
 	}
+
+	$inspect(jobs);
 </script>
 
 <PageContainer>
@@ -353,16 +364,7 @@
 					<!-- {#each $jobs.data || [] as job, idx} -->
 					{#each jobs || [] as job, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
-							<TextInput id={'title' + idx} label="Title" bind:value={job.name} />
-							<TextInput id={'company' + idx} label="Company" bind:value={job.company} />
-							<TextInput id={'location' + idx} label="Location" bind:value={job.location} />
-							<Toggle label="Current Job" bind:checked={job.currentPosition} />
-							<DateInput id={'startDate' + idx} label="Start Date" bind:value={job.startDate} />
-							{#if !job.currentPosition}
-								<DateInput id={'endDate' + idx} label="End Date" bind:value={job.endDate} />
-							{/if}
-							<TextArea id={'description' + idx} label="Summary" bind:value={job.description}
-							></TextArea>
+							<JobDetails bind:job={jobs[idx]} {idx} />
 							<div>
 								<Label id="" label="Achievements" />
 								<div class=" max-h-24 min-h-6 overflow-y-scroll">
@@ -453,7 +455,7 @@
 								<button
 									class="btn btn-text--success btn-small"
 									onclick={() => {
-										saveObject('job-positions', job);
+										saveObject('job-positions', job.id);
 										trackingStore.trackAction('Updated Resume', {
 											section: 'Job Position',
 											button: 'Save'
@@ -478,15 +480,7 @@
 				<div class="space-y-2">
 					{#each education || [] as edu, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
-							<TextInput id="degree" label="Degree" bind:value={edu.degree} />
-							<TextInput id="institution" label="Institution" bind:value={edu.institution} />
-							<TextArea id="description" label="Description" bind:value={edu.description}
-							></TextArea>
-							<Toggle label="Currently In School" bind:checked={edu.currentPosition} />
-							<DateInput id={'startDate' + idx} label="Start Date" bind:value={edu.startDate} />
-							{#if !edu.currentPosition}
-								<DateInput id={'endDate' + idx} label="End Date" bind:value={edu.endDate} />
-							{/if}
+							<EducationDetails bind:education={education[idx]} {idx} />
 							<div>
 								<Label id="" label="Achievements" />
 								<div class=" max-h-24 min-h-6 overflow-y-scroll">
@@ -570,7 +564,7 @@
 								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
 								<button
 									class="btn btn-text--success btn-small"
-									onclick={() => saveObject('education', edu)}>Save</button
+									onclick={() => saveObject('education', edu.id)}>Save</button
 								>
 							{/snippet}
 						</Card>
