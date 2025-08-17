@@ -159,6 +159,32 @@ export async function createCheckoutSession(newCheckout: { priceID: string }): P
 	}
 }
 
+export async function updateBillingDetails(): Promise<string> {
+	const url = `${PUBLIC_API_URL}/stripe/update-billing`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({})
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+			return data.checkoutSessionClientSecret;
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to get secret: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get secret`);
+	}
+}
+
 export async function cancelSubscription(subscriptionID: string) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/cancel/${subscriptionID}`, {
@@ -242,6 +268,16 @@ export const useCreateCheckoutSession = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create checkout session:', error);
+		}
+	});
+};
+
+export const useUpdateBilling = () => {
+	return createMutation({
+		mutationFn: updateBillingDetails,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to update billing details:', error);
 		}
 	});
 };

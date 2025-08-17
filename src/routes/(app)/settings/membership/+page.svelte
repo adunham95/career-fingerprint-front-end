@@ -219,6 +219,7 @@
 					<div class="flex justify-end">
 						<button
 							id="pay-button"
+							disabled={checkingOut}
 							class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
 							onclick={() => {
 								trackingStore.trackAction('Subscribe Click');

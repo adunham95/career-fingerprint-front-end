@@ -9,7 +9,8 @@
 	<TabNav
 		options={[
 			{ path: '/settings/profile', label: 'My Account' },
-			{ path: '/settings/membership', label: 'Membership' }
+			{ path: '/settings/membership', label: 'Membership' },
+			{ path: '/settings/billing', label: 'Billing' }
 			// { path: '/settings/invites', label: 'Invites' }
 		]}
 	/>
