@@ -18,11 +18,14 @@
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import Loader from '$lib/Components/Loader.svelte';
 
 	let stripe: Stripe | null = null;
 	let stripeCheckout: StripeCheckout | null = null;
 	let priceID: string | null = $state(null);
 	let couponCode: string | null = $state(null);
+	let stripeCheckoutLoading: boolean = $state(false);
+	let checkingOut = $state(false);
 	const startCheckout = useCreateCheckoutSession();
 	const cancelMembershipMutation = useCancelSubscription();
 
@@ -33,26 +36,35 @@
 
 	function updateStripe(newPriceID: string) {
 		priceID = newPriceID;
+		stripeCheckoutLoading = true;
 		if (stripe) {
 			stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
 				stripeCheckout = checkout;
 				const paymentElement = checkout.createPaymentElement();
 				paymentElement.mount('#payment-element');
+				paymentElement.on('ready', function (event) {
+					// Handle ready event
+					stripeCheckoutLoading = false;
+				});
 				const button = document.getElementById('pay-button');
+				const errors = document.getElementById('error-message');
 				if (button) {
 					button.addEventListener('click', () => {
+						checkingOut = true;
 						// Clear any validation errors
-						// errors.textContent = '';
-
+						if (errors) {
+							errors.textContent = '';
+						}
 						checkout.confirm().then(async (result) => {
 							console.log(result);
 
-							if (result.type === 'error') {
-								// errors.textContent = result.error.message;
+							if (result.type === 'error' && errors) {
+								errors.textContent = result.error.message;
 							}
 							if (result.type === 'success') {
 								console.log(result.session.id);
 							}
+							checkingOut = false;
 						});
 					});
 				}
@@ -196,21 +208,36 @@
 						>
 					</div>
 				</div>
-				<form id="payment-form">
+				<form
+					id="payment-form"
+					class={`relative ${stripeCheckoutLoading ? 'hidden' : 'block'} w-full`}
+				>
 					<div id="payment-element">
 						<!-- Elements will create form elements here -->
 					</div>
-					<button
-						id="pay-button"
-						class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
-						onclick={() => {
-							trackingStore.trackAction('Subscribe Click');
-						}}>Subscribe</button
-					>
-					<div id="error-message">
-						<!-- Display error message to your customers here -->
+					<div id="error-message" class="text-error-600 py-1"></div>
+					<div class="flex justify-end">
+						<button
+							id="pay-button"
+							class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
+							onclick={() => {
+								trackingStore.trackAction('Subscribe Click');
+							}}
+						>
+							Upgrade Account
+						</button>
 					</div>
+					{#if checkingOut}
+						<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/80">
+							<Loader />
+						</div>
+					{/if}
 				</form>
+				{#if stripeCheckoutLoading}
+					<div class="flex justify-center">
+						<Loader />
+					</div>
+				{/if}
 			</Card>
 		</TwoColumn>
 	{/if}
