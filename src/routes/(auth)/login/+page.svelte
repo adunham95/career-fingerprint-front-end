@@ -11,6 +11,7 @@
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
+	let showError = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Login');
@@ -18,6 +19,7 @@
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
+		showError = false;
 		trackingStore.trackAction('Login Click');
 
 		console.log({ email, password });
@@ -50,11 +52,13 @@
 			} else {
 				const data = await res.json();
 				console.log(res, data);
-				toastStore.show({ message: 'Error logging in', type: 'error' });
+				showError = true;
+				// toastStore.show({ message: 'Error logging in', type: 'error' });
 				isLoading = false;
 			}
 		} catch (error) {
-			toastStore.show({ message: 'Error logging in', type: 'error' });
+			showError = true;
+			// toastStore.show({ message: 'Error logging in', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
 			isLoading = false;
 		}
@@ -67,6 +71,9 @@
 			>Create your account</a
 		>
 	</p>
+	{#if showError}
+		<p class="text-error-600 text-sm">Invalid login credentials. Please try again.</p>
+	{/if}
 	<form onsubmit={(e) => login(e)} class="space-y-2">
 		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
 		<TextInput

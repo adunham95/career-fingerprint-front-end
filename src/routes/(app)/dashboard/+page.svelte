@@ -313,7 +313,7 @@
 			{:else}
 				<InfoBlock
 					title="Achievements"
-					description="To add a new achievement click Add Achievement"
+					description="Your achievement timeline is empty. To add a new achievement click Add Achievement"
 				/>
 			{/if}
 		</div>
