@@ -10,6 +10,7 @@
 		options={[
 			{ path: '/settings/profile', label: 'My Account' },
 			{ path: '/settings/membership', label: 'Membership' }
+			// { path: '/settings/invites', label: 'Invites' }
 		]}
 	/>
 
