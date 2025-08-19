@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PUBLIC_API_URL, PUBLIC_DEFAULT_SUBSCRIPTION_KEY } from '$env/static/public';
-	import { useGetPlanByID } from '$lib/API/subscription';
+	import { PUBLIC_DEFAULT_SUBSCRIPTION_KEY } from '$env/static/public';
+	import { useCreateSubscriptionTrial, useGetPlanByID } from '$lib/API/subscription';
+	import { useRegisterUserMutation } from '$lib/API/user';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { centsToDollars } from '$lib/Utils/centsToDollars';
@@ -19,11 +21,14 @@
 
 	let proData = useGetPlanByID(PUBLIC_DEFAULT_SUBSCRIPTION_KEY || 'pro');
 
+	let registerUser = useRegisterUserMutation();
+	let startSubscriptionTrial = useCreateSubscriptionTrial();
+
+	let newUser: null | { id: string } = $state(null);
+
 	onMount(() => {
 		trackingStore.pageViewEvent('Get Started');
 	});
-
-	$inspect($proData);
 
 	let profile = $state({
 		lookingFor: '',
@@ -40,36 +45,19 @@
 	});
 
 	async function createAccount() {
-		const url = `${PUBLIC_API_URL}/register`;
-
 		if (!profile.email || !profile.firstName) {
 			toastStore.show({ message: 'Missing account elements', type: 'error' });
+			return;
 		}
 
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				...profile,
-				startDate: profile.startDate ? new Date(profile.startDate).toISOString() : ''
-			})
-		});
-
-		console.log(res);
-
-		if (res.ok) {
-			const data = await res.json();
-
+		try {
+			newUser = await $registerUser.mutateAsync(profile);
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
 			});
-			// scrollToView('stickers');
 			scrollToView('premium');
-		} else {
+		} catch (error) {
 			toastStore.show({
 				type: 'error',
 				message: `Error updating User`
@@ -78,47 +66,34 @@
 	}
 
 	async function startFreeTrial() {
-		const url = `${PUBLIC_API_URL}/stripe/trial`;
-
 		if (!$proData?.data?.monthlyStripePriceID) {
 			toastStore.show({
 				type: 'error',
 				message: `Error creating subscription`
 			});
+			return;
 		}
 
-		let inviteCode = page.url.searchParams.get('code');
+		let inviteCode = page.url.searchParams.get('code') || undefined;
 
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
+		try {
+			let newSubscription = $startSubscriptionTrial.mutateAsync({
 				priceID: $proData.data?.monthlyStripePriceID,
-				planID: $proData?.data?.id,
+				planID: $proData?.data?.id || '',
 				inviteCode
-			})
-		});
-
-		if (res.ok) {
-			const data = await res.json();
-
+			});
 			toastStore.show({
 				type: 'success',
 				message: `Free trial started`
 			});
-		} else {
+			goto('/dashboard');
+		} catch (error) {
 			toastStore.show({
 				type: 'error',
 				message: `Error creating free trial`
 			});
 		}
-		goto('/dashboard');
 	}
-
-	$inspect(profile);
 </script>
 
 <div class="mx-auto max-w-4xl px-3 py-3">
@@ -248,7 +223,7 @@
 				width={130}
 			/>
 		</p>
-		<!-- {/if} -->
+
 		<div class="flex justify-end pt-2">
 			<button
 				class="btn btn--primary"
@@ -322,6 +297,7 @@
 		<div class="flex justify-end pt-2">
 			<button
 				class="btn btn--primary"
+				disabled={$registerUser.isPending}
 				onclick={() => {
 					createAccount();
 					trackingStore.trackAction('Next Step Click', {
@@ -355,14 +331,21 @@
 	</div> -->
 
 	<!-- Step 7 -->
-	<div id="premium" class="flex min-h-screen flex-col items-center justify-center">
+	<div id="premium" class=" flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-1">Unlock additional features when building your fingerprint</p>
 
 		{#if $proData.data?.monthlyStripePriceID}
 			<div
-				class="bg-surface-50 mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
+				class="bg-surface-50 relative mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
 			>
+				{#if $startSubscriptionTrial.isPending}
+					<div
+						class="absolute inset-0 flex items-center justify-center rounded-3xl bg-gray-600/40 shadow-2xl"
+					>
+						<Loader size="md" />
+					</div>
+				{/if}
 				<div class="p-8 sm:p-10 lg:flex-auto">
 					<h3 class="text-3 font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
 					<p class="mt-6 text-base/7 text-gray-600">
@@ -414,15 +397,17 @@
 							>
 								Go To My Account
 							</a> -->
-							<button
-								onclick={() => {
-									startFreeTrial();
-									trackingStore.trackAction('Start Free Trial Click');
-								}}
-								class="btn btn--primary mt-10 block w-full"
-							>
-								Start my free trial
-							</button>
+							{#if newUser}
+								<button
+									onclick={() => {
+										startFreeTrial();
+										trackingStore.trackAction('Start Free Trial Click');
+									}}
+									class="btn btn--primary mt-10 block w-full"
+								>
+									Start my free trial
+								</button>
+							{/if}
 						</div>
 					</div>
 				</div>

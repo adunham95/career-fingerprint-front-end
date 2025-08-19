@@ -1,6 +1,46 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 
+export async function registerUser(newProfile: {
+	lookingFor: string;
+	firstName: string;
+	companyName: string;
+	title: string;
+	institution: string;
+	degree: string;
+	startDate: string;
+	endDate: string;
+	email: string;
+	password: string;
+	achievement: string;
+}) {
+	const url = `${PUBLIC_API_URL}/register`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({
+				...newProfile,
+				startDate: newProfile.startDate ? new Date(newProfile.startDate).toISOString() : '',
+				endDate: newProfile.endDate ? new Date(newProfile.endDate).toISOString() : ''
+			})
+		});
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to register user ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to register user`);
+	}
+}
+
 export async function deleteUser(): Promise<{ success: boolean } | null> {
 	const url = `${PUBLIC_API_URL}/users/1`;
 
@@ -78,11 +118,23 @@ export const useDeleteUserMutation = () => {
 	});
 };
 
+export const useRegisterUserMutation = () => {
+	return createMutation({
+		mutationFn: registerUser,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to delete user:', error);
+		}
+	});
+};
+
 export const useNewInviteCodeQuery = () => {
 	return createMutation({
 		mutationFn: generateInviteCode
 	});
 };
+
+// Queries
 
 export const useGetInviteStats = () => {
 	return createQuery({

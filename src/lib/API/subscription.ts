@@ -232,6 +232,31 @@ export async function createSubscription({
 	}
 }
 
+export async function createSubscriptionTrial(trialData: {
+	priceID: string;
+	planID: string;
+	inviteCode?: string;
+}) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/stripe/trial`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(trialData)
+		});
+		if (res.ok) {
+			const data = await res.json();
+			return data;
+		}
+		throw new Error(`Failed to start free trial`);
+	} catch (error) {
+		console.log({ error });
+		throw new Error(`Failed to start free trial`);
+	}
+}
+
 export const subscriptionKeys = {
 	details: ['subscription-details'] as const,
 	availablePlans: ['available-plans'] as const,
@@ -298,6 +323,16 @@ export const useCreateSubscription = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);
+		}
+	});
+};
+
+export const useCreateSubscriptionTrial = () => {
+	return createMutation({
+		mutationFn: createSubscriptionTrial,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create subscription trail:', error);
 		}
 	});
 };
