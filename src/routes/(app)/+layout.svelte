@@ -27,7 +27,8 @@
 		profileImageURL={data.user.profileImage}
 		profileRoutes={[
 			{ title: 'Account', path: '/settings/profile' },
-			{ title: 'Membership', path: '/settings/membership' }
+			{ title: 'Membership', path: '/settings/membership' },
+			{ title: 'Referrals', path: '/settings/referral' }
 		]}
 	/>
 

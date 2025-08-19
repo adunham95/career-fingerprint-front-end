@@ -137,18 +137,8 @@ interface CurrentUser {
 	planLevel: number;
 	pitch: string;
 	lookingFor: string;
-	subscription: {
-		id: string;
-		status: string;
-		stripeSubId: string | null;
-		trialEndsAt: string | null;
-		currentPeriodEnd: string | null;
-		plan: {
-			id: string;
-			key: string;
-			level: number;
-		};
-	};
+	inviteCode: string | null;
+	subscription: SubscriptionPlan;
 }
 
 export {
