@@ -41,36 +41,22 @@
 	}
 </script>
 
-<!-- <div class="py-2">
-	<InfoBlock
-		title="Referral Codes"
-		description="You will need to generate your unique referral code. Once you have that, you can share with other people. When you share a referral code, you get $2 credit towards your next subscription when then convert there free trial to a subscription"
-	/>
-</div> -->
-
 <div class="bg-gray-50">
 	<div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16 lg:max-w-7xl lg:px-8">
-		<div class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8">
+		<div class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8">
 			<div>
 				<div class="flex justify-center">
 					<img src="/images/undraw_share-link_y9oh.svg" alt="" class="h-24 w-auto" />
 				</div>
 				<h3 class="mt-6 text-sm font-medium text-gray-900">Share</h3>
-				<p class="mt-2 text-sm text-gray-500">Share Your Custom Invite Link</p>
+				<p class="mt-2 text-sm text-gray-500">Share your custom invite link.</p>
 			</div>
 			<div>
 				<div class="flex justify-center">
 					<img src="/images/undraw_monthly-users_m84v.svg" alt="" class="h-24 w-auto" />
 				</div>
 				<h3 class="mt-6 text-sm font-medium text-gray-900">Free Trial</h3>
-				<p class="mt-2 text-sm text-gray-500">They get an extended free trial</p>
-			</div>
-			<div>
-				<div class="flex justify-center">
-					<img src="/images/undraw_in-the-zone_07y7.svg" alt="" class="h-24 w-auto" />
-				</div>
-				<h3 class="mt-6 text-sm font-medium text-gray-900">Trial Period</h3>
-				<p class="mt-2 text-sm text-gray-500">They use the free trial for a month</p>
+				<p class="mt-2 text-sm text-gray-500">They get an extended free trial for one month.</p>
 			</div>
 			<div>
 				<div class="flex justify-center">
@@ -78,8 +64,7 @@
 				</div>
 				<h3 class="mt-6 text-sm font-medium text-gray-900">Reward</h3>
 				<p class="mt-2 text-sm text-gray-500">
-					At then end of there free trial, if they subscribe you get a $2 in credits toward your
-					next subscription
+					After the free trial, you get a $2 in credits when they subscribe.
 				</p>
 			</div>
 		</div>
@@ -142,7 +127,7 @@
 					<Loader />
 				{:else}
 					<p class=" text-9xl">{$inviteStats.data?.totalInvited || 0}</p>
-					<p class="text-lg">Invited Credited</p>
+					<p class="text-lg">Invites Credited</p>
 				{/if}
 			</div>
 		</Card>
