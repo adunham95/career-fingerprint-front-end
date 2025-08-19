@@ -1,14 +1,16 @@
 <script>
 	import { invalidateAll } from '$app/navigation';
-	import { useNewInviteCodeQuery } from '$lib/API/user';
+	import { useGetInviteStats, useNewInviteCodeQuery } from '$lib/API/user';
 	import Card from '$lib/Components/Containers/Card.svelte';
-	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
 	import SocialShare from '$lib/Components/SocialShare.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard';
 	const { data } = $props();
 
 	$inspect(data);
+
+	const inviteStats = useGetInviteStats();
 
 	let isLoadingCode = $state(false);
 
@@ -128,13 +130,20 @@
 				</div>
 			</div>
 			{#snippet actions()}
-				<SocialShare text="hello world" url="google.com" />
+				<SocialShare
+					text="Here is my link for a free trial of Career Fingerprint"
+					url={`https://careerfingerprint.app/get-started?code=${data.user.inviteCode}`}
+				/>
 			{/snippet}
 		</Card>
 		<Card>
 			<div class="flex flex-col items-center justify-center">
-				<p class=" text-9xl">10</p>
-				<p class="text-lg">Users Added</p>
+				{#if $inviteStats.isLoading}
+					<Loader />
+				{:else}
+					<p class=" text-9xl">{$inviteStats.data?.totalInvited || 0}</p>
+					<p class="text-lg">Invited Credited</p>
+				{/if}
 			</div>
 		</Card>
 	</div>

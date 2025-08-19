@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { createMutation } from '@tanstack/svelte-query';
+import { createMutation, createQuery } from '@tanstack/svelte-query';
 
 export async function deleteUser(): Promise<{ success: boolean } | null> {
 	const url = `${PUBLIC_API_URL}/users/1`;
@@ -43,6 +43,27 @@ export async function generateInviteCode(): Promise<string | null> {
 	}
 }
 
+export async function inviteStats(): Promise<{ totalInvited: number } | null> {
+	const url = `${PUBLIC_API_URL}/users/invite-stats`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'GET',
+			credentials: 'include'
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to get invite code stats: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get invite code stats`);
+	}
+}
+
 export const userKeys = {
 	inviteCode: ['invite-code'] as const
 };
@@ -60,5 +81,12 @@ export const useDeleteUserMutation = () => {
 export const useNewInviteCodeQuery = () => {
 	return createMutation({
 		mutationFn: generateInviteCode
+	});
+};
+
+export const useGetInviteStats = () => {
+	return createQuery({
+		queryKey: ['invite-stats'],
+		queryFn: inviteStats
 	});
 };
