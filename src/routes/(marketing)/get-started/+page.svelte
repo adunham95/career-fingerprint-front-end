@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { PUBLIC_API_URL, PUBLIC_DEFAULT_SUBSCRIPTION_KEY } from '$env/static/public';
 	import { useGetPlanByID } from '$lib/API/subscription';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
@@ -17,9 +17,7 @@
 		if (elm) elm.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	let planKey = 'pro';
-
-	let proData = useGetPlanByID(planKey);
+	let proData = useGetPlanByID(PUBLIC_DEFAULT_SUBSCRIPTION_KEY || 'pro');
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Get Started');

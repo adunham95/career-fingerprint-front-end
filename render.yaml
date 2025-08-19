@@ -10,6 +10,8 @@ services:
         value: https://api.careerfingerprint.app # replace with your actual NestJS URL
       - key: NODE_ENV
         value: production
+      - key: PUBLIC_DEFAULT_SUBSCRIPTION_KEY
+        value: 'pro-beta'
       - key: SENTRY_DSN
         sync: false
       - key: PUBLIC_STRIPE_API_KEY
