@@ -99,6 +99,7 @@
 			},
 			body: JSON.stringify({
 				priceID: $proData.data?.monthlyStripePriceID,
+				planID: $proData?.data?.id,
 				inviteCode
 			})
 		});
