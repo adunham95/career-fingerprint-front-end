@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useGetPlanByID } from '$lib/API/subscription';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
@@ -40,13 +41,6 @@
 		achievement: ''
 	});
 
-	let proPlan = $state({
-		name: 'Pro Plan',
-		priceCents: 999,
-		interval: 'month',
-		stripePriceID: 'price_1RncVuAmXvicwTzzvah0YuEX'
-	});
-
 	async function createAccount() {
 		const url = `${PUBLIC_API_URL}/register`;
 
@@ -71,10 +65,6 @@
 		if (res.ok) {
 			const data = await res.json();
 
-			// if (data?.plan) {
-			// 	proPlan = data.plan;
-			// }
-
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
@@ -92,12 +82,14 @@
 	async function startFreeTrial() {
 		const url = `${PUBLIC_API_URL}/stripe/trial`;
 
-		if (!proPlan.stripePriceID) {
+		if (!$proData?.data?.monthlyStripePriceID) {
 			toastStore.show({
 				type: 'error',
 				message: `Error creating subscription`
 			});
 		}
+
+		let inviteCode = page.url.searchParams.get('code');
 
 		const res = await fetch(url, {
 			method: 'POST',
@@ -106,16 +98,13 @@
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify({
-				priceID: $proData.data?.monthlyStripePriceID
+				priceID: $proData.data?.monthlyStripePriceID,
+				inviteCode
 			})
 		});
 
 		if (res.ok) {
 			const data = await res.json();
-
-			if (data?.plan) {
-				proPlan = data.plan;
-			}
 
 			toastStore.show({
 				type: 'success',
@@ -416,7 +405,7 @@
 								>
 								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
 							</p>
-							<a
+							<!-- <a
 								href="/dashboard"
 								class="btn btn--primary mt-10 block w-full"
 								onclick={() =>
@@ -425,11 +414,16 @@
 									})}
 							>
 								Go To My Account
-							</a>
-							<!-- <button onclick={() => {startFreeTrial;
-							 trackingStore.trackAction('Start Free Trial Click')}}} class="btn btn--primary mt-10 block w-full">
+							</a> -->
+							<button
+								onclick={() => {
+									startFreeTrial();
+									trackingStore.trackAction('Start Free Trial Click');
+								}}
+								class="btn btn--primary mt-10 block w-full"
+							>
 								Start my free trial
-							</button> -->
+							</button>
 						</div>
 					</div>
 				</div>
