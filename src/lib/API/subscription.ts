@@ -133,7 +133,10 @@ export async function validateSubscription(
 	}
 }
 
-export async function createCheckoutSession(newCheckout: { priceID: string }): Promise<string> {
+export async function createCheckoutSession(newCheckout: {
+	priceID: string;
+	planID: string;
+}): Promise<string> {
 	const url = `${PUBLIC_API_URL}/stripe/create-checkout-session`;
 
 	try {

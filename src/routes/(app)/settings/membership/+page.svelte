@@ -74,7 +74,10 @@
 
 	async function fetchClientSecret() {
 		if (priceID) {
-			let response = await $startCheckout.mutateAsync({ priceID });
+			let response = await $startCheckout.mutateAsync({
+				priceID,
+				planID: data.availablePlans?.id || ''
+			});
 			console.log({ response });
 			return response;
 		}

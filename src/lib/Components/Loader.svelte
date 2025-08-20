@@ -1,6 +1,6 @@
 <script lang="ts">
 	interface Props {
-		size: 'sm' | 'md' | 'lg';
+		size?: 'sm' | 'md' | 'lg';
 	}
 
 	const { size = 'lg' }: Props = $props();
