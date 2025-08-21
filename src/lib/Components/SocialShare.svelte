@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { trackingStore } from '$lib/Stores/tracking';
+
 	let {
 		url = 'https://example.com',
 		text = 'Check this out!',
@@ -143,6 +145,7 @@
 		style={`background: ${link.colorHex}`}
 		class={`flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition hover:opacity-85 active:opacity-75 `}
 		aria-label={`Share on ${link.name}`}
+		onclick={() => trackingStore.trackAction('Social Share', { type: link.name })}
 	>
 		{@render link.icon()}
 		<span class="sr-only">Share to {link.name}</span>
@@ -154,7 +157,10 @@
 	<button
 		type="button"
 		class="bg-primary flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition hover:opacity-85 active:opacity-75"
-		onclick={nativeShare}
+		onclick={() => {
+			nativeShare();
+			trackingStore.trackAction('Social Share', { type: 'Share Sheet' });
+		}}
 		aria-label="Share"
 		title="Share"
 	>
@@ -164,9 +170,9 @@
 
 <!-- RENDER -->
 <div class={containerClass}>
-	<!-- {#if hasNativeShare} -->
-	{@render NativeShareButton()}
-	<!-- {/if} -->
+	{#if hasNativeShare}
+		{@render NativeShareButton()}
+	{/if}
 
 	{#each links as link}
 		{@render ShareButton(link)}

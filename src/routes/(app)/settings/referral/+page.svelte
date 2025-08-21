@@ -5,8 +5,14 @@
 	import Loader from '$lib/Components/Loader.svelte';
 	import SocialShare from '$lib/Components/SocialShare.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard';
+	import { onMount } from 'svelte';
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Referral Settings');
+	});
 
 	$inspect(data);
 
@@ -29,6 +35,7 @@
 
 	async function generateMyReferralCode() {
 		isLoadingCode = true;
+		trackingStore.trackAction('Generate Referral Code Click');
 		try {
 			await $getMyReferralCode.mutateAsync();
 			invalidateAll();
@@ -95,7 +102,13 @@
 
 						<p>https://careerfingerprint.app/get-started?code={data.user.inviteCode}</p>
 					</div>
-					<button class="rounded p-1 hover:bg-gray-300" onclick={copyText}>
+					<button
+						class="rounded p-1 hover:bg-gray-300"
+						onclick={() => {
+							copyText();
+							trackingStore.trackAction('Share Referral Code Click');
+						}}
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
