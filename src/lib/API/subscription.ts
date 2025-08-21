@@ -136,6 +136,7 @@ export async function validateSubscription(
 export async function createCheckoutSession(newCheckout: {
 	priceID: string;
 	planID: string;
+	couponID?: string;
 }): Promise<string> {
 	const url = `${PUBLIC_API_URL}/stripe/create-checkout-session`;
 
@@ -185,6 +186,92 @@ export async function updateBillingDetails(): Promise<string> {
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to get secret`);
+	}
+}
+
+export async function validateCouponCode(data: {
+	code: string;
+}): Promise<{ valid: boolean; id?: string; code?: string }> {
+	const url = `${PUBLIC_API_URL}/stripe/validate-promo`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(data)
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+			return data;
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to validate code: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to validate code`);
+	}
+}
+
+export type InvoiceEstimate = {
+	currency: string;
+	subtotal: number;
+	discounts: Array<{
+		amount: number;
+		promoCode?: string;
+		discount: {
+			id: string;
+			object: string;
+		};
+	}>;
+	tax: Array<{
+		amount: number;
+	}>;
+	total: number;
+	formatted: {
+		subtotal: string;
+		total: string;
+	};
+	lineItems: Array<{
+		description: string | null;
+		amount: number;
+		currency: string;
+	}>;
+};
+
+export async function estimate(data: {
+	promoID?: string | null;
+	priceID: string | null;
+}): Promise<InvoiceEstimate> {
+	const url = `${PUBLIC_API_URL}/stripe/estimate`;
+
+	console.log(' estimate');
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(data)
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+			console.log('estimateData', { data });
+			return data;
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to validate code: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to validate code`);
 	}
 }
 
@@ -263,6 +350,8 @@ export async function createSubscriptionTrial(trialData: {
 export const subscriptionKeys = {
 	details: ['subscription-details'] as const,
 	availablePlans: ['available-plans'] as const,
+	estimate: (priceID: string | null, promoID?: string | null) =>
+		['estimate', priceID, promoID] as const,
 	planDetailsKey: (key: string) => ['plan-details', key] as const
 };
 
@@ -289,6 +378,12 @@ export const useGetAvailablePlans = () => {
 };
 
 // Mutations
+
+export const useGetEstimate = () => {
+	return createMutation({
+		mutationFn: estimate
+	});
+};
 
 export const useCreateCheckoutSession = () => {
 	return createMutation({
@@ -336,6 +431,16 @@ export const useCreateSubscriptionTrial = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create subscription trail:', error);
+		}
+	});
+};
+
+export const useValidateCouponCode = () => {
+	return createMutation({
+		mutationFn: validateCouponCode,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to validate coupon code:', error);
 		}
 	});
 };
