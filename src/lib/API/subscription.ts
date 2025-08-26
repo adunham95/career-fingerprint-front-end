@@ -326,12 +326,10 @@ export async function cancelSubscription(subscriptionID: string) {
 	}
 }
 
-export async function createSubscription({
-	priceID,
-	sessionID
-}: {
-	priceID: string;
-	sessionID: string;
+export async function createSubscription(data: {
+	planID: string;
+	priceID?: string;
+	orgID?: string;
 }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions`, {
@@ -340,7 +338,7 @@ export async function createSubscription({
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ priceID, sessionID })
+			body: JSON.stringify(data)
 		});
 		if (res.ok) {
 			const data = await res.json();

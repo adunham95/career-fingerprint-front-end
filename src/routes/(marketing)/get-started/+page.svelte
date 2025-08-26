@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PUBLIC_DEFAULT_SUBSCRIPTION_KEY } from '$env/static/public';
-	import { useCreateSubscriptionTrial, useGetPlanByID } from '$lib/API/subscription';
-	import { useRegisterUserMutation } from '$lib/API/user';
+	import { useCreateSubscription, useCreateSubscriptionTrial } from '$lib/API/subscription';
+	import {
+		useGetCurrentUser,
+		useRegisterUserMutation,
+		type RegisteredUserData
+	} from '$lib/API/user';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
@@ -19,12 +22,14 @@
 		if (elm) elm.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	let proData = useGetPlanByID(PUBLIC_DEFAULT_SUBSCRIPTION_KEY || 'pro');
+	let { data } = $props();
 
 	let registerUser = useRegisterUserMutation();
 	let startSubscriptionTrial = useCreateSubscriptionTrial();
+	let startSubscription = useCreateSubscription();
+	let getCurrentUser = useGetCurrentUser();
 
-	let newUser: null | { id: string } = $state(null);
+	let registeredUser: null | RegisteredUserData = $state(null);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Get Started');
@@ -51,7 +56,7 @@
 		}
 
 		try {
-			newUser = await $registerUser.mutateAsync(profile);
+			registeredUser = await $registerUser.mutateAsync(profile);
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
@@ -65,8 +70,28 @@
 		}
 	}
 
+	async function startManagedSubscription() {
+		try {
+			let newSubscription = await $startSubscription.mutateAsync({
+				planID: registeredUser?.plan.id || '',
+				orgID: registeredUser?.orgID
+			});
+
+			toastStore.show({
+				type: 'success',
+				message: `Account Created`
+			});
+			goto('/dashboard');
+		} catch (error) {
+			toastStore.show({
+				type: 'error',
+				message: `Error creating free trial`
+			});
+		}
+	}
+
 	async function startFreeTrial() {
-		if (!$proData?.data?.monthlyStripePriceID) {
+		if (!registeredUser?.plan.monthlyStripePriceID) {
 			toastStore.show({
 				type: 'error',
 				message: `Error creating subscription`
@@ -78,8 +103,8 @@
 
 		try {
 			let newSubscription = $startSubscriptionTrial.mutateAsync({
-				priceID: $proData.data?.monthlyStripePriceID,
-				planID: $proData?.data?.id || '',
+				priceID: registeredUser?.plan.monthlyStripePriceID,
+				planID: registeredUser?.plan.id || '',
 				inviteCode
 			});
 			toastStore.show({
@@ -335,7 +360,7 @@
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-1">Unlock additional features when building your fingerprint</p>
 
-		{#if $proData.data?.monthlyStripePriceID}
+		{#if registeredUser?.plan.monthlyStripePriceID}
 			<div
 				class="bg-surface-50 relative mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
 			>
@@ -347,16 +372,18 @@
 					</div>
 				{/if}
 				<div class="p-8 sm:p-10 lg:flex-auto">
-					<h3 class="text-3 font-semibold tracking-tight text-gray-900">{$proData.data.name}</h3>
+					<h3 class="text-3 font-semibold tracking-tight text-gray-900">
+						{registeredUser?.plan.name}
+					</h3>
 					<p class="mt-6 text-base/7 text-gray-600">
-						{$proData.data.description}
+						{registeredUser?.plan.description}
 					</p>
 					<div class="mt-5 flex items-center gap-x-4">
 						<h4 class="text-primary flex-none font-semibold">What’s included</h4>
 						<div class="h-px flex-auto bg-gray-300"></div>
 					</div>
 					<ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-gray-600 sm:gap-6">
-						{#each $proData.data.featureList as feature}
+						{#each registeredUser?.plan.featureList as feature}
 							<li class="flex gap-x-3">
 								<svg
 									viewBox="0 0 20 20"
@@ -381,23 +408,41 @@
 						class="bg-surface-200 h-full rounded-2xl py-10 text-center ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center lg:py-16"
 					>
 						<div class="mx-auto max-w-xs px-8">
+							{#if registeredUser.orgID}
+								<p class="text-sm">
+									Good news! {registeredUser.orgName} provides Premium at no cost
+								</p>
+							{/if}
 							<p class="mt-6 flex items-baseline justify-center gap-x-2">
-								<span class="text-1 font-semibold tracking-tight text-gray-900"
-									>${centsToDollars($proData.data.priceCents)}</span
+								<span
+									class={`text-1 font-semibold tracking-tight text-gray-900 ${registeredUser.orgID ? 'line-through' : ''} `}
+									>${centsToDollars(registeredUser?.plan.priceCents)}</span
 								>
+								{#if registeredUser.orgID}
+									<span class="text-1 font-semibold tracking-tight text-gray-900">Free</span>
+								{/if}
 								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
 							</p>
-							<!-- <a
-								href="/dashboard"
-								class="btn btn--primary mt-10 block w-full"
-								onclick={() =>
-									trackingStore.trackAction('Next Step Click', {
-										step: 'Go To Account'
-									})}
-							>
-								Go To My Account
-							</a> -->
-							{#if newUser}
+							{#if registeredUser.orgID}
+								<button
+									class="btn btn--primary mt-10 block w-full"
+									onclick={() => {
+										startManagedSubscription();
+										trackingStore.trackAction('Sign up with org');
+									}}
+								>
+									Sign Up with Western Carolina University
+								</button>
+								<button
+									class="btn btn-outline--primary mt-1 block w-full"
+									onclick={() => {
+										startFreeTrial();
+										trackingStore.trackAction('Start Free Personal Trial Click');
+									}}
+								>
+									Start my personal free trial
+								</button>
+							{:else}
 								<button
 									onclick={() => {
 										startFreeTrial();

@@ -1,5 +1,33 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
+import type { CurrentUser } from '../../app';
+
+export interface RegisteredUserData {
+	accessToken: string;
+	user: {
+		id: number;
+		firstName: string;
+		lastName: string;
+		profileImage: string;
+		email: string;
+		orgID: null;
+	};
+	plan: {
+		id: string;
+		key: string;
+		level: number;
+		name: string;
+		description: string;
+		featureList: string[];
+		priceCents: number;
+		priceCentsYear: number;
+		interval: string;
+		monthlyStripePriceID: string;
+		annualStripePriceID: string;
+	};
+	orgName?: string;
+	orgID?: string;
+}
 
 export async function registerUser(newProfile: {
 	lookingFor: string;
@@ -13,7 +41,7 @@ export async function registerUser(newProfile: {
 	email: string;
 	password: string;
 	achievement: string;
-}) {
+}): Promise<RegisteredUserData> {
 	const url = `${PUBLIC_API_URL}/register`;
 
 	try {
@@ -104,6 +132,27 @@ export async function inviteStats(): Promise<{ totalInvited: number } | null> {
 	}
 }
 
+export async function currentUser(): Promise<CurrentUser | null> {
+	const url = `${PUBLIC_API_URL}/auth/current-user`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'GET',
+			credentials: 'include'
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to get current user: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get current user`);
+	}
+}
+
 export const userKeys = {
 	inviteCode: ['invite-code'] as const
 };
@@ -140,5 +189,12 @@ export const useGetInviteStats = () => {
 	return createQuery({
 		queryKey: ['invite-stats'],
 		queryFn: inviteStats
+	});
+};
+
+export const useGetCurrentUser = () => {
+	return createQuery({
+		queryKey: ['current-user'],
+		queryFn: currentUser
 	});
 };
