@@ -2,12 +2,14 @@
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import Label from './Label.svelte';
 	import type { LabelProps } from './Label.svelte';
+	import type { Snippet } from 'svelte';
 
 	interface Props extends LabelProps, HTMLInputAttributes {
 		id: string;
 		className?: string;
 		inputClassName?: string;
 		errorText?: string;
+		preInlineAddOn?: Snippet;
 	}
 
 	let {
@@ -22,6 +24,7 @@
 		value = $bindable(),
 		name,
 		errorText,
+		preInlineAddOn,
 		...props
 	}: Props = $props();
 </script>

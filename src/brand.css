@@ -167,6 +167,18 @@
 	--color-pastel-orange-800: #996f42;
 	--color-pastel-orange-900: #734925;
 	--color-pastel-orange-950: #4a2810;
+	/* Pastel Red */
+	--color-pastel-red-50: #fcfaf7;
+	--color-pastel-red-100: #fcf6f0;
+	--color-pastel-red-200: #f5e3d7;
+	--color-pastel-red-300: #f0cec0;
+	--color-pastel-red-400: #e6a195;
+	--color-pastel-red-500: #da6c6c;
+	--color-pastel-red-600: #c45858;
+	--color-pastel-red-700: #a33c3c;
+	--color-pastel-red-800: #822727;
+	--color-pastel-red-900: #611515;
+	--color-pastel-red-950: #400909;
 
 	--font-title: 'Libre Baskerville', serif;
 

@@ -138,7 +138,21 @@ interface CurrentUser {
 	pitch: string;
 	lookingFor: string;
 	inviteCode: string | null;
+	orgID: string | null;
+	org: Organization | null;
 	subscription: SubscriptionPlan;
+}
+
+interface Organization {
+	createdAt: string;
+	domain: string;
+	domainVerified: boolean;
+	email: string;
+	id: string;
+	name: string;
+	seatCount: number;
+	stripeCustomerID: string;
+	updatedAt: string;
 }
 
 export {

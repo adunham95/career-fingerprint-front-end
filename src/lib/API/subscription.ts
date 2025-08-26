@@ -163,6 +163,36 @@ export async function createCheckoutSession(newCheckout: {
 	}
 }
 
+export async function createOrgCheckoutSession(newCheckout: {
+	priceID: string;
+	quantity: number;
+	couponID?: string;
+}): Promise<string> {
+	const url = `${PUBLIC_API_URL}/stripe/create-checkout-session/org`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(newCheckout)
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+			return data.checkoutSessionClientSecret;
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to start checkout: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to start checkout`);
+	}
+}
+
 export async function updateBillingDetails(): Promise<string> {
 	const url = `${PUBLIC_API_URL}/stripe/update-billing`;
 
@@ -237,7 +267,7 @@ export type InvoiceEstimate = {
 		total: string;
 	};
 	lineItems: Array<{
-		description: string | null;
+		description: string;
 		amount: number;
 		currency: string;
 	}>;
@@ -246,6 +276,7 @@ export type InvoiceEstimate = {
 export async function estimate(data: {
 	promoID?: string | null;
 	priceID: string | null;
+	quantity?: number;
 }): Promise<InvoiceEstimate> {
 	const url = `${PUBLIC_API_URL}/stripe/estimate`;
 
@@ -388,6 +419,16 @@ export const useGetEstimate = () => {
 export const useCreateCheckoutSession = () => {
 	return createMutation({
 		mutationFn: createCheckoutSession,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create checkout session:', error);
+		}
+	});
+};
+
+export const useCreateCheckoutOrgSession = () => {
+	return createMutation({
+		mutationFn: createOrgCheckoutSession,
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create checkout session:', error);
