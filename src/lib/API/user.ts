@@ -90,6 +90,54 @@ export async function deleteUser(): Promise<{ success: boolean } | null> {
 	}
 }
 
+interface VerifyTokenResponse {
+	orgID?: string;
+	orgName?: string;
+	plan: {
+		annualStripePriceID: string;
+		description: string;
+		featureList: string[];
+		features: string[];
+		id: string;
+		interval: string;
+		key: string;
+		level: number;
+		metadata: { resumeLimit: null };
+		monthlyStripePriceID: string;
+		name: string;
+		priceCents: number;
+		priceCentsYear: number;
+	};
+}
+
+export async function verifyEmail(
+	token: string,
+	data: { token: string }
+): Promise<VerifyTokenResponse | null> {
+	const url = `${PUBLIC_API_URL}/register/verify`;
+
+	try {
+		if (!token) throw 'Missing Token';
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: 'Bearer ' + token
+			},
+			body: JSON.stringify(data)
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed validate token: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to validate token`);
+	}
+}
+
 export async function generateInviteCode(): Promise<string | null> {
 	const url = `${PUBLIC_API_URL}/users/new-invite-code`;
 

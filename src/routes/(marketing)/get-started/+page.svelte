@@ -61,7 +61,8 @@
 				type: 'success',
 				message: `User saved`
 			});
-			scrollToView('premium');
+			// scrollToView('premium');
+			goto('/dashboard');
 		} catch (error) {
 			toastStore.show({
 				type: 'error',
@@ -356,7 +357,7 @@
 	</div> -->
 
 	<!-- Step 7 -->
-	<div id="premium" class=" flex min-h-screen flex-col items-center justify-center">
+	<!-- <div id="premium" class=" flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
 		<p class="pb-1">Unlock additional features when building your fingerprint</p>
 
@@ -477,5 +478,5 @@
 					})}>Go to my account</a
 			>
 		{/if}
-	</div>
+	</div> -->
 </div>
