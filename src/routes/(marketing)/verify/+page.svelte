@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { useCreateSubscription, useCreateSubscriptionTrial } from '$lib/API/subscription';
-	import type { RegisteredUserData } from '$lib/API/user';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
@@ -61,15 +60,24 @@
 <PageContainer>
 	<div class="py-12">
 		<div class="mx-auto max-w-2xl text-center">
-			<h2 class="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
-				Your email has been verified
-			</h2>
-			<p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-				Below you can sign for a free trial
-			</p>
+			{#if data.tokenDetails?.verified}
+				<h2 class="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
+					Your email has been verified.
+				</h2>
+			{:else}
+				<h2 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
+					We could not verify your email. Please try again later.
+				</h2>
+			{/if}
+
+			{#if data.tokenDetails?.plan}
+				<p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
+					Below you can sign for a free trial
+				</p>
+			{/if}
 		</div>
 	</div>
-	{#if data.tokenDetails}
+	{#if data.tokenDetails?.plan}
 		<div
 			class="bg-surface-50 relative mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-3"
 		>

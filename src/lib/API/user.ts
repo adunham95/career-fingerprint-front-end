@@ -90,10 +90,11 @@ export async function deleteUser(): Promise<{ success: boolean } | null> {
 	}
 }
 
-interface VerifyTokenResponse {
+export interface VerifyTokenResponse {
+	verified: boolean;
 	orgID?: string;
 	orgName?: string;
-	plan: {
+	plan?: {
 		annualStripePriceID: string;
 		description: string;
 		featureList: string[];
@@ -112,16 +113,19 @@ interface VerifyTokenResponse {
 
 export async function verifyEmail(
 	token: string,
-	data: { token: string }
+	data: { token: string; showFreeTrial: boolean }
 ): Promise<VerifyTokenResponse | null> {
 	const url = `${PUBLIC_API_URL}/register/verify`;
+
+	console.log('verifyEmail', { data });
 
 	try {
 		if (!token) throw 'Missing Token';
 		const res = await fetch(url, {
 			method: 'POST',
 			headers: {
-				Authorization: 'Bearer ' + token
+				Authorization: 'Bearer ' + token,
+				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify(data)
 		});
@@ -135,6 +139,27 @@ export async function verifyEmail(
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to validate token`);
+	}
+}
+
+export async function startVerifyEmail(): Promise<{ success: boolean } | null> {
+	const url = `${PUBLIC_API_URL}/users/start-verify-email`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'GET',
+			credentials: 'include'
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to start email verification: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to start email verification`);
 	}
 }
 
@@ -228,6 +253,12 @@ export const useRegisterUserMutation = () => {
 export const useNewInviteCodeQuery = () => {
 	return createMutation({
 		mutationFn: generateInviteCode
+	});
+};
+
+export const useStartEmailVerification = () => {
+	return createMutation({
+		mutationFn: startVerifyEmail
 	});
 };
 

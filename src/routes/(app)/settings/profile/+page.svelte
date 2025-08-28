@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import { useDeleteUserMutation } from '$lib/API/user.js';
+	import { useDeleteUserMutation, useStartEmailVerification } from '$lib/API/user.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
@@ -19,6 +19,7 @@
 	let confirmPassword = $state(null);
 
 	const deleteUserMutation = useDeleteUserMutation();
+	const verifyEmailMutation = useStartEmailVerification();
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Profile Settings');
@@ -83,6 +84,15 @@
 			toastStore.show({ message: 'Cant delete user', type: 'error' });
 		}
 	}
+
+	async function verifyEmailClick() {
+		try {
+			await $verifyEmailMutation.mutateAsync();
+			toastStore.show({ message: 'Verification Email Sent' });
+		} catch (error) {
+			toastStore.show({ message: 'Could not send verification email', type: 'error' });
+		}
+	}
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
@@ -109,13 +119,23 @@
 						placeholder="Dunham"
 						bind:value={data.user.lastName}
 					/>
+
 					<TextInput
-						className="sm:col-span-6"
+						className="sm:col-span-4"
 						id="email"
 						label="Email"
 						placeholder="adunham95@gmail.com"
 						bind:value={data.user.email}
 					/>
+					<div class="sm:col-span-2">
+						{#if data.user.emailVerified}
+							<p class="badge badge--success">Verified</p>
+						{:else}
+							<button type="button" class="btn btn-text--primary" onclick={verifyEmailClick}
+								>Verify Email</button
+							>
+						{/if}
+					</div>
 				</div>
 			</form>
 			{#snippet actions()}

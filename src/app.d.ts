@@ -139,6 +139,7 @@ interface CurrentUser {
 	lookingFor: string;
 	inviteCode: string | null;
 	orgID: string | null;
+	emailVerified: boolean;
 	org: Organization | null;
 	subscription: SubscriptionPlan;
 }
