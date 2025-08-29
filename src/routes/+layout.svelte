@@ -7,7 +7,7 @@
 
 	let { children } = $props();
 
-	let showAlphaBanner = $state(true);
+	let showAlphaBanner = $state(false);
 
 	onMount(() => {
 		const urlParams = new URLSearchParams(window.location.search);
