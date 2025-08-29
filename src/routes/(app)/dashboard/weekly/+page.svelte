@@ -22,7 +22,9 @@
 
 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
 	<div class="mx-auto max-w-2xl text-center lg:max-w-4xl">
-		<h2 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Weekly Check In</h2>
+		<h2 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+			What did you accomplish this week?
+		</h2>
 	</div>
 </div>
 
