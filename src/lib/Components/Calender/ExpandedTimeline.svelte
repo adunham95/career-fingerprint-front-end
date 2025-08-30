@@ -69,42 +69,46 @@
 									{/each}
 								</div>
 							</div>
-							<div class="flex items-center">
-								<svg
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									data-slot="icon"
-									aria-hidden="true"
-									class="size-5 text-green-500"
-								>
-									<path
-										d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
-										clip-rule="evenodd"
-										fill-rule="evenodd"
-									></path>
-								</svg>
-								<p class="ml-2 text-sm font-medium text-gray-500">
-									{day.result}
-								</p>
-							</div>
-							<div class="mt-2 flex items-center text-sm">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									class="size-5"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
-										clip-rule="evenodd"
-									/>
-								</svg>
+							{#if day.result}
+								<div class="flex items-center">
+									<svg
+										viewBox="0 0 20 20"
+										fill="currentColor"
+										data-slot="icon"
+										aria-hidden="true"
+										class="size-5 text-green-500"
+									>
+										<path
+											d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+											clip-rule="evenodd"
+											fill-rule="evenodd"
+										></path>
+									</svg>
+									<p class="ml-2 text-sm font-medium text-gray-500">
+										{day.result}
+									</p>
+								</div>
+							{/if}
+							{#if day.description}
+								<div class="mt-2 flex items-center text-sm">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="size-5"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
 
-								<p class="ml-2 text-sm font-medium text-gray-500">
-									{day.description}
-								</p>
-							</div>
+									<p class="ml-2 text-sm font-medium text-gray-500">
+										{day.description}
+									</p>
+								</div>
+							{/if}
 							<div class="mt-2 flex items-center">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
