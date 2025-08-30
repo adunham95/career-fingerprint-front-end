@@ -39,20 +39,24 @@
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
 					{#if isFuture(data.meeting.time) && useFeatureGate(1, data.user)}
-						<button
+						<a
+							href={`/prep/${data.meetingID}`}
 							type="button"
 							class="btn btn-text--secondary"
 							onclick={() =>
 								trackingStore.trackAction('Prep Meeting', { component: 'Meeting Details Page' })}
-							>Prep for Meeting</button
-						>
-						<button
+							>Prep for Meeting
+						</a>
+						<a
+							href={`/cheatsheet/${data.meetingID}`}
 							type="button"
 							class="btn btn--primary"
 							onclick={() => {
 								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
-							}}>Start Meeting</button
+							}}
 						>
+							Start Meeting
+						</a>
 					{/if}
 				</div>
 			</div>
