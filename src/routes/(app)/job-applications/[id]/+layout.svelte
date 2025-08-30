@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { useJobApplicationByIDQuery } from '$lib/API/job-applications';
 	import { useCreateJobPositionFromApp } from '$lib/API/job-positions';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -25,6 +26,7 @@
 			await $migrateJobApp.mutateAsync(data.application?.id || '');
 			toastStore.show({ message: 'Added to resume', type: 'success' });
 			isMigrating = false;
+			goto('/my-fingerprint');
 		} catch (error) {
 			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
 			isMigrating = false;
