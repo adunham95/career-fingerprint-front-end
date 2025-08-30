@@ -31,9 +31,10 @@
 <PageContainer>
 	<div class="grid grid-cols-2 gap-4 py-2">
 		<Card headline="Add New Achievement">
-			<NewAchievementForm id="checkin" />
+			<NewAchievementForm id="check-in" />
 			<div class="flex justify-end pt-2">
 				<button
+					form="check-in"
 					type="submit"
 					class="btn btn--primary"
 					onclick={() => trackingStore.trackAction('Add Achievement Click')}>Add Achievement</button
