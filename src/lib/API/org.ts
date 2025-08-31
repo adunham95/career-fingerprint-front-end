@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { createMutation } from '@tanstack/svelte-query';
+import { createMutation, createQuery } from '@tanstack/svelte-query';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -34,6 +34,22 @@ export async function registerOrg(newProfile: {
 	}
 }
 
+export async function getOrgUsers(orgID: string, page = 1, size = 20) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/users?page=${page}&pageSize=${size}`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export const orgKeys = {
+	orgUsers: (id: string, page = 1, orgSize = 20) => ['orgUsers', id, page, orgSize] as const
+};
+
 export const useRegisterOrg = () => {
 	return createMutation({
 		mutationFn: registerOrg,
@@ -41,5 +57,14 @@ export const useRegisterOrg = () => {
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);
 		}
+	});
+};
+
+export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size = 20) => {
+	return createQuery({
+		queryKey: orgKeys.orgUsers(orgID, page(), size),
+		queryFn: () => getOrgUsers(orgID, page(), size)
+		// enabled: false
+		// initialData TODO
 	});
 };

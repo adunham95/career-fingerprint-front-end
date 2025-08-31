@@ -23,7 +23,7 @@
 			title="Seat Management"
 			subTitle="Manage Current Users"
 			color="green"
-			href="/"
+			href={`/org/${data.org?.id}/seats`}
 		/>
 		<DashboardActionButton
 			icon={linkIcon}
