@@ -1,4 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { User } from '@sentry/sveltekit';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 
 export async function registerOrg(newProfile: {
@@ -46,6 +47,18 @@ export async function getOrgUsers(orgID: string, page = 1, size = 20) {
 	}
 }
 
+export async function getOrgAdmins(orgID: string) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admins`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export async function removeUserFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/user/${userID}`, {
@@ -59,7 +72,21 @@ export async function removeUserFromOrg({ userID, orgID }: { userID: number; org
 	}
 }
 
+export async function removeAdminFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admin/${userID}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
+	orgAdmins: (id: string) => ['orgAdmins', id] as const,
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const
 };
 
@@ -69,6 +96,14 @@ export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size =
 	return createQuery({
 		queryKey: orgKeys.orgUsers(orgID, page(), size),
 		queryFn: () => getOrgUsers(orgID, page(), size)
+	});
+};
+
+export const useOrgAdmins = (orgID: string, initialData?: User[]) => {
+	return createQuery({
+		queryKey: orgKeys.orgAdmins(orgID),
+		queryFn: () => getOrgAdmins(orgID),
+		initialData
 	});
 };
 
@@ -87,6 +122,16 @@ export const useRegisterOrg = () => {
 export const useRemoveUserFromOrg = () => {
 	return createMutation({
 		mutationFn: removeUserFromOrg,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create subscription:', error);
+		}
+	});
+};
+
+export const useRemoveAdminFromOrg = () => {
+	return createMutation({
+		mutationFn: removeAdminFromOrg,
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);

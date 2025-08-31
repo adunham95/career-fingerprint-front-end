@@ -39,7 +39,7 @@
 			title="Manage Administrators"
 			subTitle="Add and remove the admins on this account"
 			color="purple"
-			onClick={() => {}}
+			href={`/org/${data.org?.id}/admins`}
 		/>
 		<DashboardActionButton
 			icon={gearIcon}

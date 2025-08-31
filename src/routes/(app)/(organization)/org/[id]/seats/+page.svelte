@@ -3,6 +3,8 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import TablePagination from '$lib/Components/TablePagination.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
@@ -18,6 +20,10 @@
 			$users.refetch();
 		} catch (error) {}
 	}
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Org Seats');
+	});
 </script>
 
 <PageContainer>
@@ -25,9 +31,7 @@
 		<div class="sm:flex sm:items-center">
 			<div class="sm:flex-auto">
 				<h1 class="text-base font-semibold text-gray-900">Users</h1>
-				<p class="mt-2 text-sm text-gray-700">
-					A list of all the users in your account including their name, title, email and role.
-				</p>
+				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
 			<!-- <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
 				<button type="button" class="btn btn--primary">Add user</button>
