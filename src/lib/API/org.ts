@@ -46,9 +46,33 @@ export async function getOrgUsers(orgID: string, page = 1, size = 20) {
 	}
 }
 
+export async function removeUserFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/user/${userID}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
-	orgUsers: (id: string, page = 1, orgSize = 20) => ['orgUsers', id, page, orgSize] as const
+	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const
 };
+
+// QUERIES
+
+export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size = 20) => {
+	return createQuery({
+		queryKey: orgKeys.orgUsers(orgID, page(), size),
+		queryFn: () => getOrgUsers(orgID, page(), size)
+	});
+};
+
+// MUTATIONS
 
 export const useRegisterOrg = () => {
 	return createMutation({
@@ -60,11 +84,12 @@ export const useRegisterOrg = () => {
 	});
 };
 
-export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size = 20) => {
-	return createQuery({
-		queryKey: orgKeys.orgUsers(orgID, page(), size),
-		queryFn: () => getOrgUsers(orgID, page(), size)
-		// enabled: false
-		// initialData TODO
+export const useRemoveUserFromOrg = () => {
+	return createMutation({
+		mutationFn: removeUserFromOrg,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create subscription:', error);
+		}
 	});
 };

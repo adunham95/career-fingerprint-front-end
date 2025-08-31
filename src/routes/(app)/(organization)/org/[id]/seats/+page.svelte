@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useOrgUsersByPageQuery } from '$lib/API/org';
+	import { useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import TablePagination from '$lib/Components/TablePagination.svelte';
@@ -7,9 +7,17 @@
 	const { data } = $props();
 
 	let page = $state(1);
-	let pageSize = 20;
 
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
+
+	let removeUser = useRemoveUserFromOrg();
+
+	async function removeUserFromOrg(userID: number) {
+		try {
+			await $removeUser.mutateAsync({ userID, orgID: data.org?.id || '' });
+			$users.refetch();
+		} catch (error) {}
+	}
 </script>
 
 <PageContainer>
@@ -76,9 +84,9 @@
 									{user.email}
 								</td>
 								<td class="py-4 pl-3 text-right text-sm font-medium">
-									<button class="btn btn-text--primary">
+									<button class="btn btn-text--primary" onclick={() => removeUserFromOrg(user.id)}>
 										Remove
-										<span class="sr-only">, Lindsay Walton</span>
+										<span class="sr-only">, {user.firstName} {user.lastName}</span>
 									</button>
 								</td>
 							</tr>
@@ -89,7 +97,7 @@
 		</div>
 		<TablePagination
 			bind:currentPage={page}
-			totalPages={$users.data.totalPages || 1}
+			totalPages={$users?.data?.totalPages || 1}
 			onPageChange={() => $users.refetch()}
 		/>
 	{/if}
