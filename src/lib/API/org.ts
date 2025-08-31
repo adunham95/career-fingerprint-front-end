@@ -35,6 +35,30 @@ export async function registerOrg(newProfile: {
 	}
 }
 
+export async function updateOrg(data: { id: string; name?: string; domain?: string }) {
+	const url = `${PUBLIC_API_URL}/org/${data.id}`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(data)
+		});
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to register user ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to register user`);
+	}
+}
+
 export async function getOrgUsers(orgID: string, page = 1, size = 20) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/users?page=${page}&pageSize=${size}`, {
@@ -132,6 +156,16 @@ export const useRemoveUserFromOrg = () => {
 export const useRemoveAdminFromOrg = () => {
 	return createMutation({
 		mutationFn: removeAdminFromOrg,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create subscription:', error);
+		}
+	});
+};
+
+export const useUpdateOrg = () => {
+	return createMutation({
+		mutationFn: updateOrg,
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);

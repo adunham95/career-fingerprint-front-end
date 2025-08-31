@@ -47,7 +47,7 @@
 			title="Org Settings"
 			subTitle="Manage this Organizations"
 			color="red"
-			onClick={() => {}}
+			href={`/org/${data.org?.id}/settings`}
 		/>
 	</div>
 	<p class="font-title mt-3 text-2xl">At a Glace</p>

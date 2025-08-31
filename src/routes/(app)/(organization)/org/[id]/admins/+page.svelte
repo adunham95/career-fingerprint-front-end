@@ -77,7 +77,11 @@
 								{user.email}
 							</td>
 							<td class="py-4 pl-3 text-right text-sm font-medium">
-								<button class="btn btn-text--primary" onclick={() => removeUserFromOrg(user.id)}>
+								<button
+									class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
+									disabled={data.user.id === user.id}
+									onclick={() => removeUserFromOrg(user.id)}
+								>
 									Remove
 									<span class="sr-only">, {user.firstName} {user.lastName}</span>
 								</button>
