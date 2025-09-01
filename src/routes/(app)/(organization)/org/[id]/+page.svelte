@@ -1,17 +1,43 @@
-<script>
+<script lang="ts">
+	import { useOrgDashboard } from '$lib/API/dashboard.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import DashboardStat from '$lib/Components/DashboardStat.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
+	import type { ChartConfiguration } from 'chart.js';
+	import Chart from '$lib/Components/Chart.svelte';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
 	});
-
 	const { data } = $props();
 
-	console.log({ data });
+	const orgReport = useOrgDashboard(data.org?.id || '');
+
+	console.log({ data, orgReport: $orgReport.data });
+
+	const chart: ChartConfiguration = {
+		type: 'pie',
+		data: {
+			labels: ['Active', 'InActive'],
+			datasets: [
+				{
+					label: 'Active Users',
+					data: [
+						$orgReport.data.activeVSInActive.activeUsers,
+						$orgReport.data.activeVSInActive.inactiveUsers
+					],
+					borderWidth: 1
+				}
+			]
+		},
+		options: {
+			plugins: { legend: { display: false } },
+			responsive: true
+		}
+	};
 </script>
 
 <PageContainer className="py-6">
@@ -51,9 +77,23 @@
 		/>
 	</div>
 	<p class="font-title mt-3 text-2xl">At a Glace</p>
-	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<DashboardStat number={50} ofNumber={100} name="Active Subscriptions" />
-	</div>
+	{#if $orgReport.isLoading}
+		<div class="flex justify-center">
+			<Loader />
+		</div>
+	{:else}
+		<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+			<DashboardStat
+				number={$orgReport?.data?.seatUtilization?.seatsUsed || 0}
+				ofNumber={$orgReport?.data?.seatUtilization?.seatLimit || 0}
+				name="Active Subscriptions"
+			/>
+			<div>
+				<p>Active Users</p>
+				<Chart config={chart} />
+			</div>
+		</div>
+	{/if}
 </PageContainer>
 
 {#snippet usersIcon()}
