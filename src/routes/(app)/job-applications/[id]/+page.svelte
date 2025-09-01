@@ -12,6 +12,7 @@
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
+	let jobDescription = $state(data.application?.jobDescription);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Job Application', { tab: 'Details' });
@@ -34,7 +35,7 @@
 				title: data.application.title || '',
 				company: data.application.company || '',
 				status,
-				jobDescription: data.application.jobDescription || null
+				jobDescription: jobDescription || null
 			});
 			editType = null;
 		} catch (error) {
@@ -83,39 +84,32 @@
 				{/if}
 			</dd>
 		</div>
-		{#if data.application?.jobDescription}
-			<div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-				<dt class="flex">
-					<p class="text-sm font-medium text-gray-600">
-						Job Description
+		<div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+			<dt class="flex">
+				<p class="text-sm font-medium text-gray-600">
+					Job Description
 
-						{#if editType === 'jobDescription'}
-							<button class="btn btn-small btn-text--primary" onclick={saveNewJobApplication}>
-								Save
-							</button>
-						{:else}
-							<button
-								class="btn btn-small btn-text--primary"
-								onclick={() => (editType = 'jobDescription')}
-							>
-								Edit
-							</button>
-						{/if}
-					</p>
-				</dt>
-				<dd class="mt-1 text-sm/6 whitespace-pre-wrap text-gray-800 sm:col-span-2 sm:mt-0">
 					{#if editType === 'jobDescription'}
-						<TextArea
-							id="desciption"
-							bind:value={data.application.jobDescription}
-							rows={5}
-							hideLabel
-						/>
+						<button class="btn btn-small btn-text--primary" onclick={saveNewJobApplication}>
+							Save
+						</button>
 					{:else}
-						{data.application?.jobDescription}
+						<button
+							class="btn btn-small btn-text--primary"
+							onclick={() => (editType = 'jobDescription')}
+						>
+							Edit
+						</button>
 					{/if}
-				</dd>
-			</div>
-		{/if}
+				</p>
+			</dt>
+			<dd class="mt-1 text-sm/6 whitespace-pre-wrap text-gray-800 sm:col-span-2 sm:mt-0">
+				{#if editType === 'jobDescription'}
+					<TextArea id="desciption" bind:value={jobDescription} rows={5} hideLabel />
+				{:else}
+					{jobDescription}
+				{/if}
+			</dd>
+		</div>
 	</dl>
 </div>
