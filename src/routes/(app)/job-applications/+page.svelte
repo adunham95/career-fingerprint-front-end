@@ -115,7 +115,7 @@
 					isOpen = true;
 					trackingStore.trackAction('New Job Application Click');
 				}}
-				class="focus:ring-primary-500 relative block w-full cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
+				class="focus:ring-primary-500 relative block w-full cursor-pointer rounded-lg border-3 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

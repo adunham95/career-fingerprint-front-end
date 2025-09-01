@@ -7,7 +7,7 @@
 	const { title, description }: Props = $props();
 </script>
 
-<div class="bg-info-100 border-info-200 rounded-md border p-4">
+<div class="bg-info-100 border-info-200 rounded-md border-3 p-4">
 	<div class="flex">
 		<div class="shrink-0">
 			<svg

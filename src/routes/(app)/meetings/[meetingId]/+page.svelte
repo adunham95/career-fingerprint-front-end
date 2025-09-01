@@ -67,7 +67,7 @@
 <PageContainer className="pt-4">
 	<div class="grid gap-4 lg:grid-cols-3">
 		<div
-			class=" px-4 py-8 shadow-xs ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-2 lg:row-end-2"
+			class=" px-4 py-8 shadow-xs ring-3 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-2 lg:row-end-2"
 		>
 			<NavPillButtons
 				bind:currentTab={current}

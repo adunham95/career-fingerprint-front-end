@@ -49,7 +49,7 @@
 	}
 </script>
 
-<div class={twMerge('bg-surface-50 shadow-xs ring-1 ring-gray-900/5 sm:rounded-xl', className)}>
+<div class={twMerge('bg-surface-50 shadow-xs ring-3 ring-gray-900/5 sm:rounded-xl', className)}>
 	{#if headline}
 		<h4
 			class={`font-title  font-semibold text-gray-900 ${getStyleProps().title} ${headlineClassName}`}
@@ -62,7 +62,7 @@
 	</div>
 	{#if actions}
 		<div
-			class={`flex items-center justify-end gap-x-6 border-t border-gray-900/10 ${getStyleProps().actions} ${actionsClassName}`}
+			class={`flex items-center justify-end gap-x-6 border-t-3 border-gray-900/10 ${getStyleProps().actions} ${actionsClassName}`}
 		>
 			{@render actions()}
 		</div>

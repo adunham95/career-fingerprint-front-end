@@ -170,7 +170,7 @@
 				{/if}
 			{/snippet}
 			<Card
-				className="md:col-span-2  rounded-2xl bg-gray-50  ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
+				className="md:col-span-2  rounded-2xl bg-gray-50  ring-3 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
 			>
 				<div class={`px-8 ${priceID === null ? '' : 'hidden'}`}>
 					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>

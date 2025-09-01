@@ -48,6 +48,9 @@
 				return '';
 		}
 	});
+
+	let baseStyles =
+		'relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-3 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video';
 </script>
 
 {#if premiumLocked}
@@ -56,10 +59,10 @@
 		onclick={() => {
 			trackingStore.trackAction(actionName, { unlockPremium: 'true' });
 		}}
-		class="relative flex aspect-square w-full items-center justify-center rounded-lg border-2 border-gray-600/30 bg-gray-600/10 p-2 text-center transition focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-hidden md:aspect-video"
+		class={`${baseStyles} border-gray-600/30 bg-gray-600/10 p-2 focus:ring-amber-500`}
 	>
 		<div
-			class=" absolute top-1 right-1 flex justify-center rounded border border-amber-300 bg-amber-100 p-1"
+			class=" absolute top-1 right-1 flex justify-center rounded-lg border-2 border-amber-300 bg-amber-100 p-1"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +91,7 @@
 			onClick();
 			trackingStore.trackAction(actionName);
 		}}
-		class={` ${colorStyle()} relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video`}
+		class={`${baseStyles} ${colorStyle()} `}
 	>
 		{#if premiumAction}
 			{@render includedWithPremium()}
@@ -102,7 +105,7 @@
 		onclick={() => {
 			trackingStore.trackAction(actionName);
 		}}
-		class={`${colorStyle()} relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-2 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video`}
+		class={`${baseStyles} ${colorStyle()}`}
 	>
 		{#if premiumAction}
 			{@render includedWithPremium()}
