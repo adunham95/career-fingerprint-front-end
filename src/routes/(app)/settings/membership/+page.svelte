@@ -139,6 +139,14 @@
 						</dd>
 					</div>
 				{/if}
+				{#if data.membershipDetails?.trialEndsAt}
+					<div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+						<dt class="text-sm/6 font-medium text-gray-900">Subscription Ends</dt>
+						<dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+							{format(data.membershipDetails.trialEndsAt, 'PPP')}
+						</dd>
+					</div>
+				{/if}
 			</dl>
 			{#snippet actions()}
 				{#if (data.membershipDetails?.plan.level || 0) > 0}
