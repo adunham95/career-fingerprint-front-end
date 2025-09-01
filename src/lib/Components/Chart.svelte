@@ -35,12 +35,12 @@
 <style>
 	.chart-container {
 		width: 100%;
-		height: 100%; /* let parent grid cell dictate size */
+		/* height: 100%; */
 		position: relative;
 	}
 
 	canvas {
 		width: 100% !important;
-		height: 100% !important;
+		/* height: 100% !important; */
 	}
 </style>

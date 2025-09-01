@@ -28,27 +28,6 @@
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
 		}
 	}
-
-	const chart: ChartConfiguration = {
-		type: 'pie',
-		data: {
-			labels: ['Active', 'InActive'],
-			datasets: [
-				{
-					label: 'Active Users',
-					data: [
-						$orgReport.data.activeVSInActive.activeUsers,
-						$orgReport.data.activeVSInActive.inactiveUsers
-					],
-					borderWidth: 1
-				}
-			]
-		},
-		options: {
-			plugins: { legend: { display: false } },
-			responsive: true
-		}
-	};
 </script>
 
 <PageContainer className="py-6">
@@ -103,8 +82,11 @@
 				name="Active Subscriptions"
 			/>
 			<div>
-				<p>Active Users</p>
-				<Chart config={chart} />
+				<p>Users who are active</p>
+				{@render pieChart(
+					$orgReport?.data?.activeVSInActive?.activeUsers,
+					$orgReport?.data?.activeVSInActive?.inactiveUsers
+				)}
 			</div>
 		</div>
 	{/if}
@@ -160,4 +142,26 @@
 		/>
 		<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
 	</svg>
+{/snippet}
+
+{#snippet pieChart(active: 0, inActive: 0)}
+	<Chart
+		config={{
+			type: 'pie',
+			data: {
+				labels: ['Active', 'InActive'],
+				datasets: [
+					{
+						label: 'Active Users',
+						data: [active, inActive],
+						borderWidth: 1
+					}
+				]
+			},
+			options: {
+				plugins: { legend: { display: false } },
+				responsive: true
+			}
+		}}
+	/>
 {/snippet}
