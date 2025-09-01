@@ -8,6 +8,8 @@
 	import { onMount } from 'svelte';
 	import type { ChartConfiguration } from 'chart.js';
 	import Chart from '$lib/Components/Chart.svelte';
+	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard.js';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
@@ -17,6 +19,15 @@
 	const orgReport = useOrgDashboard(data.org?.id || '');
 
 	console.log({ data, orgReport: $orgReport.data });
+
+	async function copySignUpLink() {
+		try {
+			await copyTextToClipboard(`https://careerfingerprint.app/get-started`);
+			toastStore.show({ message: 'Link Copied' });
+		} catch (error) {
+			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
+		}
+	}
 
 	const chart: ChartConfiguration = {
 		type: 'pie',
@@ -57,7 +68,10 @@
 			title="Copy Sign Up Link"
 			subTitle="Share the copy link to allow people to sign up"
 			color="blue"
-			onClick={() => {}}
+			onClick={() => {
+				trackingStore.trackAction('Org Share Sign Up Link');
+				copySignUpLink();
+			}}
 		/>
 		<DashboardActionButton
 			icon={usersIcon}
