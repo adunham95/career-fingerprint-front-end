@@ -1,6 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { User } from '@sentry/sveltekit';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
+import { queryClient } from './queryClient';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -35,7 +36,12 @@ export async function registerOrg(newProfile: {
 	}
 }
 
-export async function updateOrg(data: { id: string; name?: string; domain?: string }) {
+export async function updateOrg(data: {
+	id: string;
+	name?: string;
+	domain?: string;
+	logoURL?: string;
+}) {
 	const url = `${PUBLIC_API_URL}/org/${data.id}`;
 
 	try {
@@ -109,9 +115,77 @@ export async function removeAdminFromOrg({ userID, orgID }: { userID: number; or
 	}
 }
 
+export async function deleteDomain({ id }: { id: string }) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/domain/${id}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function createDomain({ orgID, domain }: { orgID: string; domain: string }) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/domain`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({ orgID, domain })
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function updateDomain({
+	id,
+	orgID,
+	domain
+}: {
+	id: string;
+	orgID: string;
+	domain: string;
+}) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/domain/${id}`, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify({ orgID, domain })
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getOrgDomains(orgID: string) {
+	try {
+		const res = await fetch(`${PUBLIC_API_URL}/domain/org/${orgID}`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
 	orgAdmins: (id: string) => ['orgAdmins', id] as const,
-	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const
+	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
+	orgDomains: (id: string) => ['orgDomains', id] as const
 };
 
 // QUERIES
@@ -127,6 +201,17 @@ export const useOrgAdmins = (orgID: string, initialData?: User[]) => {
 	return createQuery({
 		queryKey: orgKeys.orgAdmins(orgID),
 		queryFn: () => getOrgAdmins(orgID),
+		initialData
+	});
+};
+
+export const useOrgDomains = (
+	orgID: string,
+	initialData?: { id: string; orgID: string; domain: string }[]
+) => {
+	return createQuery({
+		queryKey: orgKeys.orgDomains(orgID),
+		queryFn: () => getOrgDomains(orgID),
 		initialData
 	});
 };
@@ -169,6 +254,48 @@ export const useUpdateOrg = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);
+		}
+	});
+};
+
+export const useCreateDomain = (orgID: string) => {
+	return createMutation({
+		mutationFn: createDomain,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgDomains(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create domain:', error);
+		}
+	});
+};
+
+export const useUpdateDomain = (orgID: string) => {
+	return createMutation({
+		mutationFn: updateDomain,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgDomains(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to update domain:', error);
+		}
+	});
+};
+
+export const useDeleteDomain = (orgID: string) => {
+	return createMutation({
+		mutationFn: deleteDomain,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgDomains(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete domain:', error);
 		}
 	});
 };

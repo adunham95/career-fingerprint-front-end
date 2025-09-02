@@ -22,6 +22,7 @@
 	let isAchievementOpen = $state(false);
 	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
+	let showSelectOrg = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -48,7 +49,7 @@
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div
-		class={`mt-3 grid grid-cols-2 gap-3 ${data.user.orgID !== null ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}
+		class={`mt-3 grid grid-cols-2 gap-3 ${data.user.orgs.length > 0 ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}
 	>
 		<DashboardActionButton
 			title="Add Achievement"
@@ -101,12 +102,23 @@
 			color="orange"
 		/>
 
-		{#if data.user.orgID}
+		{#if data.user.orgs.length === 1}
 			<DashboardActionButton
 				title="Manage Organization"
 				subTitle="View and manage your organization"
 				icon={buildingIcon}
-				href={`/org/${data.user.orgID}`}
+				href={`/org/${data.user.orgs[0].id}`}
+				actionName="Manage Organization Click"
+				color="red"
+			/>
+		{:else if data.user.orgs.length > 1}
+			<DashboardActionButton
+				title="Manage Organizations"
+				subTitle="View and manage your organization"
+				icon={buildingIcon}
+				onClick={() => {
+					showSelectOrg = true;
+				}}
 				actionName="Manage Organization Click"
 				color="red"
 			/>
@@ -181,6 +193,26 @@
 	saveFormID="newMeeting"
 >
 	<NewMeetingForm id="newMeeting" />
+</Drawer>
+
+<Drawer bind:isOpen={showSelectOrg} title="Select an Organization">
+	<div></div>
+	<ul role="list" class="divide-y divide-gray-100">
+		{#each data.user.orgs as org}
+			<li class="flex justify-between gap-x-6 py-5">
+				<a href={`/org/${org.id}`} class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200">
+					<img
+						src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+						alt=""
+						class="size-12 flex-none rounded-full bg-gray-50"
+					/>
+					<div class="min-w-0 flex-auto pt-2">
+						<p class="text-sm font-semibold text-gray-900">{org.name}</p>
+					</div>
+				</a>
+			</li>
+		{/each}
+	</ul>
 </Drawer>
 
 {#snippet startIcon()}

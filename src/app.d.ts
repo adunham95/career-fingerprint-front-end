@@ -138,9 +138,8 @@ interface CurrentUser {
 	pitch: string;
 	lookingFor: string;
 	inviteCode: string | null;
-	orgID: string | null;
 	emailVerified: boolean;
-	org: Organization | null;
+	orgs: Organization[];
 	subscription: SubscriptionPlan;
 }
 
