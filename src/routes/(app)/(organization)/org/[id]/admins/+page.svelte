@@ -1,20 +1,48 @@
 <script lang="ts">
-	import { useOrgAdmins, useRemoveAdminFromOrg } from '$lib/API/org.js';
+	import { useAddAdmin, useOrgAdmins, useRemoveAdminFromOrg } from '$lib/API/org.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
 	console.log(data);
 
+	let showNewAdmin = $state(false);
+	let firstName = $state('');
+	let lastName = $state('');
+	let email = $state('');
+
 	const removeAdminFunction = useRemoveAdminFromOrg();
 	const orgAdmins = useOrgAdmins(data.org?.id || '', data.admins);
+	const addAdminMutation = useAddAdmin(data.org?.id);
 
-	async function removeUserFromOrg(userID: number) {
+	async function removeAdminFromOrg(userID: number) {
 		try {
 			await $removeAdminFunction.mutateAsync({ userID, orgID: data.org?.id || '' });
 			await $orgAdmins.refetch();
-		} catch (error) {}
+			toastStore.show({ message: 'Removed Admin' });
+		} catch (error) {
+			toastStore.show({ message: 'Could not remove admin', type: 'error' });
+		}
+	}
+
+	async function addNewAdmin(e: SubmitEvent) {
+		e.preventDefault();
+		try {
+			console.log({ firstName, lastName, email });
+			await $addAdminMutation.mutateAsync({ firstName, lastName, email, orgID: data.org.id });
+			toastStore.show({ message: 'Added New Admin' });
+			await $orgAdmins.refetch();
+			showNewAdmin = false;
+			firstName = '';
+			lastName = '';
+			email = '';
+		} catch (error) {
+			toastStore.show({ message: 'Error new admin', type: 'error' });
+		}
 	}
 
 	onMount(() => {
@@ -29,9 +57,11 @@
 				<h1 class="text-base font-semibold text-gray-900">Admins</h1>
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
-			<!-- <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button type="button" class="btn btn--primary">Add user</button>
-			</div> -->
+			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+				<button type="button" class="btn btn--primary" onclick={() => (showNewAdmin = true)}
+					>Add Admin</button
+				>
+			</div>
 		</div>
 	</div>
 	<div class="mt-8 flow-root overflow-hidden">
@@ -79,8 +109,8 @@
 							<td class="py-4 pl-3 text-right text-sm font-medium">
 								<button
 									class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
-									disabled={data.user.id === user.id}
-									onclick={() => removeUserFromOrg(user.id)}
+									disabled={data?.user?.id === user.id}
+									onclick={() => removeAdminFromOrg(user.id)}
 								>
 									Remove
 									<span class="sr-only">, {user.firstName} {user.lastName}</span>
@@ -93,3 +123,16 @@
 		</div>
 	</div>
 </PageContainer>
+
+<Drawer
+	bind:isOpen={showNewAdmin}
+	title="New Admin"
+	subTitle="Add a new admin to your organization"
+	saveFormID="newAdminForm"
+>
+	<form id="newAdminForm" class=" space-y-2" onsubmit={addNewAdmin}>
+		<TextInput id="firstName" label="First Name" bind:value={firstName} />
+		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
+		<TextInput id="email" label="Email" type="email" bind:value={email} />
+	</form>
+</Drawer>

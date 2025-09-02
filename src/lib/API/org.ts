@@ -128,6 +128,29 @@ export async function deleteDomain({ id }: { id: string }) {
 	}
 }
 
+export async function createAdmin(data: {
+	firstName: string;
+	lastName: string;
+	email: string;
+	orgID: string;
+}) {
+	try {
+		const { orgID, ...newUsers } = data;
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admins`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(newUsers)
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export async function createDomain({ orgID, domain }: { orgID: string; domain: string }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/domain`, {
@@ -289,6 +312,20 @@ export const useUpdateDomain = (orgID: string) => {
 export const useDeleteDomain = (orgID: string) => {
 	return createMutation({
 		mutationFn: deleteDomain,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgDomains(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useAddAdmin = (orgID: string) => {
+	return createMutation({
+		mutationFn: createAdmin,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: orgKeys.orgDomains(orgID)
