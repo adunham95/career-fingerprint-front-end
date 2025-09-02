@@ -15,6 +15,7 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { loadStripe, type Stripe } from '@stripe/stripe-js';
 	import { onMount, untrack } from 'svelte';
+	import type { Organization } from '../../../../app';
 
 	let stripe: Stripe | null = null;
 
@@ -31,6 +32,8 @@
 
 	let stripeCheckoutLoading: boolean = $state(false);
 	let checkingOut = $state(false);
+
+	let newOrg: Organization;
 
 	$inspect($planData.data);
 
@@ -78,7 +81,7 @@
 		try {
 			// TODO Validation
 
-			await $createOrgAndUser.mutateAsync({
+			const { org } = await $createOrgAndUser.mutateAsync({
 				firstName,
 				lastName,
 				email,
@@ -88,6 +91,7 @@
 				orgName,
 				orgSize: groupSize
 			});
+			newOrg = org;
 
 			loadCheckout();
 			formState = 'payment';
@@ -145,7 +149,8 @@
 			let response = await $startCheckout.mutateAsync({
 				priceID,
 				quantity: groupSize,
-				couponID: undefined
+				couponID: undefined,
+				orgID: newOrg.id
 			});
 			console.log({ response });
 			return response;
@@ -174,6 +179,7 @@
 						className="col-span-2"
 						id="group-size"
 						placeholder="Enter your group size"
+						subLabel="Select the number of seats your would like"
 						label="Group Size"
 						type="number"
 					/>

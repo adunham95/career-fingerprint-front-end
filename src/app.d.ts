@@ -165,5 +165,6 @@ export {
 	PrepQuestion,
 	MeetingHighlight,
 	CurrentUser,
-	BulletPoint
+	BulletPoint,
+	Organization
 };

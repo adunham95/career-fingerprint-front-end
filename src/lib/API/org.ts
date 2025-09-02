@@ -36,6 +36,36 @@ export async function registerOrg(newProfile: {
 	}
 }
 
+export async function createOrg(newOrg: {
+	orgName: string;
+	orgSize: number;
+	orgDomain: string;
+	orgEmail: string;
+	admin: number;
+}) {
+	const url = `${PUBLIC_API_URL}/org`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(newOrg)
+		});
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to create org ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to register org`);
+	}
+}
+
 export async function updateOrg(data: {
 	id: string;
 	name?: string;
@@ -357,6 +387,16 @@ export const useAddAdmin = (orgID: string) => {
 		},
 		onError: (error) => {
 			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useCreateOrg = () => {
+	return createMutation({
+		mutationFn: createOrg,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create org:', error);
 		}
 	});
 };

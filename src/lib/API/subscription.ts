@@ -1,5 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
+import type { Organization } from '../../app';
 
 interface SubscriptionPlan {
 	id: string;
@@ -20,6 +21,7 @@ interface SubscriptionPlan {
 	plan?: {
 		level: number;
 	};
+	org?: Organization;
 }
 
 interface SubscriptionDetails {
@@ -120,10 +122,11 @@ export async function validateSubscription(
 
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/stripe/validate/${checkoutID}`, options);
+		console.log(res);
 		// TODO why is this failing on pro plans
 		if (res.ok) {
 			const data = await res.json();
-			console.log(data);
+			console.log('validateSubscription', data);
 			return data;
 		}
 		return null;
@@ -167,6 +170,7 @@ export async function createOrgCheckoutSession(newCheckout: {
 	priceID: string;
 	quantity: number;
 	couponID?: string;
+	orgID: string;
 }): Promise<string> {
 	const url = `${PUBLIC_API_URL}/stripe/create-checkout-session/org`;
 
