@@ -89,6 +89,21 @@ export async function getOrgAdmins(orgID: string) {
 	}
 }
 
+export async function getOrg(orgID?: string) {
+	try {
+		if (!orgID) {
+			throw Error('Missing OrgID');
+		}
+		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}`, {
+			credentials: 'include'
+		});
+		return res.json();
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export async function removeUserFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/user/${userID}`, {
@@ -206,6 +221,7 @@ export async function getOrgDomains(orgID: string) {
 }
 
 export const orgKeys = {
+	org: (id: string) => ['org', id] as const,
 	orgAdmins: (id: string) => ['orgAdmins', id] as const,
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
 	orgDomains: (id: string) => ['orgDomains', id] as const
@@ -236,6 +252,14 @@ export const useOrgDomains = (
 		queryKey: orgKeys.orgDomains(orgID),
 		queryFn: () => getOrgDomains(orgID),
 		initialData
+	});
+};
+
+export const useOrg = (orgID?: string) => {
+	return createQuery({
+		queryKey: orgKeys.org(orgID || ''),
+		queryFn: () => getOrg(orgID),
+		enabled: !!orgID
 	});
 };
 

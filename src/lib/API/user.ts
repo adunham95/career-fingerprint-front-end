@@ -41,6 +41,7 @@ export async function registerUser(newProfile: {
 	email: string;
 	password: string;
 	achievement: string;
+	orgID?: string;
 }): Promise<RegisteredUserData> {
 	const url = `${PUBLIC_API_URL}/register`;
 

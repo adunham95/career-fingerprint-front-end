@@ -1,35 +1,29 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { useOrg } from '$lib/API/org';
 	import { useCreateSubscription, useCreateSubscriptionTrial } from '$lib/API/subscription';
-	import {
-		useGetCurrentUser,
-		useRegisterUserMutation,
-		type RegisteredUserData
-	} from '$lib/API/user';
+	import { useRegisterUserMutation, type RegisteredUserData } from '$lib/API/user';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import Loader from '$lib/Components/Loader.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
-	import { centsToDollars } from '$lib/Utils/centsToDollars';
 	import { onMount } from 'svelte';
+
+	const orgID = page.url.searchParams.get('org') || undefined;
 
 	function scrollToView(id: string) {
 		const elm = document.getElementById(id);
 		if (elm) elm.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	let { data } = $props();
-
 	let registerUser = useRegisterUserMutation();
 	let startSubscriptionTrial = useCreateSubscriptionTrial();
 	let startSubscription = useCreateSubscription();
-	let getCurrentUser = useGetCurrentUser();
-
 	let registeredUser: null | RegisteredUserData = $state(null);
+	let org = useOrg(orgID || undefined);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Get Started');
@@ -56,7 +50,7 @@
 		}
 
 		try {
-			registeredUser = await $registerUser.mutateAsync(profile);
+			registeredUser = await $registerUser.mutateAsync({ ...profile, orgID });
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
@@ -125,6 +119,15 @@
 <div class="mx-auto max-w-4xl px-3 py-3">
 	<!-- Step 1 -->
 	<div id="step-1" class="flex min-h-screen flex-col items-center justify-center">
+		{#if $org?.data?.logoURL}
+			<img src={$org.data.logoURL} alt={`${$org?.data?.name} Logo`} />
+		{/if}
+		<div>
+			<h3 class="font-title text-md pb-2">
+				{$org?.data?.name || ''}
+			</h3>
+		</div>
+
 		<h2 class="font-title pb-2 text-3xl">Welcome to Career Fingerprint!</h2>
 		<h3 class="font-title text-lg">
 			We’re here to help you build your unique career story — and we’re glad you’re here
