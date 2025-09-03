@@ -49,7 +49,7 @@
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div
-		class={`mt-3 grid grid-cols-2 gap-3 ${data.user.orgs.length > 0 ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}
+		class={`mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 ${data.user.orgs.length > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}
 	>
 		<DashboardActionButton
 			title="Add Achievement"
