@@ -1,9 +1,14 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
+	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { format, isFuture } from 'date-fns';
@@ -11,12 +16,26 @@
 
 	const { data } = $props();
 	let current = $state('notes');
+	let newNote = $state('');
+
+	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
+	let createMeetingNotes = useCreateNote(data.meetingID || '');
 
 	console.log({ data });
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Meeting Details');
 	});
+
+	async function saveNote() {
+		try {
+			await $createMeetingNotes.mutateAsync({ note: newNote, meetingID: data.meetingID || '' });
+			toastStore.show({ message: 'Note Save', type: 'success' });
+			newNote = '';
+		} catch (error) {
+			toastStore.show({ message: 'Could not save note', type: 'error' });
+		}
+	}
 </script>
 
 <div>
@@ -78,8 +97,28 @@
 			/>
 			<div class="px-1 py-1">
 				{#if current === 'notes'}
+					<div class="pb-2">
+						<Label label="Take Notes" />
+						<TextArea
+							id="note"
+							label="Note"
+							hideLabel
+							placeholder="Note"
+							rows={4}
+							bind:value={newNote}
+						/>
+						<div class="flex justify-end">
+							<button
+								class="btn btn-text--primary"
+								onclick={() => {
+									saveNote();
+									trackingStore.trackAction('Add  Note Click');
+								}}>Add Note</button
+							>
+						</div>
+					</div>
 					<ul class="space-y-2">
-						{#each data.relatedNotes as note}
+						{#each $meetingNotes.data as note}
 							<li>
 								<Card size="sm">
 									<p>{note.note}</p>

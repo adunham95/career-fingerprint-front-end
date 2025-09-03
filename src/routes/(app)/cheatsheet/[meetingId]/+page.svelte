@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
@@ -14,6 +15,8 @@
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
+	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
+	let createMeetingNotes = useCreateNote(data.meetingID || '');
 
 	console.log({ data });
 	let currentNote = $state('');
@@ -24,23 +27,12 @@
 	});
 
 	async function saveNote() {
-		const url = `${PUBLIC_API_URL}/notes`;
-
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				note: currentNote,
-				meetingID: data.meetingID
-			})
-		});
-
-		if (res.ok) {
+		try {
+			await $createMeetingNotes.mutateAsync({ note: currentNote, meetingID: data.meetingID || '' });
 			toastStore.show({ message: 'Note Save', type: 'success' });
 			currentNote = '';
+		} catch (error) {
+			toastStore.show({ message: 'Could not save note', type: 'error' });
 		}
 	}
 
@@ -143,7 +135,7 @@
 					</p>
 				{:else if current === 'notes'}
 					<ul class="space-y-2">
-						{#each data.relatedNotes as note}
+						{#each $meetingNotes.data as note}
 							<li>
 								<Card size="sm">
 									<p>{note.note}</p>
