@@ -14,21 +14,30 @@
 	import { onMount } from 'svelte';
 	import type { Education, JobPosition } from '../../../app.js';
 	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
+	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
+	import { useMySkills, useUpdateSkillList } from '$lib/API/skill-list.js';
+	const { data } = $props();
 
 	let updateResumeObject = useUpdateResumeObjectMutation();
 	let deleteResumeObject = useDeleteResumeObjectMutation();
 	let addResumeObject = useAddResumeObjectMutation();
 
+	const skillList = useMySkills();
+	const saveSkillList = useUpdateSkillList();
+
 	onMount(() => {
 		trackingStore.pageViewEvent('My Fingerprint');
 	});
 
-	const { data } = $props();
+	$effect(() => {
+		chipList = $skillList.data?.skillList || [];
+	});
 
 	console.log(data);
 
 	let jobs = $state(data.jobs || []);
 	let education = $state(data.education || []);
+	let chipList = $state($skillList.data?.skillList || []);
 
 	async function addObject(type: keyof typeof resumeObjectTypeMap) {
 		try {
@@ -152,6 +161,13 @@
 			});
 		}
 	}
+
+	async function saveSkills() {
+		try {
+			await $saveSkillList.mutateAsync({ skillList: chipList });
+			toastStore.show({ message: 'Skill List Saved' });
+		} catch (error) {}
+	}
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
@@ -224,5 +240,10 @@
 				{/snippet}
 			</Card>
 		{/each}
+	</TwoColumn>
+	<TwoColumn title={'My Skills'}>
+		<Card>
+			<ChipList bind:chips={chipList} onChange={saveSkills} />
+		</Card>
 	</TwoColumn>
 </PageContainer>

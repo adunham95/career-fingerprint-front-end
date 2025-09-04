@@ -605,7 +605,13 @@
 			{/if}
 		</div>
 		<div class="md:col-span-2">
-			<BasicResume {personalInfo} experience={jobs} {education} showIncomplete />
+			<BasicResume
+				{personalInfo}
+				experience={jobs}
+				{education}
+				showIncomplete
+				skillList={data.mySkills?.skillList}
+			/>
 		</div>
 	</div>
 </PageContainer>

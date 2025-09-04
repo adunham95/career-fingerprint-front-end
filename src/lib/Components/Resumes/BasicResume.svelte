@@ -19,9 +19,16 @@
 
 		experience?: JobPosition[];
 		education?: Education[];
+		skillList?: string[];
 	}
 
-	const { personalInfo, experience = [], education = [], showIncomplete = false }: Props = $props();
+	const {
+		personalInfo,
+		experience = [],
+		education = [],
+		showIncomplete = false,
+		skillList = []
+	}: Props = $props();
 
 	console.log(education);
 
@@ -132,6 +139,15 @@
 
 	<!-- Content -->
 	<div class="pt-8">
+		<!-- Skill List -->
+		<section class="mb-10">
+			<h2 class="border-primary mb-6 border-b-2 pb-1 text-xl font-bold text-gray-800">Skills</h2>
+			<div class="flex justify-start gap-1">
+				{#each skillList as skill}
+					<p>{skill}</p>
+				{/each}
+			</div>
+		</section>
 		<!-- Experience -->
 		<section class="mb-10">
 			<h2 class="border-primary mb-6 border-b-2 pb-2 text-2xl font-bold text-gray-800">
