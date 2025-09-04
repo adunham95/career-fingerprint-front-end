@@ -14,10 +14,8 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import AutogrowTextInput from '$lib/Components/FormElements/AutogrowTextInput.svelte';
-	import DateInput from '$lib/Components/FormElements/DateInput.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import Toggle from '$lib/Components/FormElements/Toggle.svelte';
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
@@ -30,6 +28,8 @@
 	import { useCreateBulletPoint, useDeleteBulletPoint } from '$lib/API/bullet-points.js';
 	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
 	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
+	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
+	import { useUpdateSkillList } from '$lib/API/skill-list.js';
 
 	const { data } = $props();
 
@@ -55,6 +55,8 @@
 		summary: data.resume.summary || data.user.pitch || ''
 	});
 
+	let chipList = $state(data.mySkills?.skillList || []);
+
 	let jobs = $state<JobPosition[]>(data.jobs || []);
 	let education = $state(data.education || []);
 
@@ -66,6 +68,7 @@
 	let addResumeObject = useAddResumeObjectMutation();
 	let addBulletPointMutation = useCreateBulletPoint();
 	let deleteBulletPointMutation = useDeleteBulletPoint();
+	const saveSkillList = useUpdateSkillList();
 
 	async function updateResumeName() {
 		try {
@@ -271,7 +274,12 @@
 		}
 	}
 
-	$inspect(jobs);
+	async function saveSkills() {
+		try {
+			await $saveSkillList.mutateAsync({ skillList: chipList });
+			toastStore.show({ message: 'Skill List Saved' });
+		} catch (error) {}
+	}
 </script>
 
 <PageContainer>
@@ -571,6 +579,9 @@
 					{/each}
 				</div>
 			</Accordion>
+			<Accordion title="Skills">
+				<ChipList bind:chips={chipList} onChange={saveSkills} />
+			</Accordion>
 			{#if useFeatureGate(1, data.user)}
 				<p class="mt-4 text-gray-600">Download a PDF version this resume</p>
 				<a
@@ -610,7 +621,7 @@
 				experience={jobs}
 				{education}
 				showIncomplete
-				skillList={data.mySkills?.skillList}
+				skillList={chipList}
 			/>
 		</div>
 	</div>

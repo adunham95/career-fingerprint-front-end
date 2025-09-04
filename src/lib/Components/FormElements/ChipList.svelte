@@ -41,11 +41,13 @@
 	{/each}
 
 	<!-- Input + Add button -->
-	<input
-		bind:value={newChip}
-		onkeydown={handleKeydown}
-		placeholder="Add..."
-		class="rounded border px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-	/>
-	<button onclick={addChip} class="btn btn-small btn--primary"> Add </button>
+	<div>
+		<input
+			bind:value={newChip}
+			onkeydown={handleKeydown}
+			placeholder="Add..."
+			class="rounded border px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+		/>
+		<button onclick={addChip} class="btn btn-small btn--primary"> Add </button>
+	</div>
 </div>
