@@ -184,12 +184,12 @@
 		<Card className="md:col-span-2">
 			<form>
 				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<TextArea
+					<!-- <TextArea
 						className="sm:col-span-6"
 						id="pitch"
 						label="60 Second Pitch"
 						bind:value={data.user.pitch}
-					/>
+					/> -->
 					<Select
 						label="What are you looking for?"
 						className="sm:col-span-3"

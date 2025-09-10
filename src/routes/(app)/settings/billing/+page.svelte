@@ -26,9 +26,6 @@
 			const elements = stripe.elements({ clientSecret: await fetchClientSecret() });
 
 			const paymentElement = elements.create('payment');
-
-			// stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
-			// 	const paymentElement = checkout.createPaymentElement();
 			paymentElement.mount('#payment-element');
 			paymentElement.on('ready', function (event) {
 				// Handle ready event

@@ -7,27 +7,23 @@
 		useGetPlanByID,
 		type InvoiceEstimate
 	} from '$lib/API/subscription';
+	import { loadStripe, type Stripe } from '@stripe/stripe-js';
+	import { onMount, untrack } from 'svelte';
+	import type { Organization } from '../../../../app';
+	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
 	import BillingEstimate from '$lib/Components/BillingEstimate.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
-	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
+	import ImageUpload from '$lib/Components/FormElements/ImageUpload.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import TextInputWAddOns from '$lib/Components/FormElements/TextInputWAddOns.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
-	import { trackingStore } from '$lib/Stores/tracking';
-	import { loadStripe, type Stripe } from '@stripe/stripe-js';
-	import { onMount, untrack } from 'svelte';
-	import type { Organization } from '../../../../app.js';
-	import ImageUpload from '$lib/Components/FormElements/ImageUpload.svelte';
-	import NewOrg from './newOrg.svelte';
 
-	const { data } = $props();
+	const { userID }: { userID: number } = $props();
 
 	let stripe: Stripe | null = null;
 
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
-		trackingStore.pageViewEvent('New Org Settings');
 	});
 
 	let orgSize = $state(1);
@@ -143,7 +139,7 @@
 				orgEmail,
 				orgSize,
 				orgLogo,
-				admin: data.user.id
+				admin: userID
 			});
 			formState = 'payment';
 			loadCheckout();
@@ -151,68 +147,86 @@
 	}
 </script>
 
-<PageContainer className="divide-y divide-gray-300">
-	{#if data.user.orgs.length > 0}
-		<ul
-			role="list"
-			class="my-4 divide-y divide-gray-100 overflow-hidden bg-white shadow-xs outline-1 outline-gray-900/5 sm:rounded-xl"
-		>
-			{#each data.user.orgs as org}
-				<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-					<div class="flex min-w-0 gap-x-4">
-						{#if org.logoURL}
-							<img src={org.logoURL} alt="" class="size-12 flex-none rounded-full bg-gray-50" />
-						{:else}
-							<div
-								class="flex size-12 flex-none items-center justify-center overflow-hidden rounded-full bg-gray-50"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									class="size-8"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
-									/>
-								</svg>
-							</div>
-						{/if}
-						<div class="min-w-0 flex-auto">
-							<p class="text-sm/6 font-semibold text-gray-900">
-								<a href={`/org/${org.id}`}>
-									<span class="absolute inset-x-0 -top-px bottom-0"></span>
-									{org.name}
-								</a>
-							</p>
-						</div>
-					</div>
-					<div class="flex shrink-0 items-center gap-x-4">
-						<div class="hidden sm:flex sm:flex-col sm:items-end">
-							<p class="text-sm/6 text-gray-900">Go to Org</p>
-						</div>
-						<svg
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							data-slot="icon"
-							aria-hidden="true"
-							class="size-5 flex-none text-gray-400"
-						>
-							<path
-								d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-								clip-rule="evenodd"
-								fill-rule="evenodd"
-							/>
-						</svg>
-					</div>
-				</li>
-			{/each}
-		</ul>
-	{:else}
-		<NewOrg userID={data.user.id} />
-	{/if}
-</PageContainer>
+<TwoColumn title={'New Organization information'}>
+	{#snippet subSection()}
+		<!-- {#if showBillingForm} -->
+		<BillingEstimate
+			discounts={orderEstimate?.discounts.map((d) => d.amount) || []}
+			subTotal={orderEstimate?.subtotal || 0}
+			taxes={orderEstimate?.tax.map((t) => t.amount) || []}
+			total={orderEstimate?.total || 0}
+		/>
+		<!-- {/if} -->
+	{/snippet}
+	<Card className="md:col-span-2">
+		<div class={`${formState === 'details' ? 'block' : 'hidden'}`}>
+			<div class="mt-4 grid grid-cols-4 gap-x-4 gap-y-6">
+				<ImageUpload className="col-span-4" id="logo" label="Logo" bind:value={orgLogo} />
+				<TextInput
+					bind:value={orgName}
+					id="name"
+					label="Organization Name"
+					className="col-span-4"
+				/>
+				<TextInput
+					bind:value={orgSize}
+					className="col-span-2"
+					id="group-size"
+					placeholder="Enter your group size"
+					subLabel="Select the number of seats your would like"
+					label="Group Size"
+					type="number"
+				/>
+				<TextInputWAddOns
+					preInlineText="example@"
+					bind:value={orgDomain}
+					className="col-span-2"
+					id="org-domain"
+					label="Org Domain"
+				/>
+				<TextInput
+					id="org-email"
+					bind:value={orgEmail}
+					label="Organization Email"
+					subLabel="Used for organization communication and billing"
+					className="col-span-4"
+					type="email"
+				/>
+			</div>
+		</div>
+		<div class={`${formState === 'payment' ? 'block' : 'hidden'}`}>
+			<div
+				class={`mt-10 border-t border-gray-200 pt-10 ${formState === 'payment' ? 'block' : 'hidden'}`}
+			>
+				<h2 class="text-lg font-medium text-gray-900">Payment</h2>
+				<div id="payment-element">
+					<!-- Elements will create form elements here -->
+				</div>
+				<h3 class="pt-2">Billing Address</h3>
+				<div id="billing-element" class="pt-2">
+					<!-- Elements will create form elements here -->
+				</div>
+			</div>
+			{#if stripeCheckoutLoading}
+				<div class="flex justify-center">
+					<Loader />
+				</div>
+			{/if}
+		</div>
+		{#snippet actions()}
+			<button
+				onclick={createNewOrg}
+				class={`btn btn--primary ${formState === 'details' ? 'block' : 'hidden'}`}
+				>Create Account</button
+			>
+
+			<button
+				id="pay-button"
+				disabled={checkingOut}
+				class={`btn btn--primary  ${formState === 'payment' ? 'block' : 'hidden'}`}
+			>
+				Start Subscription
+			</button>
+		{/snippet}
+	</Card>
+</TwoColumn>

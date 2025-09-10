@@ -153,6 +153,7 @@ interface Organization {
 	seatCount: number;
 	stripeCustomerID: string;
 	updatedAt: string;
+	logoURL: string;
 }
 
 export {

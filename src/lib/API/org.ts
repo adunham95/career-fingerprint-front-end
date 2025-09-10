@@ -41,6 +41,7 @@ export async function createOrg(newOrg: {
 	orgSize: number;
 	orgDomain: string;
 	orgEmail: string;
+	orgLogo: string;
 	admin: number;
 }) {
 	const url = `${PUBLIC_API_URL}/org`;
