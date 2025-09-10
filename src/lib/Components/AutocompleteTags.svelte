@@ -41,6 +41,9 @@
 	}
 
 	async function saveNewTag() {
+		if (queryText === '') {
+			return;
+		}
 		$newAchievementTag.mutateAsync({ name: queryText });
 	}
 </script>

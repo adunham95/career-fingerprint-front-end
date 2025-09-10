@@ -9,6 +9,7 @@
 		checkItemClassName?: string;
 		oninput?: () => void;
 		options?: { id: string; label?: string; selected?: boolean }[];
+		errorText?: string;
 	}
 
 	let {
@@ -22,6 +23,7 @@
 		hideLabel,
 		labelClassName,
 		oninput,
+		errorText,
 		...props
 	}: Props = $props();
 </script>
@@ -43,4 +45,7 @@
 			</option>
 		{/each}
 	</select>
+	{#if errorText}
+		<p class="mt-2 text-sm text-red-600">{errorText}</p>
+	{/if}
 </div>

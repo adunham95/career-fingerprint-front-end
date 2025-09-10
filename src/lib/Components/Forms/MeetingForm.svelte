@@ -36,6 +36,7 @@
 	let jobPositionID = $state(meeting.jobPositionID || null);
 	let educationID = $state(meeting.educationID || null);
 	let jobAppID = $state(meeting.jobAppID || null);
+	let error = $state<{ [key: string]: string }>({});
 
 	const saveMeetingMutation = useCreateMeetingMutation();
 	const updateMeetingMutation = useUpdateMeetingMutation(meetingID || '');
@@ -44,15 +45,19 @@
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
+		error = {};
 
 		console.log({ type, jobAppID });
 
 		if (type === 'Interview' && !jobAppID) {
-			toastStore.show({ message: 'Missing job for interview', type: 'error' });
+			error.jobAppID = 'Missing job for interview';
 			return;
 		}
 		if (type === 'Internal' && (!jobPositionID || !educationID)) {
-			toastStore.show({ message: 'Missing job or education for meeting', type: 'error' });
+			error = {
+				jobPositionID: 'Link Job or Education',
+				educationID: 'Link Job or Education'
+			};
 			return;
 		}
 
@@ -146,6 +151,7 @@
 				bind:selectedCompany={jobAppID}
 				className="space-y-2"
 				oninput={() => updateOnChange && saveToAPI()}
+				errorText={error.jobAppID}
 			/>
 		{:else}
 			<Select
@@ -157,6 +163,7 @@
 					id: j.id,
 					label: `${j.name} | ${j.company}`
 				}))}
+				errorText={error.jobPositionID}
 			/>
 			<Select
 				id="select-education"
@@ -167,6 +174,7 @@
 					id: j.id,
 					label: `${j.degree} | ${j.institution}`
 				}))}
+				errorText={error.educationID}
 			/>
 		{/if}
 	</div>

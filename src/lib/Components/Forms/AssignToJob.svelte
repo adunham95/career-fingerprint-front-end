@@ -10,10 +10,11 @@
 	interface Props {
 		className?: string;
 		selectedCompany?: string | null;
+		errorText?: string;
 		oninput?: () => void;
 	}
 
-	let { className = '', selectedCompany = $bindable(), oninput }: Props = $props();
+	let { className = '', selectedCompany = $bindable(), oninput, errorText }: Props = $props();
 
 	let applications = useMyJobApplicationsQuery();
 	let newApplication = useCreateJobApplicationMutation();
@@ -47,6 +48,7 @@
 				id: app.id,
 				label: `${app.company} - ${app.title}`
 			}))}
+			{errorText}
 		/>
 	{/if}
 	<Label id="jobDetails" label="Create New Job Application" />

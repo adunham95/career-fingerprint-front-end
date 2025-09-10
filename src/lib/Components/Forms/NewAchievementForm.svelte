@@ -24,6 +24,7 @@
 	let startDate = $state(null);
 	let endDate = $state(null);
 	let selectedCategory = $state('');
+	let error = $state<{ [key: string]: string }>({});
 
 	let education = useMyEducationQuery();
 	let jobs = useMyJobPositionsQuery();
@@ -32,6 +33,20 @@
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
+		error = {};
+
+		if (!myContribution) {
+			error.myContribution = 'Missing Contribution';
+			return;
+		}
+
+		if (!jobPositionID || !educationID) {
+			error = {
+				jobPositionID: 'Link Job or Education',
+				educationID: 'Link Job or Education'
+			};
+			return;
+		}
 
 		try {
 			$newAchievement.mutateAsync({
@@ -62,14 +77,30 @@
 
 <form {id} class="@container/new-achive-form" onsubmit={submitFunction}>
 	<div class="grid gap-2">
-		<TextArea id="ach-desc" label="Background" bind:value={description} />
-		<TextArea id="ach-contriubution" label="What I Did" bind:value={myContribution} />
-		<TextArea id="ach-reult" label="What was the outcome" bind:value={result} />
+		<TextArea
+			id="ach-desc"
+			label="Background"
+			bind:value={description}
+			errorText={error?.description}
+		/>
+		<TextArea
+			id="ach-contriubution"
+			label="What I Did"
+			bind:value={myContribution}
+			errorText={error?.myContribution}
+		/>
+		<TextArea
+			id="ach-reult"
+			label="What was the outcome"
+			bind:value={result}
+			errorText={error?.result}
+		/>
 		<Select
 			id="select-job"
 			label="Link To Job"
 			bind:value={jobPositionID}
 			options={($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))}
+			errorText={error?.jobPositionID}
 		/>
 		<Select
 			id="select-education"
@@ -79,6 +110,7 @@
 				id: j.id,
 				label: `${j.degree} | ${j.institution}`
 			}))}
+			errorText={error?.educationID}
 		/>
 		<DateInput label="Start Date" id="ach-start" bind:value={startDate} showDate />
 		<DateInput label="End Date" id="ach-end" bind:value={endDate} showDate />
