@@ -182,6 +182,7 @@
 	title="Add Achievement"
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
+	onSave={() => (isAchievementOpen = false)}
 >
 	<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
 </Drawer>
@@ -191,6 +192,7 @@
 	title="Add New Meeting"
 	subTitle="Create a new interview, or internal meeting"
 	saveFormID="newMeeting"
+	onSave={() => (isNewMeetingOpen = false)}
 >
 	<NewMeetingForm id="newMeeting" />
 </Drawer>
@@ -201,11 +203,28 @@
 		{#each data.user.orgs as org}
 			<li class="flex justify-between gap-x-6 py-5">
 				<a href={`/org/${org.id}`} class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200">
-					<img
-						src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-						alt=""
-						class="size-12 flex-none rounded-full bg-gray-50"
-					/>
+					{#if org.logoURL}
+						<img src={org.logoURL} alt="" class="size-12 flex-none rounded-full bg-gray-50" />
+					{:else}
+						<div
+							class="flex size-12 flex-none items-center justify-center overflow-hidden rounded-full bg-gray-50"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="size-8"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
+								/>
+							</svg>
+						</div>
+					{/if}
 					<div class="min-w-0 flex-auto pt-2">
 						<p class="text-sm font-semibold text-gray-900">{org.name}</p>
 					</div>
