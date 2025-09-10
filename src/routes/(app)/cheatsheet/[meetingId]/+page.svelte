@@ -8,6 +8,7 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
@@ -130,11 +131,20 @@
 						{/each}
 					</ul>
 				{:else if current === 'details'}
+					{#if !data.interviewData?.jobApp?.jobDescription}
+						<InfoBlock title="No Job Description" description="Missing Job Description" />
+					{/if}
 					<p class="whitespace-pre-wrap">
 						{data.interviewData?.jobApp?.jobDescription}
 					</p>
 				{:else if current === 'notes'}
 					<ul class="space-y-2">
+						{#if $meetingNotes.data.length === 0}
+							<InfoBlock
+								title="No Notes"
+								description="Your notes from other related interviews or meetings will show up here"
+							/>
+						{/if}
 						{#each $meetingNotes.data as note}
 							<li>
 								<Card size="sm">
@@ -145,6 +155,12 @@
 					</ul>
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
+						{#if data.highlights === 0}
+							<InfoBlock
+								title="No Highlights"
+								description="Your highlights from previous meetings or prep will show up here."
+							/>
+						{/if}
 						{#each data.highlights as highlight}
 							<li>
 								<Card size="sm" contentClassName="divide-y divide-gray-200">
@@ -192,6 +208,7 @@
 	title="Update Your Meeting"
 	subTitle="Update your meeting so you can find it later"
 	saveFormID="updateMeeting"
+	onSave={() => (showMeetingDetails = false)}
 >
 	<NewMeetingForm
 		id="updateMeeting"
