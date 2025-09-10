@@ -182,7 +182,6 @@
 	title="Add Achievement"
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
-	onSave={() => (isAchievementOpen = false)}
 >
 	<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
 </Drawer>
@@ -192,9 +191,8 @@
 	title="Add New Meeting"
 	subTitle="Create a new interview, or internal meeting"
 	saveFormID="newMeeting"
-	onSave={() => (isNewMeetingOpen = false)}
 >
-	<NewMeetingForm id="newMeeting" />
+	<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
 </Drawer>
 
 <Drawer bind:isOpen={showSelectOrg} title="Select an Organization">

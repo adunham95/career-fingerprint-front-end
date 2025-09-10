@@ -8,6 +8,7 @@
 	import { useCreateMeetingMutation, useUpdateMeetingMutation } from '$lib/API/meeting';
 	import { useMyEducationQuery } from '$lib/API/education';
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions';
+	import { getLocalDateTimeValue } from '$lib/Utils/getLocalDateTimeValue';
 
 	interface Props {
 		id: string;
@@ -27,7 +28,7 @@
 
 	let title = $state(meeting.title);
 	let time = $state<string | Date>(
-		(meeting?.time ? new Date(meeting?.time) : new Date()).toISOString().slice(0, 16)
+		meeting?.time ? getLocalDateTimeValue(new Date(meeting?.time)) : getLocalDateTimeValue()
 	);
 	let type = $state<string>(meeting.type || 'Interview');
 	let location = $state(meeting.location);
@@ -43,6 +44,18 @@
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
+
+		console.log({ type, jobAppID });
+
+		if (type === 'Interview' && !jobAppID) {
+			toastStore.show({ message: 'Missing job for interview', type: 'error' });
+			return;
+		}
+		if (type === 'Internal' && (!jobPositionID || !educationID)) {
+			toastStore.show({ message: 'Missing job or education for meeting', type: 'error' });
+			return;
+		}
+
 		let meetingDetails = {
 			title,
 			time: time ? new Date(time).toISOString() : null,
