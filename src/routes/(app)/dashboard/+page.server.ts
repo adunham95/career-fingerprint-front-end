@@ -5,7 +5,7 @@ export const load = async (event) => {
 	const token = event.cookies.get('accessToken');
 
 	try {
-		const resAchievements = await fetch(`${PUBLIC_API_URL}/achievement/my`, {
+		const resAchievements = await fetch(`${PUBLIC_API_URL}/achievement/my?page=1&limit=5`, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}
