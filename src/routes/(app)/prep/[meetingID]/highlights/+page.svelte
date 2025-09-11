@@ -38,8 +38,7 @@
 	const saveHighlightMutation = useCreateHighlightMutation(data.meetingID || '');
 	const updateHighlightMutation = useUpdateHighlightMutation(data.meetingID || '');
 
-	$inspect('checked', checkedAchievements);
-	$inspect('unchecked', unCheckedAchievements);
+	let meetingText = $state($meeting.data?.agenda || $meeting.data?.jobApp?.jobDescription);
 
 	function handleMouseUp(event: MouseEvent): void {
 		const target = event.target as HTMLElement | null;
@@ -125,17 +124,17 @@
 				{#if showEditJD}
 					<UpdateJobDescription
 						jobAppID={$meeting.data?.jobApp?.id}
-						jobDescription={$meeting.data?.jobApp?.jobDescription}
+						bind:jobDescription={meetingText}
+						onSuccess={() => {
+							showEditJD = false;
+						}}
 					/>
 				{:else}
 					<Card>
-						<div
-							class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap"
-							id="job-description-area"
-						>
+						<div class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
 							{#if $meeting.data?.jobApp?.jobDescription}
-								<p>
-									{$meeting.data?.jobApp.jobDescription}
+								<p id="job-description-area">
+									{meetingText}
 								</p>
 							{:else}
 								<InfoBlock
@@ -153,18 +152,15 @@
 				{#if showEditJD}
 					<UpdateMeetingAgenda
 						meetingID={data.meetingID || ''}
-						agenda={$meeting.data?.agenda}
+						bind:agenda={meetingText}
 						onSuccess={() => (showEditJD = false)}
 					/>
 				{:else}
 					<Card>
-						<div
-							class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap"
-							id="job-description-area"
-						>
+						<div class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
 							{#if $meeting.data?.agenda}
-								<p>
-									{$meeting.data?.agenda}
+								<p id="job-description-area">
+									{meetingText}
 								</p>
 							{:else}
 								<InfoBlock title="Meeting Agenda" description="Add your meeting agenda" />

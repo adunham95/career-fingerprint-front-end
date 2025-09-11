@@ -56,8 +56,8 @@ export async function postJobApplication(newJobApp: NewJobApp) {
 
 interface UpdateJobApp {
 	id: string;
-	title: string;
-	company: string;
+	title?: string;
+	company?: string;
 	companyURL?: string | null;
 	jobStatus?: string | null;
 	jobDescription?: string | null;

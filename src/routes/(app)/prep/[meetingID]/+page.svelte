@@ -22,12 +22,10 @@
 
 	<div class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
 		<div class="pb-4">
-			<MeetingForm
-				id="update-meeting"
-				meetingID={data.meetingID}
-				meeting={$meeting.data || {}}
-				updateOnChange
-			/>
+			<MeetingForm id="update-meeting" meetingID={data.meetingID} meeting={$meeting.data || {}} />
+			<div class="flex justify-end py-2">
+				<button class="btn btn--primary">Save</button>
+			</div>
 		</div>
 	</div>
 </PageContainer>

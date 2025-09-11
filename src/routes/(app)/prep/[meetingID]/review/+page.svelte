@@ -6,6 +6,7 @@
 	import StepHeader from '../StepHeader.svelte';
 	import { format } from 'date-fns';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import { goto } from '$app/navigation';
 
 	const { data } = $props();
 
@@ -22,7 +23,13 @@
 </script>
 
 <PageContainer>
-	<StepHeader currentStep={3} meetingID={data.meetingID || ''} />
+	<StepHeader
+		currentStep={3}
+		meetingID={data.meetingID || ''}
+		onFinish={() => {
+			goto('/dashboard');
+		}}
+	/>
 	<div class="flex justify-end">
 		<button class="btn btn--primary print:hidden" onclick={() => window.print()}>Print</button>
 	</div>

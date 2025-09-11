@@ -15,10 +15,11 @@ export function getSteps(id: string = ''): Step[] {
 export function getCurrentStepDetails(
 	id: string,
 	currentStep = 0
-): { prevStep: Step | null; currentStep: Step | null; nextStep: Step | null } {
+): { prevStep: Step | null; currentStep: Step | null; nextStep: Step | null; isLast: boolean } {
 	const steps = getSteps(id);
 
 	return {
+		isLast: steps.length - 1 === currentStep,
 		prevStep: steps[currentStep - 1],
 		currentStep: steps[currentStep],
 		nextStep: steps[currentStep + 1]

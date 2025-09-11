@@ -1,45 +1,30 @@
 <script lang="ts">
-	import { createMutation, type CreateBaseMutationResult } from '@tanstack/svelte-query';
 	import TextArea from '../FormElements/TextArea.svelte';
-	import { patchJobApp } from '$lib/API/Mutations/update-job-app';
-	import { onDestroy } from 'svelte';
-	import type { JobApplication } from '../../../app';
+	import { useUpdateJobApplicationMutation } from '$lib/API/job-applications';
+	import { toastStore } from '../Toasts/toast';
 
 	interface Props {
 		jobAppID: string;
 		jobDescription?: string | null;
+		onSuccess?: () => void;
 	}
 
-	let { jobAppID, jobDescription = $bindable() }: Props = $props();
+	let { jobAppID, jobDescription = $bindable(), onSuccess }: Props = $props();
 
-	let save: CreateBaseMutationResult<
-		JobApplication | null,
-		Error,
-		Partial<JobApplication>,
-		unknown
-	>;
+	const updateJobApp = useUpdateJobApplicationMutation();
 
-	const saveMutation = createMutation({
-		mutationFn: patchJobApp,
-		onSuccess: (data) => {}
-	});
-
-	const unsubscribeJobApplications = saveMutation.subscribe((t) => {
-		save = t;
-	});
-
-	onDestroy(() => {
-		unsubscribeJobApplications();
-	});
-
-	function updateJobDescription(e: SubmitEvent) {
+	async function updateJobDescription(e: SubmitEvent) {
 		e.preventDefault();
 		if (typeof jobDescription !== 'string') {
 			alert('Not null');
 			return;
 		}
-		if (save.hasOwnProperty('mutate')) {
-			save.mutate({ id: jobAppID, jobDescription });
+		try {
+			await $updateJobApp.mutateAsync({ id: jobAppID, jobDescription });
+			toastStore.show({ message: 'Updated Job Description' });
+			onSuccess?.();
+		} catch (error) {
+			toastStore.show({ message: 'Could not  update job description', type: 'error' });
 		}
 	}
 </script>
