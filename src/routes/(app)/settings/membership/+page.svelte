@@ -21,6 +21,7 @@
 	import Loader from '$lib/Components/Loader.svelte';
 	import DiscountCodeInput from '$lib/Components/DiscountCodeInput.svelte';
 	import BillingEstimate from '$lib/Components/BillingEstimate.svelte';
+	import MembershipStatusBadge from '$lib/Components/MembershipStatusBadge.svelte';
 
 	let stripe: Stripe | null = null;
 	let stripeCheckout: StripeCheckout | null = null;
@@ -111,6 +112,18 @@
 
 	const { data } = $props();
 	console.log({ data });
+
+	function canCancel() {
+		switch (data.membershipDetails?.status) {
+			case 'canceling':
+			case 'org-managed':
+			case 'canceled-stripe':
+			case 'canceled-client':
+			case 'trialing':
+				return false;
+		}
+		return true;
+	}
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
@@ -126,7 +139,7 @@
 				<div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
 					<dt class="text-sm/6 font-medium text-gray-900">Status</dt>
 					<dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-						{data.membershipDetails?.status || 'Active'}
+						<MembershipStatusBadge status={data.membershipDetails?.status || 'Active'} />
 					</dd>
 				</div>
 				{#if data.membershipDetails?.createdAt}
@@ -157,7 +170,8 @@
 			{#snippet actions()}
 				{#if (data.membershipDetails?.plan.level || 0) > 0}
 					<button
-						class="btn btn--error"
+						class={`btn ${canCancel() ? 'btn--error' : 'btn--disabled opacity-30'}`}
+						disabled={canCancel()}
 						onclick={() => {
 							cancelMembership();
 							trackingStore.trackAction('Cancel Membership Click', {
