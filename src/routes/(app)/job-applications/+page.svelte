@@ -245,8 +245,8 @@
 	{/snippet}
 </Modal>
 
-<Drawer bind:isOpen title="Add Job Application" onSave={saveNewJobApplication}>
-	<div class="space-y-2">
+<Drawer bind:isOpen title="Add Job Application" saveFormID="new-job-app">
+	<form id="new-job-app" class="space-y-2" onsubmit={saveNewJobApplication}>
 		<TextInput id="jobTitle" label="Job Title" bind:value={jobTitle} required />
 		<TextInput id="company" label="Company" bind:value={company} required />
 		<TextInput id="companyURL" label="Company URL" bind:value={companyURL} />
@@ -298,5 +298,5 @@
 				</div>
 			</div>
 		{/if}
-	</div>
+	</form>
 </Drawer>
