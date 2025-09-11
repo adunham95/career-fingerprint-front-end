@@ -14,7 +14,7 @@
 		id: string;
 		meetingID?: string;
 		onSuccess?: () => void;
-		meeting?: Partial<Meeting>;
+		meeting?: Partial<Meeting> | null;
 		updateOnChange?: boolean;
 	}
 
@@ -22,20 +22,20 @@
 		id,
 		meetingID,
 		onSuccess = () => null,
-		meeting = {},
+		meeting = $bindable({}),
 		updateOnChange = false
 	}: Props = $props();
 
-	let title = $state(meeting.title);
+	let title = $state(meeting?.title);
 	let time = $state<string | Date>(
 		meeting?.time ? getLocalDateTimeValue(new Date(meeting?.time)) : getLocalDateTimeValue()
 	);
-	let type = $state<string>(meeting.type || 'Interview');
-	let location = $state(meeting.location);
-	let link = $state(meeting.link);
-	let jobPositionID = $state(meeting.jobPositionID || null);
-	let educationID = $state(meeting.educationID || null);
-	let jobAppID = $state(meeting.jobAppID || null);
+	let type = $state<string>(meeting?.type || 'Interview');
+	let location = $state(meeting?.location);
+	let link = $state(meeting?.link);
+	let jobPositionID = $state(meeting?.jobPositionID || null);
+	let educationID = $state(meeting?.educationID || null);
+	let jobAppID = $state(meeting?.jobAppID || null);
 	let error = $state<{ [key: string]: string }>({});
 
 	const saveMeetingMutation = useCreateMeetingMutation();

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { useMeetingByID } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -9,6 +10,7 @@
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
@@ -18,8 +20,9 @@
 	const { data } = $props();
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
+	let meetingDetails = useMeetingByID(data.meetingID || '');
 
-	console.log({ data });
+	console.log({ data, meetingDetails });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
 
@@ -28,6 +31,9 @@
 	});
 
 	async function saveNote() {
+		if (currentNote === '') {
+			return;
+		}
 		try {
 			await $createMeetingNotes.mutateAsync({ note: currentNote, meetingID: data.meetingID || '' });
 			toastStore.show({ message: 'Note Save', type: 'success' });
@@ -210,9 +216,14 @@
 	saveFormID="updateMeeting"
 	onSave={() => (showMeetingDetails = false)}
 >
-	<NewMeetingForm
-		id="updateMeeting"
-		meetingID={data.meetingID}
-		onSuccess={() => goto('/dashboard')}
-	/>
+	{#if $meetingDetails}
+		<NewMeetingForm
+			id="updateMeeting"
+			meetingID={data.meetingID}
+			meeting={$meetingDetails.data}
+			onSuccess={() => goto('/dashboard')}
+		/>
+	{:else}
+		<Loader />
+	{/if}
 </Drawer>
