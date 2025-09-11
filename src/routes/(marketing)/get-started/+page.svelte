@@ -2,8 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { useOrg } from '$lib/API/org';
-	import { useCreateSubscription, useCreateSubscriptionTrial } from '$lib/API/subscription';
-	import { useRegisterUserMutation, type RegisteredUserData } from '$lib/API/user';
+	import { useRegisterUserMutation } from '$lib/API/user';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
 	import RadioCards from '$lib/Components/FormElements/RadioCards.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
@@ -20,9 +19,6 @@
 	}
 
 	let registerUser = useRegisterUserMutation();
-	let startSubscriptionTrial = useCreateSubscriptionTrial();
-	let startSubscription = useCreateSubscription();
-	let registeredUser: null | RegisteredUserData = $state(null);
 	let org = useOrg(orgID || undefined);
 
 	onMount(() => {
@@ -50,67 +46,16 @@
 		}
 
 		try {
-			registeredUser = await $registerUser.mutateAsync({ ...profile, orgID });
+			await $registerUser.mutateAsync({ ...profile, orgID });
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
 			});
-			// scrollToView('premium');
 			goto('/dashboard');
 		} catch (error) {
 			toastStore.show({
 				type: 'error',
 				message: `Error updating User`
-			});
-		}
-	}
-
-	async function startManagedSubscription() {
-		try {
-			let newSubscription = await $startSubscription.mutateAsync({
-				planID: registeredUser?.plan.id || '',
-				orgID: registeredUser?.orgID
-			});
-
-			toastStore.show({
-				type: 'success',
-				message: `Account Created`
-			});
-			goto('/dashboard');
-		} catch (error) {
-			toastStore.show({
-				type: 'error',
-				message: `Error creating free trial`
-			});
-		}
-	}
-
-	async function startFreeTrial() {
-		if (!registeredUser?.plan.monthlyStripePriceID) {
-			toastStore.show({
-				type: 'error',
-				message: `Error creating subscription`
-			});
-			return;
-		}
-
-		let inviteCode = page.url.searchParams.get('code') || undefined;
-
-		try {
-			let newSubscription = $startSubscriptionTrial.mutateAsync({
-				priceID: registeredUser?.plan.monthlyStripePriceID,
-				planID: registeredUser?.plan.id || '',
-				inviteCode
-			});
-			toastStore.show({
-				type: 'success',
-				message: `Free trial started`
-			});
-			goto('/dashboard');
-		} catch (error) {
-			toastStore.show({
-				type: 'error',
-				message: `Error creating free trial`
 			});
 		}
 	}
@@ -173,7 +118,7 @@
 	<!-- Step 3 -->
 	<div id="introduction" class="flex min-h-screen flex-col items-center justify-center">
 		<h3 class="font-title pb-4 text-lg">Introduce Yourself</h3>
-		<p class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
+		<div class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
 			Hello, my name is <InlineTextInput
 				id="firstName-growing"
 				label="First name"
@@ -196,8 +141,8 @@
 				type="date"
 				width={130}
 			/>
-		</p>
-		<p class={profile.lookingFor === 'job' ? 'block' : 'hidden'}>
+		</div>
+		<div class={profile.lookingFor === 'job' ? 'block' : 'hidden'}>
 			Hello, my name is <InlineTextInput
 				id="firstName-job"
 				label="First name"
@@ -227,8 +172,8 @@
 				type="date"
 				width={130}
 			/>
-		</p>
-		<p class={profile.lookingFor === 'student' ? 'block' : 'hidden'}>
+		</div>
+		<div class={profile.lookingFor === 'student' ? 'block' : 'hidden'}>
 			Hello, my name is <InlineTextInput
 				id="firstName-student"
 				label="First name"
@@ -251,7 +196,7 @@
 				type="date"
 				width={130}
 			/>
-		</p>
+		</div>
 
 		<div class="flex justify-end pt-2">
 			<button
