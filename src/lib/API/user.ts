@@ -95,6 +95,8 @@ export interface VerifyTokenResponse {
 	verified: boolean;
 	orgID?: string;
 	orgName?: string;
+	userID?: string;
+	accessToken: string;
 	plan?: {
 		annualStripePriceID: string;
 		description: string;
@@ -112,20 +114,18 @@ export interface VerifyTokenResponse {
 	};
 }
 
-export async function verifyEmail(
-	token: string,
-	data: { token: string; showFreeTrial: boolean }
-): Promise<VerifyTokenResponse | null> {
+export async function verifyEmail(data: {
+	token: string;
+	showFreeTrial: boolean;
+}): Promise<VerifyTokenResponse | null> {
 	const url = `${PUBLIC_API_URL}/register/verify`;
 
 	console.log('verifyEmail', { data });
 
 	try {
-		if (!token) throw 'Missing Token';
 		const res = await fetch(url, {
 			method: 'POST',
 			headers: {
-				Authorization: 'Bearer ' + token,
 				'Content-Type': 'application/json' // Set content type to JSON
 			},
 			body: JSON.stringify(data)

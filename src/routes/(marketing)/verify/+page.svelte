@@ -16,7 +16,7 @@
 
 	async function startManagedSubscription() {
 		try {
-			if (!data.tokenDetails?.plan) throw 'Missing Plans';
+			if (!data?.tokenDetails?.plan) throw 'Missing Plans';
 			let newSubscription = await $startSubscription.mutateAsync({
 				planID: data.tokenDetails.plan.id || '',
 				orgID: data.tokenDetails.orgID

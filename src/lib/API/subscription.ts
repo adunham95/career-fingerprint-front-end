@@ -334,6 +334,7 @@ export async function createSubscription(data: {
 	planID: string;
 	priceID?: string;
 	orgID?: string;
+	userID?: string;
 }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/subscriptions`, {
@@ -359,6 +360,7 @@ export async function createSubscriptionTrial(trialData: {
 	priceID: string;
 	planID: string;
 	inviteCode?: string;
+	userID?: string;
 }) {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/stripe/trial`, {
