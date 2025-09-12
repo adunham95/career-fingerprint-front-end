@@ -70,6 +70,13 @@
 		<div class="mt-4">
 			{#if $meetingHighlights.data && $meetingHighlights.data.length > 0}
 				<h2 class="text-lg">Highlights</h2>
+				<div
+					class="mt-1 mb-2 hidden gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid md:grid-cols-3 print:grid-cols-3"
+				>
+					<p>Highlight</p>
+					<p>Notes</p>
+					<p>Achievements</p>
+				</div>
 				{#each $meetingHighlights.data as highlight}
 					<div
 						class="mb-2 grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-300 pb-6 md:grid-cols-3 print:grid-cols-3"
@@ -77,11 +84,13 @@
 						<div>
 							<h2 class="text-base/7 font-semibold text-gray-900">"{highlight.text}"</h2>
 						</div>
-
-						<div class=" gap-x-6 gap-y-8 md:col-span-2">
+						<div>
 							{#each highlight.notes as note}
-								<p>Note: {note.note}</p>
+								<p>{note.note}</p>
 							{/each}
+						</div>
+
+						<div class=" gap-x-6 gap-y-8">
 							<ul>
 								{#each highlight.achievements as ach}
 									<li>{ach.myContribution}</li>
