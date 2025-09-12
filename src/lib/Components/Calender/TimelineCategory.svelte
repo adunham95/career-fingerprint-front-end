@@ -33,20 +33,25 @@
 	});
 </script>
 
-<span class={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${colorString}`}>
-	{#if icon}
-		<span class="mr-1">
-			{@render icon?.()}
-		</span>
-	{/if}
-	{text}
-	{#if onCancel}
-		<button type="button" class="group relative -mr-1 ml-1 size-3.5 rounded-xs hover:bg-red-600/20">
-			<span class="sr-only">Remove</span>
-			<svg viewBox="0 0 14 14" class="size-3.5 stroke-red-700/50 group-hover:stroke-red-700/75">
-				<path d="M4 4l6 6m0-6l-6 6" />
-			</svg>
-			<span class="absolute -inset-1"></span>
-		</button>
-	{/if}
-</span>
+{#if text !== ''}
+	<span class={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${colorString}`}>
+		{#if icon}
+			<span class="mr-1">
+				{@render icon?.()}
+			</span>
+		{/if}
+		{text}
+		{#if onCancel}
+			<button
+				type="button"
+				class="group relative -mr-1 ml-1 size-3.5 rounded-xs hover:bg-red-600/20"
+			>
+				<span class="sr-only">Remove</span>
+				<svg viewBox="0 0 14 14" class="size-3.5 stroke-red-700/50 group-hover:stroke-red-700/75">
+					<path d="M4 4l6 6m0-6l-6 6" />
+				</svg>
+				<span class="absolute -inset-1"></span>
+			</button>
+		{/if}
+	</span>
+{/if}

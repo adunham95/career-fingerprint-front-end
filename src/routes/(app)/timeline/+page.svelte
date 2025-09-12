@@ -38,7 +38,6 @@
 	>
 		<h1 class="text-2xl font-semibold text-gray-900">My Achievement Timeline</h1>
 		<div>
-			<!-- TODO Link to printer -->
 			<button
 				class="btn btn-text--primary"
 				onclick={() => {
@@ -67,9 +66,14 @@
 		<div class="flex items-center justify-end">
 			<el-dropdown class="relative inline-block text-left">
 				<button
-					class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+					class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
 				>
-					Select A Job
+					{#if jobPositionID !== null}
+						{@const job = ($myJobPositions.data || []).find((j) => j.id == jobPositionID)}
+						{job?.name || 'Job'} || {job?.company}
+					{:else}
+						Select A Job
+					{/if}
 					<svg
 						viewBox="0 0 20 20"
 						fill="currentColor"
@@ -116,7 +120,12 @@
 				<button
 					class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
 				>
-					Select Education
+					{#if educationID !== null}
+						{@const edu = ($myEducation.data || []).find((j) => j.id == educationID)}
+						{edu?.institution || 'Education'}
+					{:else}
+						Select Education
+					{/if}
 					<svg
 						viewBox="0 0 20 20"
 						fill="currentColor"
