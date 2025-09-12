@@ -7,6 +7,8 @@
 	import { format } from 'date-fns';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { goto } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 
 	const { data } = $props();
 
@@ -31,7 +33,22 @@
 		}}
 	/>
 	<div class="flex justify-end">
-		<button class="btn btn--primary print:hidden" onclick={() => window.print()}>Print</button>
+		<button
+			class="btn btn-text--primary print:hidden"
+			onclick={() => {
+				window.print();
+				trackingStore.trackAction('Print Cheatsheet');
+			}}>Print</button
+		>
+		<a
+			class="btn btn--primary relative ml-2 flex justify-center"
+			target="_blank"
+			download
+			href={`${PUBLIC_API_URL}/meetings/${data.meetingID}/pdf`}
+			onclick={() => trackingStore.trackAction('Download Cheatsheet')}
+			>Download Cheatsheet
+			<PremiumBadge />
+		</a>
 	</div>
 	<div class="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8 print:w-full print:p-0">
 		<p class="hidden print:block">Your Career Fingerprint Meeting Guide</p>
