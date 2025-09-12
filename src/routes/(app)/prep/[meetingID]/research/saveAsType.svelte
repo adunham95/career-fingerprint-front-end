@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { upsertPrepAnswer, type NewPrepAnswer } from '$lib/API/Mutations/upsert-prep-answer';
 	import { useCreatePrepAnswersMutation } from '$lib/API/prep-answers';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { debounce } from '$lib/Utils/debounce';
-	import { createMutation, type CreateBaseMutationResult } from '@tanstack/svelte-query';
-	import { onDestroy } from 'svelte';
 
 	let isSaving = $state(false);
 	let isSaved = $state(false);
@@ -38,10 +35,10 @@
 <div>
 	<TextArea bind:value {id} {label} oninput={(e) => saveToAPI()} />
 	<div class="flex min-h-[1rem] w-full justify-end">
-		{#if isSaving}
+		{#if $updateAnswer.isPending}
 			<p class="text-xs italic">Saving...</p>
 		{/if}
-		{#if isSaved}
+		{#if $updateAnswer.isSuccess}
 			<p class="text-xs italic">Saved</p>
 		{/if}
 	</div>
