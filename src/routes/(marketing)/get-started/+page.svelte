@@ -79,6 +79,7 @@
 		</h3>
 		<div class="flex justify-end py-2">
 			<button
+				type="button"
 				class="btn btn--primary"
 				onclick={() => {
 					scrollToView('current-situation');
@@ -89,7 +90,18 @@
 	</div>
 
 	<!-- Step 2 -->
-	<div id="current-situation" class="flex min-h-screen flex-col items-center justify-center">
+	<form
+		id="current-situation"
+		class="flex min-h-screen flex-col items-center justify-center"
+		onsubmit={(e) => {
+			e.preventDefault();
+			scrollToView('introduction');
+			trackingStore.trackAction('Next Step Click', {
+				step: 'Current Situation',
+				currentSituation: profile.lookingFor
+			});
+		}}
+	>
 		<h3 class="font-title pb-4 text-lg">Which of these best describes your current situation?</h3>
 		<RadioCards
 			wrapperClass="sm:grid-cols-2"
@@ -102,21 +114,30 @@
 			bind:value={profile.lookingFor}
 		/>
 		<div class="flex justify-end pt-2">
-			<button
-				class="btn btn--primary"
-				onclick={() => {
-					scrollToView('introduction');
-					trackingStore.trackAction('Next Step Click', {
-						step: 'Current Situation',
-						currentSituation: profile.lookingFor
-					});
-				}}>Continue</button
-			>
+			<button class="btn btn--primary" type="submit">Continue</button>
 		</div>
-	</div>
+	</form>
 
 	<!-- Step 3 -->
-	<div id="introduction" class="flex min-h-screen flex-col items-center justify-center">
+	<form
+		id="introduction"
+		class="flex min-h-screen flex-col items-center justify-center"
+		onsubmit={(e) => {
+			e.preventDefault();
+			scrollToView('achievement');
+			trackingStore.trackAction('Next Step Click', {
+				step: 'Introduction',
+				currentSituation: profile.lookingFor,
+				firstNameFilledOut: profile.firstName !== '',
+				companyFilledOut: profile.companyName !== '',
+				titleFilledOut: profile.title !== '',
+				startDateFilledOut: profile.startDate !== '',
+				endDateFilledOut: profile.endDate !== '',
+				degreeFilledOut: profile.degree !== '',
+				institutionFilledOut: profile.institution !== ''
+			});
+		}}
+	>
 		<h3 class="font-title pb-4 text-lg">Introduce Yourself</h3>
 		<div class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
 			Hello, my name is <InlineTextInput
@@ -199,30 +220,23 @@
 		</div>
 
 		<div class="flex justify-end pt-2">
-			<button
-				class="btn btn--primary"
-				onclick={() => {
-					scrollToView('achievement');
-					trackingStore.trackAction('Next Step Click', {
-						step: 'Introduction',
-						currentSituation: profile.lookingFor,
-						firstNameFilledOut: profile.firstName !== '',
-						companyFilledOut: profile.companyName !== '',
-						titleFilledOut: profile.title !== '',
-						startDateFilledOut: profile.startDate !== '',
-						endDateFilledOut: profile.endDate !== '',
-						degreeFilledOut: profile.degree !== '',
-						institutionFilledOut: profile.institution !== ''
-					});
-				}}
-			>
-				Continue</button
-			>
+			<button class="btn btn--primary" type="submit"> Continue</button>
 		</div>
-	</div>
+	</form>
 
 	<!-- Step 4 -->
-	<div id="achievement" class="flex min-h-screen flex-col items-center justify-center">
+	<form
+		id="achievement"
+		class="flex min-h-screen flex-col items-center justify-center"
+		onsubmit={(e) => {
+			e.preventDefault();
+			scrollToView('account');
+			trackingStore.trackAction('Next Step Click', {
+				step: 'Achievement',
+				achievementFilledOut: profile.achievement !== ''
+			});
+		}}
+	>
 		<h3 class="font-title pb-4 text-lg">
 			Tell us one thing you’re proud of from your time at {profile.institution ||
 				profile.companyName}.
@@ -234,21 +248,19 @@
 			bind:value={profile.achievement}
 		/>
 		<div class="flex justify-end pt-2">
-			<button
-				class="btn btn--primary"
-				onclick={() => {
-					scrollToView('account');
-					trackingStore.trackAction('Next Step Click', {
-						step: 'Achievement',
-						achievementFilledOut: profile.achievement !== ''
-					});
-				}}>Continue</button
-			>
+			<button class="btn btn--primary" type="submit"> Continue </button>
 		</div>
-	</div>
+	</form>
 
 	<!-- Step 5 -->
-	<div id="account" class="flex min-h-screen flex-col items-center justify-center">
+	<form
+		id="account"
+		class="flex min-h-screen flex-col items-center justify-center"
+		onsubmit={(e) => {
+			e.preventDefault();
+			createAccount();
+		}}
+	>
 		<h3 class="font-title pb-2 text-lg">Create Your Account</h3>
 		<p class="pb-4">Save your progress and access it anytime.</p>
 		<div class=" flex w-full max-w-[300px] flex-col">
@@ -270,161 +282,17 @@
 		</div>
 		<div class="flex justify-end pt-2">
 			<button
+				type="submit"
 				class="btn btn--primary"
 				disabled={$registerUser.isPending}
 				onclick={() => {
-					createAccount();
 					trackingStore.trackAction('Next Step Click', {
 						step: 'Create Account'
 					});
-				}}>Create Account</button
+				}}
 			>
+				Create Account
+			</button>
 		</div>
-	</div>
-
-	<!-- Step 6 -->
-	<!-- <div id="stickers" class="flex min-h-screen flex-col items-center justify-center">
-		<h3 class="font-title pb-2 text-lg">Want free Career Fingerprint stickers?</h3>
-		<p class="pb-4">
-			Drop your mailing address and we’ll send you a small pack to celebrate your career journey!
-		</p>
-		<div class="grid w-full grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3">
-			<TextInput id="street" label="Street" className="sm:col-span-3" />
-			<TextInput id="city" label="City" />
-			<TextInput id="state" label="State / Province" />
-			<TextInput id="postalCode" label="ZIP / Postal code" />
-		</div>
-		<div class="flex w-full flex-col justify-end gap-1.5 pt-2 sm:flex-row">
-			<button class="btn btn-text--secondary" onclick={() => scrollToView('premium')}
-				>I don't want stickers</button
-			>
-			<button class="btn btn--primary" onclick={() => scrollToView('premium')}
-				>Claim my stickers!</button
-			>
-		</div>
-	</div> -->
-
-	<!-- Step 7 -->
-	<!-- <div id="premium" class=" flex min-h-screen flex-col items-center justify-center">
-		<h3 class="font-title pb-2 text-lg">Go Premium</h3>
-		<p class="pb-1">Unlock additional features when building your fingerprint</p>
-
-		{#if registeredUser?.plan.monthlyStripePriceID}
-			<div
-				class="bg-surface-50 relative mx-auto mt-8 w-full rounded-3xl ring-1 ring-gray-200 sm:mt-10 lg:mx-0 lg:flex lg:max-w-none"
-			>
-				{#if $startSubscriptionTrial.isPending}
-					<div
-						class="absolute inset-0 flex items-center justify-center rounded-3xl bg-gray-600/40 shadow-2xl"
-					>
-						<Loader size="md" />
-					</div>
-				{/if}
-				<div class="p-8 sm:p-10 lg:flex-auto">
-					<h3 class="text-3 font-semibold tracking-tight text-gray-900">
-						{registeredUser?.plan.name}
-					</h3>
-					<p class="mt-6 text-base/7 text-gray-600">
-						{registeredUser?.plan.description}
-					</p>
-					<div class="mt-5 flex items-center gap-x-4">
-						<h4 class="text-primary flex-none font-semibold">What’s included</h4>
-						<div class="h-px flex-auto bg-gray-300"></div>
-					</div>
-					<ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-gray-600 sm:gap-6">
-						{#each registeredUser?.plan.featureList as feature}
-							<li class="flex gap-x-3">
-								<svg
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									data-slot="icon"
-									aria-hidden="true"
-									class="text-primary h-6 w-5 flex-none"
-								>
-									<path
-										d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-										clip-rule="evenodd"
-										fill-rule="evenodd"
-									/>
-								</svg>
-								{feature}
-							</li>
-						{/each}
-					</ul>
-				</div>
-				<div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-sm lg:shrink-0">
-					<div
-						class="bg-surface-200 h-full rounded-2xl py-10 text-center ring-1 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center lg:py-16"
-					>
-						<div class="mx-auto max-w-xs px-8">
-							{#if registeredUser.orgID}
-								<p class="text-sm">
-									Good news! {registeredUser.orgName} provides Premium at no cost
-								</p>
-							{/if}
-							<p class="mt-6 flex items-baseline justify-center gap-x-2">
-								<span
-									class={`text-1 font-semibold tracking-tight text-gray-900 ${registeredUser.orgID ? 'line-through' : ''} `}
-									>${centsToDollars(registeredUser?.plan.priceCents)}</span
-								>
-								{#if registeredUser.orgID}
-									<span class="text-1 font-semibold tracking-tight text-gray-900">Free</span>
-								{/if}
-								<span class="text-4 font-semibold tracking-wide text-gray-600">/month</span>
-							</p>
-							{#if registeredUser.orgID}
-								<button
-									class="btn btn--primary mt-10 block w-full"
-									onclick={() => {
-										startManagedSubscription();
-										trackingStore.trackAction('Sign up with org');
-									}}
-								>
-									Sign Up with Western Carolina University
-								</button>
-								<button
-									class="btn btn-outline--primary mt-1 block w-full"
-									onclick={() => {
-										startFreeTrial();
-										trackingStore.trackAction('Start Free Personal Trial Click');
-									}}
-								>
-									Start my personal free trial
-								</button>
-							{:else}
-								<button
-									onclick={() => {
-										startFreeTrial();
-										trackingStore.trackAction('Start Free Trial Click');
-									}}
-									class="btn btn--primary mt-10 block w-full"
-								>
-									Start my free trial
-								</button>
-							{/if}
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="mt-2 flex w-full justify-end">
-				<a
-					href="/dashboard"
-					onclick={() =>
-						trackingStore.trackAction('Next Step Click', {
-							step: 'Go To Account'
-						})}
-					class=" text-small btn btn-text--secondary btn-small">Continue without Premium Benefits</a
-				>
-			</div>
-		{:else}
-			<a
-				href="/dashboard"
-				class="btn btn--primary mt-10 block w-full"
-				onclick={() =>
-					trackingStore.trackAction('Next Step Click', {
-						step: 'Go To Account'
-					})}>Go to my account</a
-			>
-		{/if}
-	</div> -->
+	</form>
 </div>
