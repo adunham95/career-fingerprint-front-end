@@ -40,7 +40,7 @@
 			return;
 		}
 
-		if (!jobPositionID || !educationID) {
+		if (!jobPositionID && !educationID) {
 			error = {
 				jobPositionID: 'Link Job or Education',
 				educationID: 'Link Job or Education'

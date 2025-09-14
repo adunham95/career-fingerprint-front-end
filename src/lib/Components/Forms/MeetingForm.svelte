@@ -53,7 +53,7 @@
 			error.jobAppID = 'Missing job for interview';
 			return;
 		}
-		if (type === 'Internal' && (!jobPositionID || !educationID)) {
+		if (type === 'Internal' && !jobPositionID && !educationID) {
 			error = {
 				jobPositionID: 'Link Job or Education',
 				educationID: 'Link Job or Education'
