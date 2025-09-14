@@ -214,14 +214,16 @@
 	title="Update Your Meeting"
 	subTitle="Update your meeting so you can find it later"
 	saveFormID="updateMeeting"
-	onSave={() => (showMeetingDetails = false)}
 >
 	{#if $meetingDetails}
 		<NewMeetingForm
 			id="updateMeeting"
 			meetingID={data.meetingID}
 			meeting={$meetingDetails.data}
-			onSuccess={() => goto('/dashboard')}
+			onSuccess={() => {
+				goto('/dashboard');
+				showMeetingDetails = false;
+			}}
 		/>
 	{:else}
 		<Loader />
