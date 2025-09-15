@@ -5,14 +5,14 @@
 	import MeetingTable from '$lib/Components/MeetingTable.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
-	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	const { data } = $props();
 
 	let isNewMeetingOpen = $state(false);
-	let page = 1;
-	let meetingType = $state<'all' | 'upcoming' | 'previous'>('previous');
+	let pageNumber = 1;
+	let meetingType = $state<string>('all');
 
 	let upcomingMeetings = useUpcomingMeetings();
 	let previousMeeting = usePreviousMeetings();
@@ -31,6 +31,10 @@
 	console.log({ data });
 
 	onMount(() => {
+		let meetingTab = page.url.searchParams.get('tab');
+		if (meetingTab) {
+			meetingType = meetingTab;
+		}
 		trackingStore.pageViewEvent('My Meetings');
 	});
 </script>

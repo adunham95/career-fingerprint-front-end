@@ -97,7 +97,7 @@
 			icon={meetingIcon}
 			title="Previous Meetings"
 			subTitle="View your previous meetings details and notes"
-			href="/meetings"
+			href="/meetings?tab=previous"
 			actionName="Previous Meetings Click"
 			color="orange"
 		/>
