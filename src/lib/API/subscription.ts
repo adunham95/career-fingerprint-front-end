@@ -197,7 +197,7 @@ export async function createOrgCheckoutSession(newCheckout: {
 	}
 }
 
-export async function updateBillingDetails(): Promise<string> {
+export async function updateBillingDetails(): Promise<{ checkoutSessionClientSecret: string }> {
 	const url = `${PUBLIC_API_URL}/stripe/update-billing`;
 
 	try {
@@ -212,7 +212,7 @@ export async function updateBillingDetails(): Promise<string> {
 
 		if (res.ok) {
 			const data = await res.json();
-			return data.checkoutSessionClientSecret;
+			return data;
 		} else {
 			const message = await res.text();
 			throw new Error(`Failed to get secret: ${res.status} ${message}`);
