@@ -7,6 +7,7 @@
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
@@ -128,6 +129,9 @@
 					</ul>
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
+						{#if data.highlights.length === 0}
+							<InfoBlock title="Empty Highlights" description="The highlight list is empty" />
+						{/if}
 						{#each data.highlights as highlight}
 							<li>
 								<Card size="sm" contentClassName="divide-y divide-gray-200">
