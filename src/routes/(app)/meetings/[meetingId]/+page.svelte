@@ -130,6 +130,7 @@
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
 						{#if data.highlights.length === 0}
+							<!-- TODO Fix Text -->
 							<InfoBlock title="Empty Highlights" description="The highlight list is empty" />
 						{/if}
 						{#each data.highlights as highlight}
