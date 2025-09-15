@@ -14,7 +14,7 @@ export const load = async (event) => {
 			event.cookies.set('accessToken', tokenDetails.accessToken, {
 				path: '/stripe', // Only available on the verify page
 				secure: process.env.NODE_ENV === 'production',
-				maxAge: 5 * 60 * 1000, // Cookie expires in 5 days
+				maxAge: 30 * 60 * 1000, // Cookie expires in 5 days
 				httpOnly: true,
 				sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
 			});
@@ -22,7 +22,7 @@ export const load = async (event) => {
 			event.cookies.set('accessToken', tokenDetails.accessToken, {
 				path: '/subscriptions', // Only available on the verify page
 				secure: process.env.NODE_ENV === 'production',
-				maxAge: 5 * 60 * 1000, // Cookie expires in 5 days
+				maxAge: 30 * 60 * 1000, // Cookie expires in 5 days
 				httpOnly: true,
 				sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
 			});
