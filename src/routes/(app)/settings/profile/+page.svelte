@@ -53,6 +53,13 @@
 	async function updateAccount(saveType: 'profile' | 'password' | 'account') {
 		const url = `${PUBLIC_API_URL}/users/${data.user.id}`;
 
+		if (saveType === 'password' && newPassword !== confirmPassword) {
+			toastStore.show({
+				type: 'error',
+				message: `Passwords do not match`
+			});
+		}
+
 		const res = await fetch(url, {
 			method: 'PATCH',
 			credentials: 'include',
