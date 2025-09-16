@@ -127,5 +127,10 @@
 	subTitle="Create a new interview, or internal meeting"
 	saveFormID="newMeeting"
 >
-	<NewMeetingForm id="newMeeting" />
+	<NewMeetingForm
+		id="newMeeting"
+		onSuccess={() => {
+			isNewMeetingOpen = false;
+		}}
+	/>
 </Drawer>

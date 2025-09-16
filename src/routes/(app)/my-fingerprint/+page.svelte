@@ -213,33 +213,35 @@
 				Add New Education
 			</button>
 		{/snippet}
-		{#each education || [] as edu, idx}
-			<Card contentClassName="space-y-2 px-4 py-4">
-				<EducationDetails bind:education={education[idx]} {idx} />
-				{#snippet actions()}
-					<button
-						class="btn btn-text--error btn-small"
-						onclick={() => {
-							trackingStore.trackAction('Updated Resume', {
-								section: 'Education',
-								button: 'Delete'
-							});
-							deleteObject('education', edu.id);
-						}}>Delete</button
-					>
-					<button
-						class="btn btn-text--success btn-small"
-						onclick={() => {
-							trackingStore.trackAction('Updated Resume', {
-								section: 'Education',
-								button: 'Save'
-							});
-							saveObject('education', edu.id);
-						}}>Save</button
-					>
-				{/snippet}
-			</Card>
-		{/each}
+		<div class="space-y-4">
+			{#each education || [] as edu, idx}
+				<Card contentClassName="space-y-2 px-4 py-4">
+					<EducationDetails bind:education={education[idx]} {idx} />
+					{#snippet actions()}
+						<button
+							class="btn btn-text--error btn-small"
+							onclick={() => {
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Education',
+									button: 'Delete'
+								});
+								deleteObject('education', edu.id);
+							}}>Delete</button
+						>
+						<button
+							class="btn btn-text--success btn-small"
+							onclick={() => {
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Education',
+									button: 'Save'
+								});
+								saveObject('education', edu.id);
+							}}>Save</button
+						>
+					{/snippet}
+				</Card>
+			{/each}
+		</div>
 	</TwoColumn>
 	<TwoColumn title={'My Skills'}>
 		<Card>
