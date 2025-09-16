@@ -29,16 +29,11 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 	const authToken = event.cookies.get('accessToken');
 	if (!authToken) {
 		event.locals.user = null;
-		// event.locals.session = null;
+		event.locals.session = null;
 		return resolve(event);
 	}
 
 	const { user } = await auth.validateAuthToken(authToken);
-	// if (session) {
-	// 	auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-	// } else {
-	// 	auth.deleteSessionTokenCookie(event);
-	// }
 
 	event.locals.user = user;
 

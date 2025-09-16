@@ -9,7 +9,6 @@ export async function validateAuthToken(token: string) {
 			}
 		});
 		const user = await res.json();
-		// console.log({ user });
 		if (user?.message === 'Unauthorized' || !user) {
 			return { user: null };
 		}
