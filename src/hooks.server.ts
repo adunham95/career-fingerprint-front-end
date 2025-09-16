@@ -1,8 +1,9 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import * as Sentry from '@sentry/sveltekit';
 import type { Handle } from '@sveltejs/kit';
-import * as auth from '$lib/Server/auth';
 import { PUBLIC_SENTRY_DSN } from '$env/static/public';
+import { createApiClient } from '$lib/API/apiClient';
+import type { CurrentUser } from './app';
 
 Sentry.init({
 	dsn: PUBLIC_SENTRY_DSN,
@@ -27,15 +28,19 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 	}
 
 	const authToken = event.cookies.get('accessToken');
+	const sessionToken = event.cookies.get('sessionAccessToken');
+	console.log({ sessionToken });
 	if (!authToken) {
 		event.locals.user = null;
 		event.locals.session = null;
 		return resolve(event);
 	}
 
-	const { user } = await auth.validateAuthToken(authToken);
+	const api = createApiClient(event);
 
-	event.locals.user = user;
+	const user = await api.get('/auth/current-user');
+
+	event.locals.user = user as CurrentUser;
 
 	return resolve(event);
 });

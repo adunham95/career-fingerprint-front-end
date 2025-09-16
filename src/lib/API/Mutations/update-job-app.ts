@@ -1,6 +1,9 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { JobApplication } from '../../../app';
 
+/**
+ * @deprecated
+ */
 export async function patchJobApp(jobApp: Partial<JobApplication>): Promise<JobApplication | null> {
 	console.info('patchJobApp', jobApp);
 	const url = `${PUBLIC_API_URL}/job-applications/${jobApp.id}`;

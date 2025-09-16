@@ -7,6 +7,9 @@ export interface NewPrepAnswer {
 	meetingID?: string;
 }
 
+/**
+ * @deprecated
+ */
 export async function upsertPrepAnswer(
 	prepAnswer: NewPrepAnswer
 ): Promise<{ success: boolean } | null> {
