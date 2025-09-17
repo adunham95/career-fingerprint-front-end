@@ -88,7 +88,7 @@
 			</div>
 		</div>
 		<div class="-mx-4 mt-8 sm:-mx-0">
-			<MeetingTable {meetings} />
+			<MeetingTable meetings={meetings || []} />
 		</div>
 		<!-- <nav
 			aria-label="Pagination"

@@ -62,8 +62,8 @@
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 bg-white">
-					{#each data.meetings as meeting}
-						{@const date = new Date(meeting.time)}
+					{#each data.meetings || [] as meeting}
+						{@const date = meeting?.time ? new Date(meeting.time) : new Date()}
 						<tr>
 							<td
 								class="w-full max-w-0 py-4 pr-3 pl-4 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0"
