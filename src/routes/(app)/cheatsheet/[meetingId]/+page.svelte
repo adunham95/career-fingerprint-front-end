@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useMeetingByID } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -27,7 +26,7 @@
 	let showMeetingDetails = $state(false);
 
 	onMount(() => {
-		trackingStore.pageViewEvent('Cheatsheet', { type: data.interviewData.type });
+		trackingStore.pageViewEvent('Cheatsheet', { type: data?.interviewData?.type || ' ' });
 	});
 
 	async function saveNote() {
@@ -161,13 +160,13 @@
 					</ul>
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
-						{#if data.highlights === 0}
+						{#if data?.highlights && data?.highlights.length === 0}
 							<InfoBlock
 								title="No Highlights"
 								description="Your highlights from previous meetings or prep will show up here."
 							/>
 						{/if}
-						{#each data.highlights as highlight}
+						{#each data.highlights || [] as highlight}
 							<li>
 								<Card size="sm" contentClassName="divide-y divide-gray-200">
 									<div class="pb-2">

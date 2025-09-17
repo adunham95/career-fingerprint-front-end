@@ -1,31 +1,12 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
-import type { Education, JobPosition } from '../../app';
+import type { Education, JobPosition, Resume } from '../../app';
 import { jobPositionKeys } from './job-positions';
 import { educationKeys } from './education';
 
 interface UpdateResumeInput {
 	id: string;
 	name: string;
-	default: boolean;
-	firstName: string | null;
-	lastName: string | null;
-	email: string | null;
-	summary: string | null;
-	phoneNumber: string | null;
-	location: string | null;
-	website: string | null;
-	linkedin: string | null;
-	github: string | null;
-	title: string | null;
-}
-
-interface Resume {
-	id: string;
-	name: string;
-	userID: number;
-	createdAt: string;
-	updatedAt: string;
 	default: boolean;
 	firstName: string | null;
 	lastName: string | null;
@@ -235,7 +216,7 @@ export const useDuplicateResumeQuery = (id: string) => {
 	});
 };
 
-export const useGetResumeByIDQuery = (id: string, initialData: Resume) => {
+export const useGetResumeByIDQuery = (id: string, initialData?: Resume) => {
 	return createQuery({
 		queryKey: resumeKeys.resume(id),
 		queryFn: () => getResumeByID(id),

@@ -155,6 +155,40 @@ interface Organization {
 	stripeCustomerID: string;
 	updatedAt: string;
 	logoURL: string;
+	domains: OrgDomain[];
+}
+
+interface OrgDomain {
+	id: string;
+	orgID: string;
+	domain: string;
+}
+
+interface Resume {
+	id: string;
+	name: string;
+	userID: number;
+	createdAt: string;
+	updatedAt: string;
+	default: boolean;
+	firstName: string | null;
+	lastName: string | null;
+	email: string | null;
+	summary: string | null;
+	phoneNumber: string | null;
+	location: string | null;
+	website: string | null;
+	linkedin: string | null;
+	github: string | null;
+	title: string | null;
+}
+
+interface SkillData {
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	skillList: string[];
+	userID: number;
 }
 
 export {
@@ -168,5 +202,7 @@ export {
 	MeetingHighlight,
 	CurrentUser,
 	BulletPoint,
-	Organization
+	Organization,
+	Resume,
+	SkillData
 };

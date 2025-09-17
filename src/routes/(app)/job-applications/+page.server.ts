@@ -1,17 +1,9 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import type { JobApplication } from '../../../app.js';
+import { createApiClient } from '$lib/API/apiClient.js';
 
 export const load = async (event) => {
-	const token = event.cookies.get('accessToken');
-
 	try {
-		const resApplications = await fetch(`${PUBLIC_API_URL}/job-applications/my`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-
-		const applications: JobApplication[] = await resApplications.json();
+		const api = createApiClient(event);
+		const applications = api.get('/job-applications/my');
 		return { applications };
 	} catch (error) {
 		console.error(error);

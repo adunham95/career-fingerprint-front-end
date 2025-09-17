@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TextArea from '../FormElements/TextArea.svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import Select from '../FormElements/Select.svelte';
 	import DateInput from '../FormElements/DateInput.svelte';
 	import { toastStore } from '../Toasts/toast';

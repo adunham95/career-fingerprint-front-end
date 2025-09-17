@@ -1,14 +1,8 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { createApiClient } from '$lib/API/apiClient.js';
 export const load = async (event) => {
-	const token = event.cookies.get('accessToken');
-
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/resume/my`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resumes = await res.json();
+		const api = createApiClient(event);
+		const resumes = await api.get('/resume/my');
 
 		return { resumes };
 	} catch (error) {

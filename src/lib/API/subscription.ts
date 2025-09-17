@@ -1,6 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import type { Organization } from '../../app';
+import { createApiClient, type ApiClient } from './apiClient';
 
 interface SubscriptionPlan {
 	id: string;
@@ -36,27 +37,12 @@ interface SubscriptionDetails {
 	createdAt: string;
 }
 
-export async function getSubscriptionDetails(token?: string): Promise<SubscriptionDetails | null> {
-	let options: RequestInit = {
-		credentials: 'include'
-	};
-	if (token) {
-		options = {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		};
-	}
-
+export async function getSubscriptionDetails(api?: ApiClient) {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/details`, options);
-		if (res.ok) {
-			return res.json();
-		} else {
-			console.log('Error');
-			throw new Error('Error Fetching membership subscription');
+		if (!api) {
+			api = createApiClient();
 		}
-		return null;
+		return api.get('/subscriptions/details');
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -78,27 +64,14 @@ export async function getPlanDetailsByKey(id: string): Promise<SubscriptionPlan 
 	}
 }
 
-export async function getPlansAvailableToUpgrade(token?: string): Promise<SubscriptionPlan | null> {
-	let options: RequestInit = {
-		credentials: 'include'
-	};
-	if (token) {
-		options = {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		};
-	}
-
+export async function getPlansAvailableToUpgrade(
+	api?: ApiClient
+): Promise<SubscriptionPlan | null> {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/subscriptions/plans/available`, options);
-		// TODO why is this failing on pro plans
-		if (res.ok) {
-			const data = await res.json();
-			console.log(data);
-			return data;
+		if (!api) {
+			api = createApiClient();
 		}
-		return null;
+		return api.get('/subscriptions/plans/available');
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -107,29 +80,14 @@ export async function getPlansAvailableToUpgrade(token?: string): Promise<Subscr
 
 export async function validateSubscription(
 	checkoutID: string,
-	token?: string
+	api?: ApiClient
 ): Promise<SubscriptionPlan | null> {
-	let options: RequestInit = {
-		credentials: 'include'
-	};
-	if (token) {
-		options = {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		};
-	}
-
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/stripe/validate/${checkoutID}`, options);
-		console.log(res);
-		// TODO why is this failing on pro plans
-		if (res.ok) {
-			const data = await res.json();
-			console.log('validateSubscription', data);
-			return data;
+		if (!api) {
+			api = createApiClient();
 		}
-		return null;
+		// TODO why is this failing on pro plans
+		return api.get(`/stripe/validate/${checkoutID}`);
 	} catch (error) {
 		console.error(error);
 		return null;

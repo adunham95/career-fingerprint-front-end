@@ -1,39 +1,22 @@
-import { PUBLIC_API_URL } from '$env/static/public';
 import { error } from '@sveltejs/kit';
-import type { Achievement } from '../../../../../app.js';
+import { createApiClient } from '$lib/API/apiClient.js';
 export const load = async (event) => {
 	const meetingID = event.params.meetingID;
-	const token = event.cookies.get('accessToken');
 
 	console.log({ params: event.params });
 
 	try {
-		const resMeeting = await fetch(`${PUBLIC_API_URL}/meetings/${meetingID}`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
+		const api = createApiClient(event);
+		const meeting = await api.get(`/meetings/${meetingID}`);
 
-		if (!resMeeting) {
+		if (!meeting) {
 			error(404, {
 				message: 'Not found'
 			});
 		}
 
-		const resAch = await fetch(`${PUBLIC_API_URL}/achievement/my`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resHighlights = await fetch(`${PUBLIC_API_URL}/highlights/meeting/${meetingID}`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-
-		const meeting = await resMeeting.json();
-		const highlights = await resHighlights.json();
-		const achievements: Achievement[] = await resAch.json();
+		const highlights = await api.get(`/highlights/meeting/${meetingID}`);
+		const achievements = await api.get(`/achievement/my`);
 
 		return { meeting, meetingID, achievements, highlights };
 	} catch (error) {

@@ -25,15 +25,15 @@
 
 	const updateOrgMutation = useUpdateOrg();
 
-	const orgDomains = useOrgDomains(data.org.id, data.org.domains);
-	const updateDomainFunction = useUpdateDomain(data.org.id);
-	const deleteDomainFunction = useDeleteDomain(data.org.id);
-	const createDomainFunction = useCreateDomain(data.org.id);
+	const orgDomains = useOrgDomains(data.org?.id || '', data.org?.domains || []);
+	const updateDomainFunction = useUpdateDomain(data.org?.id || '');
+	const deleteDomainFunction = useDeleteDomain(data.org?.id || '');
+	const createDomainFunction = useCreateDomain(data.org?.id || '');
 
 	let profile = $state({
 		name: data.org?.name || '',
 		domain: data.org?.domain,
-		logoURL: data.org.logoURL
+		logoURL: data.org?.logoURL
 	});
 
 	function updateOrg() {
@@ -47,7 +47,7 @@
 
 	async function updateDomain(domain: string, id: string) {
 		try {
-			await $updateDomainFunction.mutateAsync({ id, domain, orgID: data.org.id });
+			await $updateDomainFunction.mutateAsync({ id, domain, orgID: data.org?.id || '' });
 			toastStore.show({ message: 'Domain Updated' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not update domain', type: 'error' });
@@ -65,7 +65,7 @@
 
 	async function addDomain() {
 		try {
-			await $createDomainFunction.mutateAsync({ domain: newDomain, orgID: data.org.id });
+			await $createDomainFunction.mutateAsync({ domain: newDomain, orgID: data.org?.id || '' });
 			newDomain = '';
 			toastStore.show({ message: 'Domain Added' });
 		} catch (error) {

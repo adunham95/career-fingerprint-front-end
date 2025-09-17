@@ -1,23 +1,10 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import type { Achievement, Meeting } from '../../../app';
+import { createApiClient } from '$lib/API/apiClient';
 
 export const load = async (event) => {
-	const token = event.cookies.get('accessToken');
-
 	try {
-		const resAchievements = await fetch(`${PUBLIC_API_URL}/achievement/my?page=1&limit=5`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resMeetings = await fetch(`${PUBLIC_API_URL}/meetings/my/upcoming?page=1&limit=3`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-
-		const achievements: Achievement[] = await resAchievements.json();
-		const meetings: Meeting[] = await resMeetings.json();
+		const api = createApiClient(event);
+		const achievements = await api.get('/achievement/my', { page: 1, limit: 5 });
+		const meetings = await api.get('/meetings/my/upcoming', { page: 1, limit: 3 });
 		return { achievements, meetings };
 	} catch (error) {
 		console.error(error);

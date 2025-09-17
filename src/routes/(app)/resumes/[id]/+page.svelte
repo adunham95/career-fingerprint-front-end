@@ -39,29 +39,29 @@
 
 	console.log(data);
 
-	let resume = useGetResumeByIDQuery(data.resume.id, data.resume);
+	let resume = useGetResumeByIDQuery(data?.resume?.id || '', data?.resume);
 	let resumeName = $state($resume.data.name);
 
 	let personalInfo = $state({
-		firstName: data.resume.firstName || data.user.firstName,
-		lastName: data.resume.lastName || data.user.lastName,
-		title: data.resume.title,
-		email: data.resume.contactEmail || data.user.email,
-		phoneNumber: data.resume.phoneNumber,
-		location: data.resume.location,
-		website: data.resume.website,
-		linkedin: data.resume.linkedIn,
-		github: data.resume.github,
-		summary: data.resume.summary || data.user.pitch || ''
+		firstName: data.resume?.firstName || data.user.firstName,
+		lastName: data.resume?.lastName || data.user.lastName,
+		title: data.resume?.title,
+		email: data.resume?.email || data.user.email,
+		phoneNumber: data.resume?.phoneNumber,
+		location: data.resume?.location,
+		website: data.resume?.website,
+		linkedin: data.resume?.linkedin,
+		github: data.resume?.github,
+		summary: data.resume?.summary || data.user.pitch || ''
 	});
 
 	let chipList = $state(data.mySkills?.skillList || []);
 
-	let jobs = $state<JobPosition[]>(data.jobs || []);
+	let jobs = $state(data.jobs || []);
 	let education = $state(data.education || []);
 
-	let updateResumeMutation = useUpdateResumeMutation(data.resume.id);
-	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume.id);
+	let updateResumeMutation = useUpdateResumeMutation(data.resume?.id || '');
+	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume?.id || '');
 
 	let updateResumeObject = useUpdateResumeObjectMutation();
 	let deleteResumeObject = useDeleteResumeObjectMutation();
@@ -72,7 +72,7 @@
 
 	async function updateResumeName() {
 		try {
-			await $updateResumeMutation.mutateAsync({ id: data.resume.id, name: resumeName });
+			await $updateResumeMutation.mutateAsync({ id: data.resume?.id, name: resumeName });
 			toastStore.show({
 				type: 'success',
 				message: `Resume Updated`
@@ -87,7 +87,7 @@
 
 	async function updateResume() {
 		try {
-			await $updateResumeMutation.mutateAsync({ id: data.resume.id, ...personalInfo });
+			await $updateResumeMutation.mutateAsync({ id: data.resume?.id, ...personalInfo });
 			toastStore.show({
 				type: 'success',
 				message: `Resume Updated`
@@ -242,7 +242,7 @@
 		try {
 			let newBulletPoint = await $addBulletPointMutation.mutateAsync({
 				...newBulletPointData,
-				resumeID: data.resume.id
+				resumeID: data.resume?.id || ''
 			});
 
 			if (newBulletPointData.jobPositionID) {
@@ -586,7 +586,7 @@
 				<p class="mt-4 text-gray-600">Download a PDF version this resume</p>
 				<a
 					target="_blank"
-					href={`${PUBLIC_API_URL}/resume/${data.resume.id}/pdf`}
+					href={`${PUBLIC_API_URL}/resume/${data?.resume?.id}/pdf`}
 					download
 					class="btn btn--primary relative mt-2 flex w-full justify-center"
 					onclick={() => trackingStore.trackAction('Download Resume')}

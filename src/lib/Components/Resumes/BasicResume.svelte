@@ -4,17 +4,17 @@
 
 	interface Props {
 		showIncomplete?: boolean;
-		personalInfo: {
+		personalInfo?: {
 			firstName: string | null;
 			lastName: string | null;
-			title: string | null;
+			title?: string | null;
 			email: string | null;
-			phoneNumber: string | null;
-			location: string | null;
-			website: string | null;
-			linkedin: string | null;
-			github: string | null;
-			summary: string | null;
+			phoneNumber?: string | null;
+			location?: string | null;
+			website?: string | null;
+			linkedin?: string | null;
+			github?: string | null;
+			summary?: string | null;
 		};
 
 		experience?: JobPosition[];
@@ -61,11 +61,11 @@
 	<div>
 		<div class="flex flex-col justify-between md:flex-row">
 			<div>
-				<p class="text-3xl font-bold">{personalInfo.firstName} {personalInfo.lastName}</p>
-				<p class="mt-1 text-xl">{personalInfo.title}</p>
+				<p class="text-3xl font-bold">{personalInfo?.firstName} {personalInfo?.lastName}</p>
+				<p class="mt-1 text-xl">{personalInfo?.title}</p>
 			</div>
 			<div class="mt-4 md:mt-0">
-				{#if personalInfo.email}
+				{#if personalInfo?.email}
 					<div class="mt-2 flex items-center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -81,10 +81,10 @@
 								d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
 							/>
 						</svg>
-						<span>{personalInfo.email}</span>
+						<span>{personalInfo?.email}</span>
 					</div>
 				{/if}
-				{#if personalInfo.phoneNumber}
+				{#if personalInfo?.phoneNumber}
 					<div class="mt-2 flex items-center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -100,10 +100,10 @@
 								d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
 							/>
 						</svg>
-						<span>{personalInfo.phoneNumber}</span>
+						<span>{personalInfo?.phoneNumber}</span>
 					</div>
 				{/if}
-				{#if personalInfo.location}
+				{#if personalInfo?.location}
 					<div class="mt-2 flex items-center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -125,14 +125,14 @@
 								d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
 							/>
 						</svg>
-						<span>{personalInfo.location}</span>
+						<span>{personalInfo?.location}</span>
 					</div>
 				{/if}
 			</div>
 		</div>
-		{#if personalInfo.summary}
+		{#if personalInfo?.summary}
 			<div class="mt-6">
-				<p class="text-lg">{personalInfo.summary}</p>
+				<p class="text-lg">{personalInfo?.summary}</p>
 			</div>
 		{/if}
 	</div>
@@ -219,7 +219,7 @@
 	{#snippet actions()}
 		<div class="flex justify-center space-x-6">
 			<a
-				href={`https://${personalInfo.website}`}
+				href={`https://${personalInfo?.website}`}
 				aria-label="Personal Website"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -241,7 +241,7 @@
 				</svg>
 			</a>
 			<a
-				href={`https://${personalInfo.linkedin}`}
+				href={`https://${personalInfo?.linkedin}`}
 				aria-label="Linkedin"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -259,7 +259,7 @@
 				</svg>
 			</a>
 			<a
-				href={`https://${personalInfo.github}`}
+				href={`https://${personalInfo?.github}`}
 				aria-label="Github"
 				target="_blank"
 				rel="noopener noreferrer"

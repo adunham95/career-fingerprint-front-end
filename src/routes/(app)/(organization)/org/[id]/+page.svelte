@@ -6,7 +6,6 @@
 	import Loader from '$lib/Components/Loader.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
-	import type { ChartConfiguration } from 'chart.js';
 	import Chart from '$lib/Components/Chart.svelte';
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
@@ -22,7 +21,7 @@
 
 	async function copySignUpLink() {
 		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/get-started?org=${data.org.id}`);
+			await copyTextToClipboard(`https://careerfingerprint.app/get-started?org=${data?.org?.id}`);
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });

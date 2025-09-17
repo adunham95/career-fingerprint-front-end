@@ -1,3 +1,4 @@
+import { createApiClient } from '$lib/API/apiClient.js';
 import { getPlansAvailableToUpgrade, getSubscriptionDetails } from '$lib/API/subscription.js';
 import { redirect } from '@sveltejs/kit';
 
@@ -8,8 +9,9 @@ export const load = async (event) => {
 	console.log('Load account', token);
 
 	try {
-		const membershipDetails = await getSubscriptionDetails(token);
-		const availablePlans = await getPlansAvailableToUpgrade(token);
+		const api = createApiClient(event);
+		const membershipDetails = await getSubscriptionDetails(api);
+		const availablePlans = await getPlansAvailableToUpgrade(api);
 		console.log({ membershipDetails, availablePlans });
 		return { membershipDetails, availablePlans };
 	} catch (error) {

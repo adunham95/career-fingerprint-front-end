@@ -1,6 +1,6 @@
-import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Achievement } from '../../app';
+import { createApiClient } from './apiClient';
 
 interface NewAchievement {
 	description: string;
@@ -16,32 +16,13 @@ interface NewAchievement {
 export async function createAchievement(
 	newAchievement: NewAchievement
 ): Promise<Achievement | null> {
-	const url = `${PUBLIC_API_URL}/achievement`;
-
-	console.log({ newAchievement });
-
 	try {
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify({
-				...newAchievement,
-				startDate: newAchievement.startDate
-					? new Date(newAchievement.startDate).toISOString()
-					: null,
-				endDate: newAchievement.endDate ? new Date(newAchievement.endDate).toISOString() : null
-			})
+		const api = createApiClient();
+		return api.post('/achievement', {
+			...newAchievement,
+			startDate: newAchievement.startDate ? new Date(newAchievement.startDate).toISOString() : null,
+			endDate: newAchievement.endDate ? new Date(newAchievement.endDate).toISOString() : null
 		});
-
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to create achievement: ${res.status} ${message}`);
-		}
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to create achievement`);
@@ -49,26 +30,9 @@ export async function createAchievement(
 }
 
 export async function createAchievementTag(newTag: { name: string }): Promise<Achievement | null> {
-	const url = `${PUBLIC_API_URL}/achievement-tags`;
-
-	console.log({ newTag });
-
 	try {
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(newTag)
-		});
-
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to create category: ${res.status} ${message}`);
-		}
+		const api = createApiClient();
+		return api.post('/achievement-tags', newTag);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to create achievement category`);
@@ -77,10 +41,8 @@ export async function createAchievementTag(newTag: { name: string }): Promise<Ac
 
 export async function getAutocompleteAchievementTags(query: string) {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/achievement-tags/autocomplete?query=${query}`, {
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.get('/achievement-tags/autocomplete', { query });
 	} catch (error) {
 		console.error(error);
 		return [];
@@ -89,10 +51,8 @@ export async function getAutocompleteAchievementTags(query: string) {
 
 export async function getAchievementTags() {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/achievement-tags`, {
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.get('/achievement-tags');
 	} catch (error) {
 		console.error(error);
 		return [];
@@ -104,30 +64,23 @@ export async function getAchievements(
 	jobPositionID: string | null = null,
 	educationID: string | null = null
 ) {
-	const url = new URL('/achievement/my', PUBLIC_API_URL);
-	const params = url.searchParams;
+	const api = createApiClient();
+
+	const queries: Record<string, string | number | boolean | undefined> | undefined = {};
 
 	if (includeLinked) {
-		params.append('includeLinked', 'true');
+		queries['includeLinked'] = true;
 	}
 
 	if (jobPositionID) {
-		params.append('jobPositionID', jobPositionID);
+		queries['jobPositionID'] = jobPositionID;
 	}
 
 	if (educationID) {
-		params.append('educationID', educationID);
+		queries['educationID'] = educationID;
 	}
 
-	try {
-		const res = await fetch(url, {
-			credentials: 'include'
-		});
-		return res.json();
-	} catch (error) {
-		console.error(error);
-		return [];
-	}
+	return api.get('/achievement/my', queries);
 }
 
 export const achievementKeys = {

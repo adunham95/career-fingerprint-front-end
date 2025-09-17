@@ -1,18 +1,13 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { createApiClient } from '$lib/API/apiClient.js';
 import type { Meeting } from '../../../../../app.js';
 
 export const load = async (event) => {
-	const token = event.cookies.get('accessToken');
 	const id = event.params.id;
 
 	try {
-		const resMeetings = await fetch(`${PUBLIC_API_URL}/meetings/job-application/${id}`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
+		const api = createApiClient();
+		const meetings = await api.get<Meeting[]>(`/meetings/job-application/${id}`);
 
-		const meetings: Meeting[] = await resMeetings.json();
 		return { meetings };
 	} catch (error) {
 		console.error(error);

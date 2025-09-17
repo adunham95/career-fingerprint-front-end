@@ -1,32 +1,17 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import { getSkillList } from '$lib/API/skill-list';
-import type { Education, JobPosition } from '../../../../app';
+import { createApiClient } from '$lib/API/apiClient';
+import type { Education, JobPosition, Resume, SkillData } from '../../../../app';
 
 export const load = async (event) => {
-	const token = event.cookies.get('accessToken');
 	console.log(event.params.id);
 
 	try {
-		const resResumeDetails = await fetch(`${PUBLIC_API_URL}/resume/${event.params.id}`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resEducation = await fetch(`${PUBLIC_API_URL}/education/my`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resJobs = await fetch(`${PUBLIC_API_URL}/job-positions/my`, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		});
-		const resume = await resResumeDetails.json();
-		const education: Education[] = await resEducation.json();
-		const jobs: JobPosition[] = await resJobs.json();
-		const mySkills = await getSkillList(token);
-		return { resume, education, jobs, mySkills };
+		const api = createApiClient(event);
+		const resume = await api.get<Resume>(`/resume/${event.params.id}`);
+		const education = await api.get<Education[]>('/education/my');
+		const jobs = await api.get<JobPosition[]>('/job-positions/my');
+		const skillList = await api.get<SkillData>('/skill-list/my');
+
+		return { resume, education, jobs, mySkills: skillList };
 	} catch (error) {
 		console.error(error);
 	}
