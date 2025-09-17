@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
 	const api = createApiClient(event);
-	const user = api.get('/auth/logout');
+	const user = await api.get('/auth/logout');
 	console.log({ user });
 	event.cookies.delete('accessToken', { path: '/' });
 	event.locals.user = null;

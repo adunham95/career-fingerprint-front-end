@@ -6,7 +6,7 @@ export const load = async (event) => {
 
 	try {
 		const api = createApiClient(event);
-		const application = api.get<JobApplication>(`/job-applications/${id}`);
+		const application = await api.get<JobApplication>(`/job-applications/${id}`);
 		return { application };
 	} catch (error) {
 		console.error(error);

@@ -5,7 +5,7 @@ export const load = async (event) => {
 	const id = event.params.id;
 
 	try {
-		const api = createApiClient();
+		const api = createApiClient(event);
 		const meetings = await api.get<Meeting[]>(`/meetings/job-application/${id}`);
 
 		return { meetings };
