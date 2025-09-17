@@ -7,7 +7,7 @@
 		dates: Achievement[];
 	}
 
-	const { dates }: Props = $props();
+	const { dates = [] }: Props = $props();
 </script>
 
 <div class="flow-root">

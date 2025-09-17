@@ -15,10 +15,10 @@
 	let educationID = $state<string | null>(null);
 
 	let myAchievements = useMyAchievements(
-		data.achievements,
 		true,
 		() => jobPositionID,
-		() => educationID
+		() => educationID,
+		data.achievements
 	);
 	let myJobPositions = useMyJobPositionsQuery();
 	let myEducation = useMyEducationQuery();
@@ -180,7 +180,7 @@
 		</div>
 	</div>
 
-	<div class="grid grid-cols-2">
+	<div class="grid md:grid-cols-2">
 		<ExpandedTimeline dates={$myAchievements.data || []} />
 	</div>
 </PageContainer>

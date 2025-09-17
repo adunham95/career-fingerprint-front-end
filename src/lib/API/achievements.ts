@@ -63,7 +63,7 @@ export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
 	educationID: string | null = null
-) {
+): Promise<Achievement[]> {
 	const api = createApiClient();
 
 	const queries: Record<string, string | number | boolean | undefined> | undefined = {};
@@ -142,10 +142,10 @@ export const useAchievementTags = () => {
 };
 
 export const useMyAchievements = (
-	initialData: Achievement[] = [],
 	includeLinked: null | boolean = null,
 	jobPositionID: () => string | null,
-	educationID: () => string | null
+	educationID: () => string | null,
+	initialData: Achievement[] = []
 ) => {
 	return createQuery({
 		queryKey: achievementKeys.allWithOptions(includeLinked, jobPositionID(), educationID()),

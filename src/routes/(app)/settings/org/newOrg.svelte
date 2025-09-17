@@ -160,17 +160,17 @@
 	{/snippet}
 	<Card className="md:col-span-2">
 		<div class={`${formState === 'details' ? 'block' : 'hidden'}`}>
-			<div class="mt-4 grid grid-cols-4 gap-x-4 gap-y-6">
-				<ImageUpload className="col-span-4" id="logo" label="Logo" bind:value={orgLogo} />
+			<div class="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-4">
+				<ImageUpload className="md:col-span-4" id="logo" label="Logo" bind:value={orgLogo} />
 				<TextInput
 					bind:value={orgName}
 					id="name"
 					label="Organization Name"
-					className="col-span-4"
+					className="md:col-span-4"
 				/>
 				<TextInput
 					bind:value={orgSize}
-					className="col-span-2"
+					className="md:col-span-2"
 					id="group-size"
 					placeholder="Enter your group size"
 					subLabel="Select the number of seats your would like"
@@ -180,7 +180,7 @@
 				<TextInputWAddOns
 					preInlineText="example@"
 					bind:value={orgDomain}
-					className="col-span-2"
+					className="md:col-span-2"
 					id="org-domain"
 					label="Org Domain"
 				/>
@@ -189,7 +189,7 @@
 					bind:value={orgEmail}
 					label="Organization Email"
 					subLabel="Used for organization communication and billing"
-					className="col-span-4"
+					className="md:col-span-4"
 					type="email"
 				/>
 			</div>

@@ -39,7 +39,9 @@
 					</svg>
 				</dt>
 				<dd>
-					<time datetime={eventTime.toString()}>{eventTime.toDateString()}</time>
+					{#if eventTime}
+						<time datetime={eventTime.toString()}>{eventTime.toDateString()}</time>
+					{/if}
 				</dd>
 			</div>
 			<div
