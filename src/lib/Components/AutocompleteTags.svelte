@@ -58,7 +58,7 @@
 			bind:value
 			class="focus:outline-primary block w-full rounded-md bg-white py-1.5 pr-12 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6"
 		/>
-		{#if $autocompleteTags?.data?.length > 0}
+		{#if ($autocompleteTags?.data || []).length > 0}
 			<button type="button" class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2">
 				<svg
 					viewBox="0 0 20 20"
@@ -105,7 +105,7 @@
 			popover
 			class="max-h-60 w-(--input-width) overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 transition-discrete [--anchor-gap:--spacing(1)] data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
 		>
-			{#each $autocompleteTags.data as tag}
+			{#each $autocompleteTags.data || [] as tag}
 				<el-option
 					value={tag.name}
 					class="aria-selected:bg-primary block truncate px-3 py-2 text-gray-900 select-none aria-selected:text-white"

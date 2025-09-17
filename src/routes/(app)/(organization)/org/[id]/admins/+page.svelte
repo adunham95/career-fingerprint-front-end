@@ -17,7 +17,7 @@
 
 	const removeAdminFunction = useRemoveAdminFromOrg();
 	const orgAdmins = useOrgAdmins(data.org?.id || '', data.admins);
-	const addAdminMutation = useAddAdmin(data.org?.id);
+	const addAdminMutation = useAddAdmin(data.org?.id || '');
 
 	async function removeAdminFromOrg(userID: number) {
 		try {
@@ -33,7 +33,12 @@
 		e.preventDefault();
 		try {
 			console.log({ firstName, lastName, email });
-			await $addAdminMutation.mutateAsync({ firstName, lastName, email, orgID: data.org.id });
+			await $addAdminMutation.mutateAsync({
+				firstName,
+				lastName,
+				email,
+				orgID: data.org?.id || ''
+			});
 			toastStore.show({ message: 'Added New Admin' });
 			await $orgAdmins.refetch();
 			showNewAdmin = false;

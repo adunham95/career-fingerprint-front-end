@@ -7,6 +7,15 @@
 	let { children, data } = $props();
 
 	console.log({ data });
+	const routes = $derived(() => {
+		if (data.org?.id) {
+			return [
+				{ title: 'My Dashboard', path: '/dashboard' },
+				{ title: 'Org Dashboard', path: `/org/${data.org.id}` }
+			];
+		}
+		return [{ title: 'My Dashboard', path: '/dashboard' }];
+	});
 </script>
 
 <QueryClientProvider client={queryClient}>
@@ -14,10 +23,7 @@
 	<AccountHeader
 		userID={data?.user?.id || 0}
 		appTitle="Career Fingerprint"
-		routes={[
-			{ title: 'My Dashboard', path: '/dashboard' },
-			{ title: 'Org Dashboard', path: `/org/${data.org.id}` }
-		]}
+		routes={routes()}
 		lastName={data?.user?.lastName}
 		firstName={data?.user?.firstName}
 		profileImageURL={data?.user?.profileImage}

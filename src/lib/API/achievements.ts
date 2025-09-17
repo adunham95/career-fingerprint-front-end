@@ -42,7 +42,7 @@ export async function createAchievementTag(newTag: { name: string }): Promise<Ac
 export async function getAutocompleteAchievementTags(query: string) {
 	try {
 		const api = createApiClient();
-		return api.get('/achievement-tags/autocomplete', { query });
+		return api.get<{ name: string }[]>('/achievement-tags/autocomplete', { query });
 	} catch (error) {
 		console.error(error);
 		return [];

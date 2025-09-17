@@ -144,6 +144,20 @@ interface CurrentUser {
 	subscription: SubscriptionPlan;
 }
 
+interface User {
+	id: number;
+	firstName: string;
+	lastName: string;
+	accountStatus: string;
+	email: string;
+	profileImage: string | null;
+	stripeCustomerID: string | null;
+	planLevel: number;
+	pitch: string;
+	lookingFor: string;
+	inviteCode: string | null;
+}
+
 interface Organization {
 	createdAt: string;
 	domain: string;
@@ -204,5 +218,6 @@ export {
 	BulletPoint,
 	Organization,
 	Resume,
-	SkillData
+	SkillData,
+	User
 };
