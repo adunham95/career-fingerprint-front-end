@@ -51,12 +51,14 @@
 				class="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1"
 			>
 				<div class="mt-6 min-w-0 flex-1 sm:hidden md:block">
-					<h1 class="truncate text-2xl font-bold text-gray-900">{data.meeting.title}</h1>
+					<h1 class="truncate text-2xl font-bold text-gray-900">
+						{data.meeting?.title || 'Meeting'}
+					</h1>
 				</div>
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if isFuture(data.meeting.time) && useFeatureGate(1, data.user)}
+					{#if isFuture(data.meeting?.time || new Date()) && useFeatureGate(1, data.user)}
 						<a
 							href={`/prep/${data.meetingID}`}
 							type="button"
@@ -127,11 +129,11 @@
 					</ul>
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
-						{#if data.highlights.length === 0}
+						{#if (data.highlights || []).length === 0}
 							<!-- TODO Fix Text -->
 							<InfoBlock title="Empty Highlights" description="The highlight list is empty" />
 						{/if}
-						{#each data.highlights as highlight}
+						{#each data.highlights || [] as highlight}
 							<li>
 								<Card size="sm" contentClassName="divide-y divide-gray-200">
 									<div class="pb-2">
@@ -191,7 +193,7 @@
 							</svg>
 						</dt>
 						<dd class="text-sm/6 text-gray-500">
-							<p>{data.meeting.type}</p>
+							<p>{data.meeting?.type}</p>
 						</dd>
 					</div>
 
@@ -213,11 +215,11 @@
 							</svg>
 						</dt>
 						<dd class="text-sm/6 text-gray-500">
-							<time>{format(data.meeting.time, 'Pp')}</time>
+							<time>{format(data.meeting?.time || new Date(), 'Pp')}</time>
 						</dd>
 					</div>
 
-					{#if data.meeting.location}
+					{#if data.meeting?.location}
 						<!-- Meeting Time -->
 						<div class="flex w-full flex-none gap-x-4">
 							<dt class="flex-none">
@@ -241,7 +243,7 @@
 						</div>
 					{/if}
 
-					{#if data.meeting.link}
+					{#if data.meeting?.link}
 						<!-- Meeting Time -->
 						<div class="flex w-full flex-none gap-x-4">
 							<dt class="flex-none">
@@ -271,7 +273,7 @@
 					{/if}
 				</div>
 			</Card>
-			{#if data.meeting.jobApp}
+			{#if data.meeting?.jobApp}
 				{@const jobApp = data.meeting.jobApp}
 				<Card>
 					<dl class="flex flex-wrap">
