@@ -125,8 +125,8 @@
 		{/if}
 	</div>
 
-	<div class="mt-3 grid grid-cols-1 grid-rows-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="bg-surface-100 row-span-2 rounded border-3 border-gray-200 p-4 md:col-span-2">
+	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>
 			{#if (data.achievements || []).length > 0}
 				<Timeline
@@ -170,9 +170,6 @@
 					/>
 				{/if}
 			</ol>
-		</div>
-		<div class="bg-surface-100 rounded border-3 border-gray-200 p-6 md:col-span-2">
-			<!-- <Calender disableSelectedDays /> -->
 		</div>
 	</div>
 </PageContainer>
