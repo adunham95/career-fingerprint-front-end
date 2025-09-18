@@ -1,9 +1,9 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import * as Sentry from '@sentry/sveltekit';
 import type { Handle } from '@sveltejs/kit';
-import { PUBLIC_SENTRY_DSN } from '$env/static/public';
-import { createApiClient } from '$lib/API/apiClient';
+import { PUBLIC_API_URL, PUBLIC_SENTRY_DSN } from '$env/static/public';
 import type { CurrentUser } from './app';
+import { createApiClient } from '$lib/API/apiClient';
 
 Sentry.init({
 	dsn: PUBLIC_SENTRY_DSN,
@@ -27,21 +27,52 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 		return new Response('Forbidden', { status: 403 });
 	}
 
-	const authToken = event.cookies.get('accessToken');
-	const sessionToken = event.cookies.get('sessionAccessToken');
-	console.log({ sessionToken });
-	if (!authToken) {
-		event.locals.user = null;
-		event.locals.session = null;
-		return resolve(event);
-	}
-
+	let user: CurrentUser | null = null;
 	const api = createApiClient(event);
+	try {
+		user = await api.get('/auth/current-user');
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (err: any) {
+		if (err.message.includes('401')) {
+			// Retry handled inside api client with refresh
+			try {
+				user = await api.get('/auth/current-user');
+			} catch {
+				user = null;
+			}
+		} else {
+			console.error('Auth check failed', err);
+		}
+	}
+	// try {
+	// 	const res = await event.fetch(`${PUBLIC_API_URL}/auth/current-user`, {
+	// 		credentials: 'include'
+	// 	});
 
-	const user = await api.get('/auth/current-user');
+	// 	if (res.ok) {
+	// 		user = await res.json();
+	// 	} else if (res.status === 401) {
+	// 		// Try refresh
+	// 		const refreshRes = await event.fetch(`${PUBLIC_API_URL}/auth/refresh`, {
+	// 			method: 'POST',
+	// 			credentials: 'include'
+	// 		});
 
-	event.locals.user = user as CurrentUser;
+	// 		if (refreshRes.ok) {
+	// 			// Retry current-user
+	// 			const retryRes = await event.fetch(`${PUBLIC_API_URL}/auth/current-user`, {
+	// 				credentials: 'include'
+	// 			});
+	// 			if (retryRes.ok) {
+	// 				user = await retryRes.json();
+	// 			}
+	// 		}
+	// 	}
+	// } catch (err) {
+	// 	console.error('Auth check failed', err);
+	// }
 
+	event.locals.user = user;
 	return resolve(event);
 });
 export const handleError = Sentry.handleErrorWithSentry();

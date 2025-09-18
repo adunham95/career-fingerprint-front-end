@@ -24,13 +24,26 @@ export interface ApiClient {
 	del<T>(path: string, options?: RequestInit): Promise<T>;
 }
 
-export function createApiClient(event?: { request: Request }) {
+export function createApiClient(event?: { request: Request; fetch?: typeof fetch }) {
+	const fetcher = event?.fetch ?? fetch;
+	async function refreshSession(): Promise<boolean> {
+		try {
+			const res = await fetcher(`${PUBLIC_API_URL}/auth/refresh`, {
+				method: 'POST'
+			});
+			return res.ok;
+		} catch {
+			return false;
+		}
+	}
+
 	async function request<T>(
 		method: string,
 		path: string,
 		body?: unknown,
 		options: RequestInit = {},
-		params?: Record<string, string | number | boolean | undefined>
+		params?: Record<string, string | number | boolean | undefined>,
+		retry = true
 	): Promise<T> {
 		let headers: HeadersInit = options.headers || {};
 
@@ -49,19 +62,25 @@ export function createApiClient(event?: { request: Request }) {
 			options.credentials = 'include';
 		}
 
-		const res = await fetch(`${PUBLIC_API_URL}${path}${buildQuery(params)}`, {
+		const res = await fetcher(`${PUBLIC_API_URL}${path}${buildQuery(params)}`, {
 			...options,
 			method,
 			headers,
 			body: body ? JSON.stringify(body) : undefined
 		});
 
-		if (!res.ok) {
-			const text = await res.text();
-			throw new Error(`API error ${res.status}: ${text}`);
+		if (res.status === 401 && retry) {
+			const refreshed = await refreshSession();
+			if (refreshed) {
+				return request<T>(method, path, body, options, params, false);
+			}
 		}
 
-		// Try parsing JSON, but allow empty body
+		if (!res.ok) {
+			const text = await res.text();
+			throw new Error(`API error ${res.status}: ${text}. Path: ${path}`);
+		}
+
 		const text = await res.text();
 		return text ? (JSON.parse(text) as T) : (undefined as T);
 	}

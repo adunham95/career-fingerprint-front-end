@@ -2,6 +2,7 @@ import { createApiClient } from '$lib/API/apiClient';
 import type { Education, JobPosition } from '../../../app.js';
 
 export const load = async (event) => {
+	console.log(event.cookies);
 	try {
 		const api = createApiClient(event);
 		const education = await api.get<Education[]>('/education/my');
