@@ -5,18 +5,21 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import ImageUpload from '$lib/Components/FormElements/ImageUpload.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { error } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
-	let newPassword = $state(null);
+	let newPassword = $state<string | null>(null);
 	let confirmPassword = $state(null);
+	let errorMessages = $state<{ [key: string]: string }>({});
 
 	const deleteUserMutation = useDeleteUserMutation();
 	const verifyEmailMutation = useStartEmailVerification();
@@ -52,12 +55,24 @@
 
 	async function updateAccount(saveType: 'profile' | 'password' | 'account') {
 		const url = `${PUBLIC_API_URL}/users/${data.user.id}`;
+		errorMessages = {};
 
 		if (saveType === 'password' && newPassword !== confirmPassword) {
 			toastStore.show({
 				type: 'error',
 				message: `Passwords do not match`
 			});
+			errorMessages = { ...errorMessages, password: 'Passwords do not match' };
+			return;
+		}
+
+		if (saveType === 'password' && newPassword !== null && newPassword.length < 6) {
+			toastStore.show({
+				type: 'error',
+				message: `Passwords must be longer than 6 characters`
+			});
+			errorMessages = { ...errorMessages, password: 'Passwords must be longer than 6 characters' };
+			return;
 		}
 
 		const res = await fetch(url, {
@@ -159,7 +174,14 @@
 	</TwoColumn>
 	<TwoColumn title={'Password'}>
 		<Card className="md:col-span-2">
-			<form>
+			<form
+				id="resetPassword"
+				onsubmit={(e) => {
+					e.preventDefault();
+					updateAccount('password');
+					trackingStore.trackAction('Update Account Click', { type: 'password' });
+				}}
+			>
 				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 					<TextInput
 						className="sm:col-span-3"
@@ -175,15 +197,9 @@
 					/>
 				</div>
 			</form>
+			<ErrorText errorText={errorMessages.password} />
 			{#snippet actions()}
-				<button
-					type="submit"
-					class="btn btn--primary"
-					onclick={() => {
-						updateAccount('password');
-						trackingStore.trackAction('Update Account Click', { type: 'password' });
-					}}>Update</button
-				>
+				<button type="submit" form="resetPassword" class="btn btn--primary">Update</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
