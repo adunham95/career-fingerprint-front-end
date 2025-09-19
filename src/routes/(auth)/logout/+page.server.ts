@@ -7,5 +7,5 @@ export const load = async (event) => {
 	console.log({ user });
 	event.cookies.delete('accessToken', { path: '/' });
 	event.locals.user = null;
-	redirect(303, '/');
+	redirect(303, '/login');
 };

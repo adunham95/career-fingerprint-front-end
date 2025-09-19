@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useDeleteUserMutation, useStartEmailVerification } from '$lib/API/user.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -12,7 +11,6 @@
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
-	import { error } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -100,8 +98,7 @@
 	async function deleteUserFunc() {
 		try {
 			await $deleteUserMutation.mutateAsync();
-			toastStore.show({ message: 'User deleted', type: 'success' });
-			goto('/logout');
+			toastStore.show({ message: 'Your account has been marked for deletion', type: 'success' });
 		} catch (error) {
 			toastStore.show({ message: 'Cant delete user', type: 'error' });
 		}
@@ -267,7 +264,10 @@
 	</TwoColumn>
 	<TwoColumn title="Delete Your Account">
 		<Card>
-			<p class="pb-2">If you no longer want to use our service</p>
+			<p class="pb-2">
+				If you’re sure you’d like to leave Career Fingerprint, deleting your account will
+				permanently remove your access.
+			</p>
 			{#snippet actions()}
 				<button
 					class="btn btn--error"

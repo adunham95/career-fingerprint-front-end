@@ -71,7 +71,7 @@ export async function registerUser(newProfile: {
 }
 
 export async function deleteUser(): Promise<{ success: boolean } | null> {
-	const url = `${PUBLIC_API_URL}/users/1`;
+	const url = `${PUBLIC_API_URL}/users`;
 
 	try {
 		const res = await fetch(url, {
