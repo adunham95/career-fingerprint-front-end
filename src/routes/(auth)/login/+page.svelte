@@ -8,6 +8,8 @@
 	import mixpanel from 'mixpanel-browser';
 	import { onMount } from 'svelte';
 
+	const { data: pageData } = $props();
+
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
@@ -47,7 +49,7 @@
 				mixpanel.people.set({
 					$email: data.user.email
 				});
-				await goto('/dashboard');
+				await goto(pageData.redirectPath);
 				isLoading = false;
 			} else {
 				const data = await res.json();
