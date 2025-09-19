@@ -68,7 +68,7 @@
 			bind:value={password}
 			autocomplete={'new-password'}
 		/>
-		<div class="flex w-full justify-between pt-2">
+		<div class="col-span-2 flex w-full justify-between pt-2">
 			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
 			<button disabled={isLoading} class="btn btn-text--primary btn-small">Create Account</button>
 		</div>
