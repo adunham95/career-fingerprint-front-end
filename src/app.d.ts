@@ -6,6 +6,7 @@ declare global {
 		interface Locals {
 			user: CurrentUser | null;
 			session: string | null;
+			tokens: { accessToken?: string };
 		}
 		// interface PageData {}
 		// interface PageState {}
