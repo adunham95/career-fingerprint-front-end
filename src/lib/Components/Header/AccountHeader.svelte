@@ -436,6 +436,7 @@
 								<a
 									href={route.path}
 									onclick={() => {
+										mobileNabOpen = !mobileNabOpen;
 										trackingStore.trackAction('Nav Item Click', {
 											tab: route.title,
 											container: 'profile'

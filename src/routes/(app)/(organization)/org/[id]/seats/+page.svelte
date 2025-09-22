@@ -88,7 +88,13 @@
 									{user.email}
 								</td>
 								<td class="py-4 pl-3 text-right text-sm font-medium">
-									<button class="btn btn-text--primary" onclick={() => removeUserFromOrg(user.id)}>
+									<button
+										class="btn btn-text--primary"
+										onclick={() => {
+											removeUserFromOrg(user.id);
+											trackingStore.trackAction('Remove user from seat click');
+										}}
+									>
 										Remove
 										<span class="sr-only">, {user.firstName} {user.lastName}</span>
 									</button>

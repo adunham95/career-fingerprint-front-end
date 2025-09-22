@@ -124,6 +124,7 @@
 								class="btn btn-text--success"
 								onclick={() => {
 									updateDomain(domainData.domain, domainData.id);
+									trackingStore.trackAction('Update Org Domain');
 								}}>Update</button
 							>
 						</div>
@@ -132,6 +133,7 @@
 								class="btn btn-text--error"
 								onclick={() => {
 									deleteDomain(domainData.id);
+									trackingStore.trackAction('Delete Org Domain');
 								}}>Delete</button
 							>
 						</div>
@@ -149,6 +151,7 @@
 							class="btn btn-text--success"
 							onclick={() => {
 								addDomain();
+								trackingStore.trackAction('Add Org Domain');
 							}}>Save</button
 						>
 					</div>

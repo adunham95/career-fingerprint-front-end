@@ -52,11 +52,23 @@
 					Application Status
 
 					{#if editType === 'status'}
-						<button class="btn btn-small btn-text--primary" onclick={saveNewJobApplication}>
+						<button
+							class="btn btn-small btn-text--primary"
+							onclick={() => {
+								saveNewJobApplication();
+								trackingStore.trackAction('Save Application', { type: 'status', status });
+							}}
+						>
 							Save
 						</button>
 					{:else}
-						<button class="btn btn-small btn-text--primary" onclick={() => (editType = 'status')}>
+						<button
+							class="btn btn-small btn-text--primary"
+							onclick={() => {
+								editType = 'status';
+								trackingStore.trackAction('Edit Application', { type: 'status' });
+							}}
+						>
 							Edit
 						</button>
 					{/if}
@@ -90,13 +102,22 @@
 					Job Description
 
 					{#if editType === 'jobDescription'}
-						<button class="btn btn-small btn-text--primary" onclick={saveNewJobApplication}>
+						<button
+							class="btn btn-small btn-text--primary"
+							onclick={() => {
+								saveNewJobApplication();
+								trackingStore.trackAction('Save Application', { type: 'jobDescription' });
+							}}
+						>
 							Save
 						</button>
 					{:else}
 						<button
 							class="btn btn-small btn-text--primary"
-							onclick={() => (editType = 'jobDescription')}
+							onclick={() => {
+								editType = 'jobDescription';
+								trackingStore.trackAction('Edit Application', { type: 'jobDescription' });
+							}}
 						>
 							Edit
 						</button>

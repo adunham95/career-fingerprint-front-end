@@ -8,7 +8,7 @@
 
 	const { data } = $props();
 
-	const meeting = useMeetingByID(data.meeting.id, data.meeting);
+	const meeting = useMeetingByID(data.meeting?.id || '', data.meeting);
 
 	console.log(data);
 

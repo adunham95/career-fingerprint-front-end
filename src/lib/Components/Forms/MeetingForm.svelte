@@ -9,6 +9,7 @@
 	import { useMyEducationQuery } from '$lib/API/education';
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions';
 	import { getLocalDateTimeValue } from '$lib/Utils/getLocalDateTimeValue';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	interface Props {
 		id: string;
@@ -45,6 +46,7 @@
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
+		trackingStore.trackAction('Update Meeting');
 		error = {};
 
 		console.log({ type, jobAppID });

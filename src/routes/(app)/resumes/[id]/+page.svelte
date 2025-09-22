@@ -382,11 +382,16 @@
 												<li class="text-sm text-gray-600">
 													<button
 														class="group/ach relative w-full rounded px-2 py-1 text-start"
-														onclick={() =>
+														onclick={() => {
+															trackingStore.trackAction('Updated Resume', {
+																section: 'Job Position',
+																button: 'Add Bullet Point From Achievement'
+															});
 															addBulletPoint({
 																jobPositionID: job.id,
 																text: achievement.myContribution
-															})}
+															});
+														}}
 													>
 														<span>
 															{achievement.myContribution}
@@ -441,7 +446,13 @@
 										{/each}
 										<button
 											class="btn btn-text--success btn-small w-full text-start"
-											onclick={() => addBulletPoint({ jobPositionID: job.id })}
+											onclick={() => {
+												addBulletPoint({ jobPositionID: job.id });
+												trackingStore.trackAction('Updated Resume', {
+													section: 'Job Position',
+													button: 'Add Bullet Point'
+												});
+											}}
 										>
 											Add Bullet Point
 										</button>
@@ -498,11 +509,16 @@
 												<li class="text-sm text-gray-600">
 													<button
 														class="group/ach relative w-full rounded px-2 py-1 text-start"
-														onclick={() =>
+														onclick={() => {
+															trackingStore.trackAction('Updated Resume', {
+																section: 'Education',
+																button: 'Add Bullet Point From Achievement'
+															});
 															addBulletPoint({
 																educationID: edu.id,
 																text: achievement.myContribution
-															})}
+															});
+														}}
 													>
 														<span>
 															{achievement.myContribution}
@@ -557,7 +573,13 @@
 										{/each}
 										<button
 											class="btn btn-text--success btn-small w-full text-start"
-											onclick={() => addBulletPoint({ educationID: edu.id })}
+											onclick={() => {
+												addBulletPoint({ educationID: edu.id });
+												trackingStore.trackAction('Updated Resume', {
+													section: 'Education',
+													button: 'Add Bullet Point'
+												});
+											}}
 										>
 											Add Bullet Point
 										</button>

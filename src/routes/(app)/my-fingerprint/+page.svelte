@@ -173,7 +173,16 @@
 <PageContainer className="divide-y divide-gray-300">
 	<TwoColumn title={'My Jobs'}>
 		{#snippet subSection()}
-			<button class="btn btn--primary" onclick={() => addObject('job-positions')}>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					addObject('job-positions');
+					trackingStore.trackAction('Updated Resume', {
+						section: 'Job Position',
+						button: 'Add'
+					});
+				}}
+			>
 				Add New Job
 			</button>
 		{/snippet}
@@ -209,7 +218,16 @@
 	</TwoColumn>
 	<TwoColumn title={'My Education'}>
 		{#snippet subSection()}
-			<button class="btn btn--primary" onclick={() => addObject('education')}>
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					addObject('education');
+					trackingStore.trackAction('Updated Resume', {
+						section: 'Education',
+						button: 'Add'
+					});
+				}}
+			>
 				Add New Education
 			</button>
 		{/snippet}

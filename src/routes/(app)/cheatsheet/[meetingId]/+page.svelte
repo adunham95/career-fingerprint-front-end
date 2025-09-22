@@ -61,8 +61,13 @@
 					</h2>
 				</div>
 				<div class="mt-4 flex md:mt-0 md:ml-4">
-					<button type="button" class="btn btn--primary" onclick={finishMeeting}
-						>Finish Meeting</button
+					<button
+						type="button"
+						class="btn btn--primary"
+						onclick={() => {
+							finishMeeting();
+							trackingStore.trackAction('Finish Meeting Click');
+						}}>Finish Meeting</button
 					>
 				</div>
 			</div>
@@ -80,7 +85,7 @@
 					class="btn btn-text--primary"
 					onclick={() => {
 						saveNote();
-						trackingStore.trackAction('Add  Note Click');
+						trackingStore.trackAction('Add Note Click');
 					}}>Add Note</button
 				>
 			</div>

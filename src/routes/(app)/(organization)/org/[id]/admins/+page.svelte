@@ -63,8 +63,13 @@
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
 			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button type="button" class="btn btn--primary" onclick={() => (showNewAdmin = true)}
-					>Add Admin</button
+				<button
+					type="button"
+					class="btn btn--primary"
+					onclick={() => {
+						showNewAdmin = true;
+						trackingStore.trackAction('Add Admin Click');
+					}}>Add Admin</button
 				>
 			</div>
 		</div>
@@ -115,7 +120,10 @@
 								<button
 									class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
 									disabled={data?.user?.id === user.id}
-									onclick={() => removeAdminFromOrg(user.id)}
+									onclick={() => {
+										removeAdminFromOrg(user.id);
+										trackingStore.trackAction('Remove Admin Click');
+									}}
 								>
 									Remove
 									<span class="sr-only">, {user.firstName} {user.lastName}</span>
