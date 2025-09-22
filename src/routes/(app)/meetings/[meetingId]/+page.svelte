@@ -10,7 +10,7 @@
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
-	import { format, isFuture } from 'date-fns';
+	import { format, formatDistanceToNow } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -20,6 +20,13 @@
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
 
+	function isUpcomingOrRecent(meetingTime: Date | string): boolean {
+		const tenMinutesAgo = Date.now() - 10 * 60 * 1000; // timestamp
+		const meetingTimestamp =
+			meetingTime instanceof Date ? meetingTime.getTime() : new Date(meetingTime).getTime();
+
+		return meetingTimestamp >= tenMinutesAgo;
+	}
 	console.log({ data });
 
 	onMount(() => {
@@ -58,7 +65,7 @@
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if isFuture(data.meeting?.time || new Date()) && useFeatureGate(1, data.user)}
+					{#if isUpcomingOrRecent(data.meeting?.time || new Date()) && useFeatureGate(1, data.user)}
 						<a
 							href={`/prep/${data.meetingID}`}
 							type="button"

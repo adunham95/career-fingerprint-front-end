@@ -5,7 +5,7 @@
 	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
-	import { useCreateMeetingMutation } from '$lib/API/meeting.js';
+	import { useCreateMeetingMutation, useUpcomingMeetings } from '$lib/API/meeting.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { goto } from '$app/navigation';
 	import Loader from '$lib/Components/Loader.svelte';
@@ -29,6 +29,7 @@
 	});
 
 	const createNewMeetingMutation = useCreateMeetingMutation();
+	const upcomingMeetings = useUpcomingMeetings(data.meetings);
 
 	async function createNewMeeting() {
 		isLoadingNewMeeting = true;
@@ -159,8 +160,8 @@
 				>
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
-				{#if (data.meetings || []).length > 0}
-					{#each data.meetings || [] as meeting}
+				{#if ($upcomingMeetings.data || []).length > 0}
+					{#each $upcomingMeetings.data || [] as meeting}
 						<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(1, data.user)} />
 					{/each}
 				{:else}
