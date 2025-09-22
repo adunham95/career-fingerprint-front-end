@@ -1,7 +1,7 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import * as Sentry from '@sentry/sveltekit';
 import type { Handle } from '@sveltejs/kit';
-import { PUBLIC_API_URL, PUBLIC_SENTRY_DSN } from '$env/static/public';
+import { PUBLIC_SENTRY_DSN } from '$env/static/public';
 import type { CurrentUser } from './app';
 import { createApiClient } from '$lib/API/apiClient';
 
@@ -44,35 +44,15 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 			console.error('Auth check failed', err);
 		}
 	}
-	// try {
-	// 	const res = await event.fetch(`${PUBLIC_API_URL}/auth/current-user`, {
-	// 		credentials: 'include'
-	// 	});
-
-	// 	if (res.ok) {
-	// 		user = await res.json();
-	// 	} else if (res.status === 401) {
-	// 		// Try refresh
-	// 		const refreshRes = await event.fetch(`${PUBLIC_API_URL}/auth/refresh`, {
-	// 			method: 'POST',
-	// 			credentials: 'include'
-	// 		});
-
-	// 		if (refreshRes.ok) {
-	// 			// Retry current-user
-	// 			const retryRes = await event.fetch(`${PUBLIC_API_URL}/auth/current-user`, {
-	// 				credentials: 'include'
-	// 			});
-	// 			if (retryRes.ok) {
-	// 				user = await retryRes.json();
-	// 			}
-	// 		}
-	// 	}
-	// } catch (err) {
-	// 	console.error('Auth check failed', err);
-	// }
-
 	event.locals.user = user;
-	return resolve(event);
+
+	const response = await resolve(event);
+
+	// If your API client got a new cookie during refresh:
+	if (event.locals.newCookie) {
+		response.headers.append('set-cookie', event.locals.newCookie);
+	}
+
+	return response;
 });
 export const handleError = Sentry.handleErrorWithSentry();

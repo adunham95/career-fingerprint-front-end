@@ -1,4 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { RequestEvent } from '@sveltejs/kit';
+
+const serverCookies: string | null = null;
 
 function buildQuery(params?: Record<string, string | number | boolean | undefined>) {
 	if (!params) return '';
@@ -24,13 +27,27 @@ export interface ApiClient {
 	del<T>(path: string, options?: RequestInit): Promise<T>;
 }
 
-export function createApiClient(event?: { request: Request; fetch?: typeof fetch }) {
+export function createApiClient(event?: RequestEvent) {
 	const fetcher = event?.fetch ?? fetch;
+
 	async function refreshSession(): Promise<boolean> {
+		let headers: HeadersInit = {};
+		if (event) {
+			const cookieHeader = event.request.headers.get('cookie');
+			if (cookieHeader) {
+				headers = { ...headers, cookie: cookieHeader };
+			}
+		}
 		try {
 			const res = await fetcher(`${PUBLIC_API_URL}/auth/refresh`, {
+				headers,
 				method: 'POST'
 			});
+
+			const setCookie = res.headers.get('set-cookie');
+			if (setCookie && event) {
+				event.locals.newCookie = setCookie; // hand it back to SvelteKit
+			}
 			return res.ok;
 		} catch {
 			return false;
@@ -53,9 +70,13 @@ export function createApiClient(event?: { request: Request; fetch?: typeof fetch
 
 		// Forward cookies if we’re in a server load
 		if (event) {
-			const cookieHeader = event.request.headers.get('cookie');
-			if (cookieHeader) {
-				headers = { ...headers, cookie: cookieHeader };
+			if (event) {
+				const cookieHeader = serverCookies ?? event.request.headers.get('cookie');
+				if (cookieHeader) {
+					headers = { ...headers, cookie: cookieHeader };
+				}
+			} else {
+				options.credentials = 'include';
 			}
 		} else {
 			// Client-side, let browser attach cookies
@@ -70,7 +91,9 @@ export function createApiClient(event?: { request: Request; fetch?: typeof fetch
 		});
 
 		if (res.status === 401 && retry) {
+			console.log('refreshing');
 			const refreshed = await refreshSession();
+			console.log('refreshed', refreshed);
 			if (refreshed) {
 				return request<T>(method, path, body, options, params, false);
 			}
