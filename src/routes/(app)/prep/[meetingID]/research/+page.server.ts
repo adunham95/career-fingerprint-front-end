@@ -6,13 +6,13 @@ export const load = async (event) => {
 	try {
 		const api = createApiClient(event);
 		const meeting = await api.get(`/meetings/${meetingID}`);
-		const questions = await api.get(`/prep/questions/meeting/${meetingID}`);
 
 		if (!meeting) {
 			error(404, {
 				message: 'Not found'
 			});
 		}
+		const questions = await api.get(`/prep/questions/meeting/${meetingID}`);
 
 		return { meeting, meetingID, questions };
 	} catch (error) {

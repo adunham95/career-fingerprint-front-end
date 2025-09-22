@@ -8,15 +8,14 @@ export const load = async (event) => {
 	try {
 		const api = createApiClient(event);
 		const meeting = await api.get(`/meetings/${meetingID}`);
-
 		if (!meeting) {
-			error(404, {
-				message: 'Not found'
-			});
+			throw error(404, { message: 'Meeting not found' });
 		}
 
-		const highlights = await api.get(`/highlights/meeting/${meetingID}`);
-		const achievements = await api.get(`/achievement/my`);
+		const [highlights, achievements] = await Promise.all([
+			api.get(`/highlights/meeting/${meetingID}`),
+			api.get(`/achievement/my`) // limit avoids pulling too much
+		]);
 
 		return { meeting, meetingID, achievements, highlights };
 	} catch (error) {

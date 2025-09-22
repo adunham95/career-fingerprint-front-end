@@ -5,8 +5,8 @@ import { createApiClient } from '$lib/API/apiClient';
 
 export const load = async (event) => {
 	const id = event.params.meetingId;
-
-	const featureEnabled = useFeatureGate(1, event.locals.user);
+	const { user } = await event.parent();
+	const featureEnabled = useFeatureGate(1, user);
 
 	if (!featureEnabled) {
 		redirect(307, '/settings/membership');
@@ -14,11 +14,13 @@ export const load = async (event) => {
 
 	try {
 		const api = createApiClient(event);
-		const interviewData = await api.get<Meeting>(`/meetings/${id}`);
-		const relatedNotes = await api.get(`/notes/meeting/${id}`);
-		const highlights = await api.get<MeetingHighlight[]>(`/highlights/meeting/${id}`);
-		const education: Education[] = await api.get('/education/my');
-		const jobs: JobPosition[] = await api.get('/job-positions/my');
+		const [interviewData, relatedNotes, highlights, education, jobs] = await Promise.all([
+			await api.get<Meeting>(`/meetings/${id}`),
+			await api.get(`/notes/meeting/${id}`),
+			await api.get<MeetingHighlight[]>(`/highlights/meeting/${id}`),
+			await api.get<Education[]>('/education/my'),
+			await api.get<JobPosition[]>('/job-positions/my')
+		]);
 		return {
 			education,
 			jobs,

@@ -8,9 +8,12 @@ export const load = async (event) => {
 
 	try {
 		const api = createApiClient(event);
-		const meeting = await api.get<Meeting>(`/meetings/${id}`);
-		const relatedNotes = await api.get(`/notes/meeting/${id}`);
-		const highlights = await api.get<MeetingHighlight[]>(`/highlights/meeting/${id}`);
+
+		const [meeting, relatedNotes, highlights] = await Promise.all([
+			await api.get<Meeting>(`/meetings/${id}`),
+			await api.get(`/notes/meeting/${id}`),
+			await api.get<MeetingHighlight[]>(`/highlights/meeting/${id}`)
+		]);
 
 		return {
 			id,
