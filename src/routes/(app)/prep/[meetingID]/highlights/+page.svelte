@@ -32,7 +32,7 @@
 
 	console.log({ data });
 
-	const meeting = useMeetingByID(data.meeting.id, data.meeting);
+	const meeting = useMeetingByID(data.meeting?.id || '', data.meeting);
 	const deleteHighlightMutation = useDeleteHighlightMutation(data.meetingID || '');
 	const meetingHighlights = useMeetingHighlightsQuery(data.meetingID || '', data.highlights);
 	const saveHighlightMutation = useCreateHighlightMutation(data.meetingID || '');

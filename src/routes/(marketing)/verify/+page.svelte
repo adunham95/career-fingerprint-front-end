@@ -6,6 +6,7 @@
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { centsToDollars } from '$lib/Utils/centsToDollars';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
@@ -13,6 +14,13 @@
 
 	let startSubscriptionTrial = useCreateSubscriptionTrial();
 	let startSubscription = useCreateSubscription();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Verify Email', {
+			verified: data.tokenDetails?.verified || false,
+			hasPlan: !!data.tokenDetails?.plan || false
+		});
+	});
 
 	async function startManagedSubscription() {
 		try {

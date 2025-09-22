@@ -9,7 +9,7 @@ interface TrackingObject {
 function createTrackingStore() {
 	const { subscribe, update } = writable<TrackingObject>({});
 
-	function pageViewEvent(pageName: string, options: { [key: string]: string } = {}) {
+	function pageViewEvent(pageName: string, options: { [key: string]: string | boolean } = {}) {
 		console.log('Tracking', { pageName, options });
 
 		if (process.env.NODE_ENV === 'production') {

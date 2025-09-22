@@ -15,50 +15,6 @@
 
 	let updateBillingDetails = useUpdateBilling();
 
-	// onMount(async () => {
-	// 	stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
-	// 	trackingStore.pageViewEvent('Billing Settings');
-
-	// 	let clientSecret = await fetchClientSecret();
-
-	// 	if (stripe && clientSecret) {
-	// 		const elements = stripe.elements({ clientSecret });
-
-	// 		const paymentElement = elements.create('payment');
-	// 		paymentElement.mount('#payment-element');
-	// 		paymentElement.on('ready', function (event) {
-	// 			// Handle ready event
-	// 			stripeCheckoutLoading = false;
-	// 		});
-	// 		const button = document.getElementById('pay-button');
-	// 		const errors = document.getElementById('error-message');
-	// 		if (button) {
-	// 			button.addEventListener('click', async () => {
-	// 				savingCC = true;
-	// 				// Clear any validation errors
-	// 				if (errors) {
-	// 					errors.textContent = '';
-	// 				}
-	// 				try {
-	// 					const response = await elements.submit();
-	// 					console.log(response);
-	// 					if (response.error && errors) {
-	// 						errors.textContent = response.error.message || 'Could not update credit card';
-	// 					} else {
-	// 						toastStore.show({ message: 'Credit Card Updated' });
-	// 					}
-	// 				} catch (error) {
-	// 					if (errors) {
-	// 						errors.textContent = 'Could not update credit card';
-	// 					}
-	// 				} finally {
-	// 					savingCC = false;
-	// 				}
-	// 			});
-	// 		}
-	// 	}
-	// });
-
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
 		trackingStore.pageViewEvent('Billing Settings');

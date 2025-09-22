@@ -93,6 +93,9 @@ interface Meeting {
 	jobPositionID: string;
 	educationID: string;
 	jobApp: JobApplication;
+	highlights?: MeetingHighlight[];
+	jobPosition?: JobPosition;
+	prepAnswers?: PrepAnswer[];
 }
 
 interface Note {
@@ -108,7 +111,7 @@ interface Note {
 	userID: number;
 }
 
-interface MeetingHighlight {
+export interface MeetingHighlight {
 	id: string;
 	createdAt: string;
 	updatedAt: string;
@@ -126,6 +129,11 @@ interface PrepQuestion {
 	displayOn: string[];
 	order: number;
 	prepAnswers: { answer: string }[];
+}
+interface PrepAnswer {
+	id: string;
+	answer: string;
+	question: { question: string };
 }
 
 interface CurrentUser {
@@ -220,5 +228,6 @@ export {
 	Organization,
 	Resume,
 	SkillData,
-	User
+	User,
+	PrepAnswer
 };

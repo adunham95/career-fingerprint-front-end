@@ -16,7 +16,7 @@
 
 	const meetingHighlights = useMeetingHighlightsQuery(
 		data.meetingID || '',
-		data.meeting.highlights
+		data.meeting?.highlights || []
 	);
 
 	onMount(() => {
@@ -103,7 +103,7 @@
 		</div>
 		<div class="mt-4">
 			<div class="grid grid-cols-3 gap-1">
-				{#each data.prepAnswers as answer}
+				{#each data.prepAnswers || [] as answer}
 					<div
 						class="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-600 bg-white"
 					>

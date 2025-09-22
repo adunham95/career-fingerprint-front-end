@@ -21,7 +21,7 @@
 
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
-		trackingStore.pageViewEvent('Get Started Org');
+		trackingStore.pageViewEvent('Get Started', { type: 'Org' });
 	});
 
 	let groupSize = $state(1);
