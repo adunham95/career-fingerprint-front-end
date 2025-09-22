@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { useMeetingHighlightsQuery } from '$lib/API/highlights';
-	import { useGetAnswersByMeetingID } from '$lib/API/prep-answers';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import { onMount } from 'svelte';
 	import StepHeader from '../StepHeader.svelte';
