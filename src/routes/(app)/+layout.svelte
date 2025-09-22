@@ -31,6 +31,7 @@
 			{ title: 'Referrals', path: '/settings/referral' }
 		]}
 	/>
-
-	{@render children()}
+	<main class="pb-4">
+		{@render children()}
+	</main>
 </QueryClientProvider>
