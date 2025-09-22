@@ -1,6 +1,24 @@
 {
 	"name": "Career Fingerprint",
 	"short_name": "Career Fingerprint",
+	"description": "Helps professionals and students organize accomplishments, prepare for interviews, and create impactful resumes.",
+	"start_url": "/dashboard",
+	"screenshots": [
+		{
+			"src": "/screenshots/careerfingerprint.app_dashboard_desktop.png",
+			"sizes": "2048x1300",
+			"type": "image/png",
+			"form_factor": "wide",
+			"label": "Desktop Dashboard"
+		},
+		{
+			"src": "/screenshots/careerfingerprint.app_dashboard_mobile.png",
+			"sizes": "1170x2532",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "Desktop Mobile"
+		}
+	],
 	"icons": [
 		{
 			"src": "/favicons/production/web-app-manifest-192x192.png",
@@ -27,7 +45,19 @@
 			"type": "image/png"
 		},
 		{
+			"purpose": "any",
+			"sizes": "192x192",
+			"src": "/favicons/production/maskable_icon_x192.png",
+			"type": "image/png"
+		},
+		{
 			"purpose": "maskable",
+			"sizes": "512x512",
+			"src": "/favicons/production/maskable_icon_x512.png",
+			"type": "image/png"
+		},
+		{
+			"purpose": "any",
 			"sizes": "512x512",
 			"src": "/favicons/production/maskable_icon_x512.png",
 			"type": "image/png"
