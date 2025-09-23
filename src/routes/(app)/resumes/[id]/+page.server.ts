@@ -1,8 +1,17 @@
 import { createApiClient } from '$lib/API/apiClient';
+import { useFeatureGate } from '$lib/Utils/featureGate';
+import { redirect } from '@sveltejs/kit';
 import type { Education, JobPosition, Resume } from '../../../../app';
 
 export const load = async (event) => {
 	console.log(event.params.id);
+
+	const { user } = await event.parent();
+	const featureEnabled = useFeatureGate(1, user);
+
+	if (!featureEnabled) {
+		redirect(307, '/settings/membership');
+	}
 
 	try {
 		const api = createApiClient(event);

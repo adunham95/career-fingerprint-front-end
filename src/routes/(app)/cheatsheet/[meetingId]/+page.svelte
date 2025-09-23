@@ -95,7 +95,7 @@
 				bind:currentTab={current}
 				tabs={[
 					{ id: 'details', label: 'Job Details' },
-					{ id: 'resume', label: 'Resume' },
+					{ id: 'resume', label: 'My Fingerprint' },
 					{ id: 'notes', label: 'Prior Notes' },
 					{ id: 'highlights', label: 'Highlights' }
 				]}
