@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -6,11 +7,12 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
-	import { format, formatDistanceToNow } from 'date-fns';
+	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -83,6 +85,20 @@
 							}}
 						>
 							Start Meeting
+						</a>
+					{/if}
+					{#if useFeatureGate(1, data.user)}
+						<a
+							href={`${PUBLIC_API_URL}/notes/meeting/${data.meetingID}/pdf`}
+							type="button"
+							download
+							class="btn btn--primary relative"
+							onclick={() => {
+								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
+							}}
+						>
+							<PremiumBadge />
+							Download Meeting Notes
 						</a>
 					{/if}
 				</div>
