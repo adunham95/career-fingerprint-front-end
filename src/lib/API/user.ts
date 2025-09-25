@@ -11,6 +11,7 @@ export interface RegisteredUserData {
 		profileImage: string;
 		email: string;
 		orgID: null;
+		timezone: string | null;
 	};
 	plan: {
 		id: string;
@@ -42,6 +43,7 @@ export async function registerUser(newProfile: {
 	password: string;
 	achievement: string;
 	orgID?: string;
+	timezone?: string;
 }): Promise<RegisteredUserData> {
 	const url = `${PUBLIC_API_URL}/register`;
 

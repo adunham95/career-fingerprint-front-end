@@ -46,7 +46,8 @@
 		}
 
 		try {
-			await $registerUser.mutateAsync({ ...profile, orgID });
+			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			await $registerUser.mutateAsync({ ...profile, orgID, timezone });
 			toastStore.show({
 				type: 'success',
 				message: `User saved`
