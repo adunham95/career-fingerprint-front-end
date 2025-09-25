@@ -2,7 +2,7 @@
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
+	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import { useUpcomingMeetings } from '$lib/API/meeting.js';
