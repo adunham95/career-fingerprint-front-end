@@ -4,15 +4,18 @@
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions.js';
 	import ExpandedTimeline from '$lib/Components/Calender/ExpandedTimeline.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import NewAchievementForm from '$lib/Components/Forms/NewAchievementForm.svelte';
+	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
+	import type { Achievement } from '../../../app.js';
 	const { data } = $props();
 
 	let jobPositionID = $state<string | null>(null);
 	let educationID = $state<string | null>(null);
+
+	let selectedAchievement = $state<Achievement | null>(null);
 
 	let myAchievements = useMyAchievements(
 		true,
@@ -180,8 +183,20 @@
 		</div>
 	</div>
 
-	<div class="grid md:grid-cols-2">
+	<div class="grid gap-1 md:grid-cols-2">
 		<ExpandedTimeline dates={$myAchievements.data || []} />
+		<!-- Uncomment to add edit achievement functionality -->
+		<!-- onActionClick={(a) => (selectedAchievement = a)} -->
+		<div>
+			{#if selectedAchievement}
+				<div class=" sticky top-0">
+					<NewAchievementForm id="updateAchievement" bind:achievement={selectedAchievement} />
+					<div class="flex justify-end">
+						<button form="updateAchievement" class="btn btn--primary"> Save </button>
+					</div>
+				</div>
+			{/if}
+		</div>
 	</div>
 </PageContainer>
 

@@ -5,9 +5,10 @@
 
 	interface Props {
 		dates: Achievement[];
+		onActionClick?: (a: Achievement) => void;
 	}
 
-	const { dates = [] }: Props = $props();
+	const { dates = [], onActionClick = () => null }: Props = $props();
 </script>
 
 <div class="flow-root">
@@ -40,7 +41,8 @@
 								</div>
 							</div>
 						</div>
-						<div
+						<button
+							onclick={() => onActionClick(day)}
 							class="hover:bg-secondary/20 min-w-0 flex-1 rounded p-2 transition-colors duration-300"
 						>
 							<div>
@@ -125,7 +127,7 @@
 									{day.myContribution}
 								</p>
 							</div>
-						</div>
+						</button>
 					</div>
 				</div>
 			</li>

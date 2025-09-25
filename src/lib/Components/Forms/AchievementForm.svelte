@@ -6,22 +6,30 @@
 	import { useMyEducationQuery } from '$lib/API/education';
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions';
 	import AutocompleteTags from '../AutocompleteTags.svelte';
-	import { useCreateAchievementMutation } from '$lib/API/achievements';
+	import {
+		useCreateAchievementMutation,
+		useUpdateAchievementMutation
+	} from '$lib/API/achievements';
+	import type { Achievement } from '../../../app';
 
 	interface Props {
 		id: string;
 		onSuccess?: () => void;
+		achievement?: Partial<Achievement> | null;
+		updateOnChange?: boolean;
 	}
 
-	const { id, onSuccess = () => null }: Props = $props();
+	const { id, onSuccess = () => null, achievement = $bindable({}) }: Props = $props();
+
+	$inspect(achievement);
 
 	let description = $state('');
 	let myContribution = $state('');
 	let result = $state('');
-	let jobPositionID = $state(null);
-	let educationID = $state(null);
-	let startDate = $state(null);
-	let endDate = $state(null);
+	let jobPositionID = $state<string | null>(null);
+	let educationID = $state<string | null>(null);
+	let startDate = $state<string | null>(null);
+	let endDate = $state<string | null>(null);
 	let selectedCategory = $state('');
 	let error = $state<{ [key: string]: string }>({});
 
@@ -29,6 +37,32 @@
 	let jobs = useMyJobPositionsQuery();
 
 	let newAchievement = useCreateAchievementMutation();
+	let updateAchievement = useUpdateAchievementMutation();
+
+	$effect(() => {
+		if (achievement) {
+			description = achievement.description || '';
+			myContribution = achievement.myContribution || '';
+			result = achievement.result || '';
+			jobPositionID = achievement.jobPosition?.id || null;
+			educationID = achievement.education?.id || null;
+			startDate = achievement.startDate || null;
+			endDate = achievement.endDate || null;
+			// selectedCategory = achievement.achievementTags?.[0] ?? '';
+			error = {};
+		} else {
+			// if null, clear the form
+			description = '';
+			myContribution = '';
+			result = '';
+			jobPositionID = null;
+			educationID = null;
+			startDate = null;
+			endDate = null;
+			selectedCategory = '';
+			error = {};
+		}
+	});
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
@@ -47,18 +81,28 @@
 			return;
 		}
 
+		let achDetails = {
+			description,
+			result,
+			myContribution,
+			jobPositionID,
+			educationID,
+			achievementTags: selectedCategory === '' ? [] : [selectedCategory],
+			startDate: startDate ? new Date(startDate).toISOString() : null,
+			endDate: endDate ? new Date(endDate).toISOString() : null
+		};
+
 		try {
-			$newAchievement.mutateAsync({
-				description,
-				result,
-				myContribution,
-				jobPositionID,
-				educationID,
-				achievementTags: selectedCategory === '' ? [] : [selectedCategory],
-				startDate: startDate ? new Date(startDate).toISOString() : null,
-				endDate: endDate ? new Date(endDate).toISOString() : null
-			});
-			toastStore.show({ message: 'New Achievement Added', type: 'success' });
+			if (achievement?.id) {
+				await $updateAchievement.mutateAsync({
+					id: achievement.id,
+					achievement: achDetails
+				});
+				toastStore.show({ message: 'Achievement Updated', type: 'success' });
+			} else {
+				await $newAchievement.mutateAsync(achDetails);
+				toastStore.show({ message: 'New Achievement Added', type: 'success' });
+			}
 			description = '';
 			myContribution = '';
 			result = '';
@@ -111,6 +155,7 @@
 			}))}
 			errorText={error?.educationID}
 		/>
+		<!-- TODO Figure out date details -->
 		<DateInput label="Start Date" id="ach-start" bind:value={startDate} showDate />
 		<DateInput label="End Date" id="ach-end" bind:value={endDate} showDate />
 		<AutocompleteTags label="Category" id="ach-category" bind:value={selectedCategory} />

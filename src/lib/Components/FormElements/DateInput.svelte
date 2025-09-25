@@ -17,6 +17,8 @@
 		showDate = false
 	}: DatePickerProps = $props();
 
+	$inspect(value);
+
 	const parseDate = (dateStr: string | null): Date => {
 		if (!dateStr || dateStr === '') return new Date();
 		const parsed = new Date(dateStr);

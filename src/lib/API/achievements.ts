@@ -29,6 +29,26 @@ export async function createAchievement(
 	}
 }
 
+export async function updateAchievement({
+	achievement,
+	id
+}: {
+	achievement: NewAchievement;
+	id: string;
+}): Promise<Achievement | null> {
+	try {
+		const api = createApiClient();
+		return api.patch(`/achievement/${id}`, {
+			...achievement,
+			startDate: achievement.startDate ? new Date(achievement.startDate).toISOString() : null,
+			endDate: achievement.endDate ? new Date(achievement.endDate).toISOString() : null
+		});
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to update achievement`);
+	}
+}
+
 export async function createAchievementTag(newTag: { name: string }): Promise<Achievement | null> {
 	try {
 		const api = createApiClient();
@@ -101,6 +121,21 @@ export const useCreateAchievementMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: achievementKeys.all
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create achievements:', error);
+		}
+	});
+};
+
+export const useUpdateAchievementMutation = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: updateAchievement,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				predicate: (query) => Array.isArray(query.queryKey) && query.queryKey[0] === 'achievements'
 			});
 		},
 		onError: (error) => {
