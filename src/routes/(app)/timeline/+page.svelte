@@ -37,10 +37,10 @@
 
 <PageContainer>
 	<div
-		class="align-center mt-5 mb-5 flex justify-between border-b border-gray-200 pb-5 print:hidden"
+		class="align-center mt-5 mb-5 flex flex-col justify-between border-b border-gray-200 pb-5 sm:flex-row print:hidden"
 	>
 		<h1 class="text-2xl font-semibold text-gray-900">My Achievement Timeline</h1>
-		<div>
+		<div class="flex justify-end">
 			<button
 				class="btn btn-text--primary"
 				onclick={() => {
@@ -183,7 +183,7 @@
 		</div>
 	</div>
 
-	<div class="grid gap-1 md:grid-cols-2">
+	<div class="grid grid-cols-1 gap-1 md:grid-cols-2">
 		<ExpandedTimeline dates={$myAchievements.data || []} />
 		<!-- Uncomment to add edit achievement functionality -->
 		<!-- onActionClick={(a) => (selectedAchievement = a)} -->

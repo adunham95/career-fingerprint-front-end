@@ -40,7 +40,7 @@
 			{@const date = new Date(meeting.time || '')}
 			<tr>
 				<td
-					class="w-full max-w-0 py-4 pr-3 pl-4 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0"
+					class="w-full max-w-0 py-4 pr-3 pl-4 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-2"
 				>
 					{meeting.title}
 					<dl class="font-normal lg:hidden">

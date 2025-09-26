@@ -5,6 +5,7 @@
 	import FeedbackForm from '../Forms/FeedbackForm.svelte';
 	import Modal from '../Overlays/Modal.svelte';
 	import { toastStore } from '../Toasts/toast';
+	import { page } from '$app/stores';
 
 	interface Props {
 		appTitle?: string;
@@ -176,16 +177,6 @@
 							</button>
 						</div>
 
-						<!--
-              Dropdown menu, show/hide based on menu state.
-  
-              Entering: "transition ease-out duration-100"
-                From: "transform opacity-0 scale-95"
-                To: "transform opacity-100 scale-100"
-              Leaving: "transition ease-in duration-75"
-                From: "transform opacity-100 scale-100"
-                To: "transform opacity-0 scale-95"
-            -->
 						<div
 							class={`absolute right-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none ${profileOpen ? 'block' : 'hidden'}`}
 							role="menu"
@@ -227,7 +218,6 @@
 								</div>
 							</div>
 							<div class="my-2 w-full border-t border-gray-300"></div>
-							<!-- Active: "bg-gray-100 outline-none", Not Active: "" -->
 							{#each profileRoutes as route}
 								<a
 									href={route.path}
@@ -256,7 +246,7 @@
 									});
 									logout();
 								}}
-								class="m-1 block w-full rounded px-4 py-2 text-left text-base text-gray-700 hover:bg-gray-200"
+								class="m-1 block w-11/12 rounded px-4 py-2 text-left text-base text-gray-700 hover:bg-gray-200"
 								role="menuitem"
 								tabindex="-1"
 								id="logout"
@@ -278,7 +268,11 @@
 							container: 'nav-item'
 						});
 					}}
-					class="hover:bg-primary-300 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900"
+					class={`hover:bg-primary-300 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900 ${
+						$page.url.pathname.startsWith(route.path)
+							? 'bg-primary-200 text-primary-900'
+							: 'hover:bg-primary-300 text-gray-900 hover:text-gray-900'
+					}`}
 				>
 					{route.title}
 				</a>
@@ -363,7 +357,11 @@
 										container: 'nav-item'
 									});
 								}}
-								class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
+								class={`block rounded-md px-3 py-2 text-base font-medium  ${
+									$page.url.pathname.startsWith(route.path)
+										? 'bg-primary-200 text-primary-900'
+										: 'text-gray-900 hover:bg-gray-100 hover:text-gray-800'
+								}`}
 							>
 								{route.title}
 							</a>
