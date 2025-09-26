@@ -2,22 +2,17 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import type { Meeting } from '../../../app';
 	import { formatDistanceToNow } from 'date-fns';
+	import PremiumBadge from '../PremiumBadge.svelte';
+	import FeatureLocked from '../FeatureLocked.svelte';
+	import UnlockWithPremiumButton from '../Buttons/UnlockWithPremiumButton.svelte';
 
 	interface Props extends Meeting {
 		id: string;
 		type: string | 'interview' | 'review' | '1-1';
-		hideActions?: boolean;
 		disableActions?: boolean;
 	}
 
-	const {
-		id,
-		type = 'interview',
-		title,
-		time,
-		hideActions = false,
-		disableActions = false
-	}: Props = $props();
+	const { id, type = 'interview', title, time, disableActions = false }: Props = $props();
 
 	let eventTime = $derived.by(() => {
 		if (typeof time === 'string') {
@@ -87,7 +82,7 @@
 			</div>
 		</dl>
 	</div>
-	{#if !hideActions}
+	{#if !disableActions}
 		<div class="flex flex-col justify-end">
 			<a
 				href={`/prep/${id}`}
@@ -100,6 +95,10 @@
 					trackingStore.trackAction('Start Meeting', { component: 'UpcomingEventRow' })}
 				class="btn btn-text--secondary btn-small">Start</a
 			>
+		</div>
+	{:else}
+		<div class="flex flex-col justify-end gap-1">
+			<UnlockWithPremiumButton featureName="Prep and Start" size="sm" />
 		</div>
 	{/if}
 </li>

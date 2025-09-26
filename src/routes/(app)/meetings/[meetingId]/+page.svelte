@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
+	import UnlockWithPremiumButton from '$lib/Components/Buttons/UnlockWithPremiumButton.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
@@ -67,32 +69,12 @@
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if isUpcomingOrRecent(data.meeting?.time || new Date()) && useFeatureGate(1, data.user)}
-						<a
-							href={`/prep/${data.meetingID}`}
-							type="button"
-							class="btn btn-text--secondary"
-							onclick={() =>
-								trackingStore.trackAction('Prep Meeting', { component: 'Meeting Details Page' })}
-							>Prep for Meeting
-						</a>
-						<a
-							href={`/cheatsheet/${data.meetingID}`}
-							type="button"
-							class="btn btn--primary"
-							onclick={() => {
-								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
-							}}
-						>
-							Start Meeting
-						</a>
-					{/if}
 					{#if useFeatureGate(1, data.user)}
 						<a
 							href={`${PUBLIC_API_URL}/notes/meeting/${data.meetingID}/pdf`}
 							type="button"
 							download
-							class="btn btn--primary relative"
+							class="btn btn--secondary relative"
 							onclick={() => {
 								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
 							}}
@@ -100,6 +82,44 @@
 							<PremiumBadge />
 							Download Meeting Notes
 						</a>
+					{:else}
+						<div class="btn btn--secondary relative cursor-not-allowed opacity-25">
+							<PremiumBadge />
+							Download Meeting Notes
+						</div>
+					{/if}
+					{#if isUpcomingOrRecent(data.meeting?.time || new Date())}
+						{#if useFeatureGate(1, data.user)}
+							<a
+								href={`/prep/${data.meetingID}`}
+								type="button"
+								class="btn btn-text--secondary relative"
+								onclick={() =>
+									trackingStore.trackAction('Prep Meeting', { component: 'Meeting Details Page' })}
+								><PremiumBadge />
+								Prep for Meeting
+							</a>
+							<a
+								href={`/cheatsheet/${data.meetingID}`}
+								type="button"
+								class="btn btn--primary relative"
+								onclick={() => {
+									trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
+								}}
+							>
+								<PremiumBadge />
+								Start Meeting
+							</a>
+						{:else}
+							<div class="btn btn--secondary relative cursor-not-allowed opacity-25">
+								<PremiumBadge />
+								Prep for Meeting
+							</div>
+							<div class="btn btn--primary relative cursor-not-allowed opacity-25">
+								<PremiumBadge />
+								Start Meeting
+							</div>
+						{/if}
 					{/if}
 				</div>
 			</div>
@@ -153,8 +173,17 @@
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
 						{#if (data.highlights || []).length === 0}
-							<!-- TODO Fix Text -->
-							<InfoBlock title="Empty Highlights" description="The highlight list is empty" />
+							{#if useFeatureGate(1, data.user)}
+								<InfoBlock
+									title="Empty Highlights"
+									description="The highlight list is empty. Prepare for a meeting to add new highlights"
+								/>
+							{:else}
+								<FeatureBlock
+									title="Meeting Highlights"
+									description="Meeting highlights show when you prep for a meeting"
+								/>
+							{/if}
 						{/if}
 						{#each data.highlights || [] as highlight}
 							<li>

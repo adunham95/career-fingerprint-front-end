@@ -162,7 +162,7 @@
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#if ($upcomingMeetings.data || []).length > 0}
 					{#each $upcomingMeetings.data || [] as meeting}
-						<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(1, data.user)} />
+						<UpcomingEventRow {...meeting} disableActions={!useFeatureGate(1, data.user)} />
 					{/each}
 				{:else}
 					<InfoBlock

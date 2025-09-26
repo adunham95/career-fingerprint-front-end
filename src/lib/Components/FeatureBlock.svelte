@@ -9,7 +9,7 @@
 	const { title, description }: Props = $props();
 </script>
 
-<div class="rounded-md border border-amber-200 bg-amber-100 p-4">
+<div class="rounded-md border-3 border-amber-200 bg-amber-100 p-4">
 	<div class="flex">
 		<div class="shrink-0">
 			<svg

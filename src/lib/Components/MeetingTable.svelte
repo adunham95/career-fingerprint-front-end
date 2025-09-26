@@ -2,6 +2,7 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import type { Meeting } from '../../app';
 	import { format } from 'date-fns';
+	import InfoBlock from './InfoBlock.svelte';
 
 	interface Props {
 		meetings: Meeting[];
@@ -71,3 +72,11 @@
 		{/each}
 	</tbody>
 </table>
+{#if meetings.length === 0}
+	<div class="pt-2">
+		<InfoBlock
+			title="No Meetings"
+			description="You have no meetings. Clock 'Create New Meeting' to add a new meeting"
+		/>
+	</div>
+{/if}

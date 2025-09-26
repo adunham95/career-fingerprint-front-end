@@ -16,6 +16,7 @@
 	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
 	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
 	import { useMySkills, useUpdateSkillList } from '$lib/API/skill-list.js';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	const { data } = $props();
 
 	let updateResumeObject = useUpdateResumeObjectMutation();
@@ -187,6 +188,12 @@
 			</button>
 		{/snippet}
 		<div class="space-y-4">
+			{#if jobs.length === 0}
+				<InfoBlock
+					title="No Jobs"
+					description="No Jobs to show. Click Add New Job to add a new job"
+				/>
+			{/if}
 			{#each jobs || [] as job, idx}
 				<Card contentClassName="space-y-2 px-4 py-4 ">
 					<JobDetails bind:job={jobs[idx]} {idx} />
@@ -232,6 +239,12 @@
 			</button>
 		{/snippet}
 		<div class="space-y-4">
+			{#if education.length === 0}
+				<InfoBlock
+					title="No Education"
+					description="No Education to show. Click Add New Education to add a new education"
+				/>
+			{/if}
 			{#each education || [] as edu, idx}
 				<Card contentClassName="space-y-2 px-4 py-4">
 					<EducationDetails bind:education={education[idx]} {idx} />

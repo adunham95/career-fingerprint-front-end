@@ -2,12 +2,13 @@
 	interface Props {
 		title: string;
 		description: string;
+		className?: string;
 	}
 
-	const { title, description }: Props = $props();
+	const { title, description, className = '' }: Props = $props();
 </script>
 
-<div class="bg-info-100 border-info-200 rounded-md border-3 p-4">
+<div class={`bg-info-100 border-info-200 rounded-md border-3 p-4 ${className}`}>
 	<div class="flex">
 		<div class="shrink-0">
 			<svg

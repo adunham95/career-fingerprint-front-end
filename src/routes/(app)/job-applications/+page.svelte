@@ -10,6 +10,7 @@
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
@@ -135,6 +136,15 @@
 				New Job Application
 			</button>
 		</li>
+		{#if $applications.data?.length === 0}
+			<li>
+				<InfoBlock
+					title="No Job Applications"
+					description="Add a new job application to track "
+					className="h-full"
+				/>
+			</li>
+		{/if}
 		{#each $applications.data || [] as app, idx}
 			<li>
 				<a href={`/job-applications/${app.id}`}>
