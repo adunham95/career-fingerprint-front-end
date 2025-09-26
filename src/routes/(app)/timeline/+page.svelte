@@ -184,19 +184,14 @@
 	</div>
 
 	<div class="grid grid-cols-1 gap-1 md:grid-cols-2">
-		<ExpandedTimeline dates={$myAchievements.data || []} />
 		<!-- Uncomment to add edit achievement functionality -->
-		<!-- onActionClick={(a) => (selectedAchievement = a)} -->
-		<div>
-			{#if selectedAchievement}
-				<div class=" sticky top-0">
-					<NewAchievementForm id="updateAchievement" bind:achievement={selectedAchievement} />
-					<div class="flex justify-end">
-						<button form="updateAchievement" class="btn btn--primary"> Save </button>
-					</div>
-				</div>
-			{/if}
-		</div>
+		<ExpandedTimeline
+			dates={$myAchievements.data || []}
+			onActionClick={(a) => {
+				selectedAchievement = a;
+				isAchievementOpen = true;
+			}}
+		/>
 	</div>
 </PageContainer>
 
@@ -205,6 +200,16 @@
 	title="Add Achievement"
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
+	onClose={() => {
+		selectedAchievement = null;
+	}}
 >
-	<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+	<NewAchievementForm
+		id="newAchievement"
+		achievement={selectedAchievement}
+		onSuccess={() => {
+			isAchievementOpen = false;
+			selectedAchievement = null;
+		}}
+	/>
 </Drawer>

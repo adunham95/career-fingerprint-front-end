@@ -18,6 +18,7 @@
 		title: string;
 		subTitle?: string;
 		onSave?: () => void;
+		onClose?: () => void;
 		saveFormID?: string;
 	}
 
@@ -32,6 +33,7 @@
 		title,
 		subTitle,
 		onSave,
+		onClose,
 		saveFormID
 	}: Props = $props();
 
@@ -112,7 +114,10 @@
 						<h2 class="text-base font-semibold text-white" id="drawer-title">{title}</h2>
 						<div class="ml-3 flex h-7 items-center">
 							<button
-								onclick={() => (isOpen = false)}
+								onclick={() => {
+									isOpen = false;
+									onClose?.();
+								}}
 								type="button"
 								class="bg-secondary text-secondary-200 relative rounded-md hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-hidden"
 							>
@@ -147,6 +152,7 @@
 					type="button"
 					class="btn btn-text--error"
 					onclick={() => {
+						onClose?.();
 						isOpen = false;
 						trackingStore.trackAction('Close Drawer', { title });
 					}}>Cancel</button

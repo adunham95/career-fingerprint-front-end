@@ -75,9 +75,11 @@ interface Achievement {
 	myContribution: string;
 	description: string;
 	result: string;
-	jobPosition: JobPosition;
-	education: Education;
-	tags: { name: string; color: string }[];
+	jobPosition?: JobPosition;
+	jobPositionID?: string;
+	education?: Education;
+	educationID?: string;
+	tags?: { name: string; color: string }[];
 }
 
 interface Meeting {

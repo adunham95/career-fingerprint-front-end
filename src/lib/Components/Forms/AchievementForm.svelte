@@ -11,6 +11,9 @@
 		useUpdateAchievementMutation
 	} from '$lib/API/achievements';
 	import type { Achievement } from '../../../app';
+	import DateInputV2 from '../FormElements/DateInputV2.svelte';
+	import SplitDateInput from '../FormElements/SplitDateInput.svelte';
+	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
 
 	interface Props {
 		id: string;
@@ -19,7 +22,7 @@
 		updateOnChange?: boolean;
 	}
 
-	const { id, onSuccess = () => null, achievement = $bindable({}) }: Props = $props();
+	let { id, onSuccess = () => null, achievement = $bindable({}) }: Props = $props();
 
 	$inspect(achievement);
 
@@ -29,6 +32,9 @@
 	let jobPositionID = $state<string | null>(null);
 	let educationID = $state<string | null>(null);
 	let startDate = $state<string | null>(null);
+	let startMonth = $state<string>('');
+	let startDay = $state<string>('');
+	let startYear = $state<string>('');
 	let endDate = $state<string | null>(null);
 	let selectedCategory = $state('');
 	let error = $state<{ [key: string]: string }>({});
@@ -39,16 +45,32 @@
 	let newAchievement = useCreateAchievementMutation();
 	let updateAchievement = useUpdateAchievementMutation();
 
+	let lastAchievementId: string | undefined;
+
+	const parseDate = (dateStr: string | null | undefined): Date => {
+		if (!dateStr || dateStr === '') return new Date();
+		const parsed = new Date(dateStr);
+		return isNaN(parsed.getTime()) ? new Date() : parsed;
+	};
+
 	$effect(() => {
-		if (achievement) {
+		if (achievement && achievement?.id !== lastAchievementId) {
+			lastAchievementId = achievement?.id;
 			description = achievement.description || '';
 			myContribution = achievement.myContribution || '';
 			result = achievement.result || '';
-			jobPositionID = achievement.jobPosition?.id || null;
-			educationID = achievement.education?.id || null;
+			jobPositionID = achievement.jobPosition?.id || achievement.jobPositionID || null;
+			educationID = achievement.education?.id || achievement.educationID || null;
 			startDate = achievement.startDate || null;
 			endDate = achievement.endDate || null;
-			// selectedCategory = achievement.achievementTags?.[0] ?? '';
+
+			const initialStartDate: Date = parseDate(achievement.startDate);
+
+			startDay = initialStartDate.getDate().toString();
+			startMonth = initialStartDate.getMonth().toString();
+			startYear = initialStartDate.getFullYear().toString();
+
+			selectedCategory = achievement.tags?.[0]?.name ?? '';
 			error = {};
 		} else {
 			// if null, clear the form
@@ -88,8 +110,10 @@
 			jobPositionID,
 			educationID,
 			achievementTags: selectedCategory === '' ? [] : [selectedCategory],
-			startDate: startDate ? new Date(startDate).toISOString() : null,
-			endDate: endDate ? new Date(endDate).toISOString() : null
+			startDate: startMonth
+				? buildDateWithCurrentTime(startYear, startMonth, startDay).toISOString()
+				: null
+			// endDate: endDate ? new Date(endDate).toISOString() : null
 		};
 
 		try {
@@ -156,8 +180,16 @@
 			errorText={error?.educationID}
 		/>
 		<!-- TODO Figure out date details -->
-		<DateInput label="Start Date" id="ach-start" bind:value={startDate} showDate />
-		<DateInput label="End Date" id="ach-end" bind:value={endDate} showDate />
+		<SplitDateInput
+			label="Start Date"
+			id="ach-start"
+			bind:month={startMonth}
+			bind:day={startDay}
+			bind:year={startYear}
+			showDate
+		/>
+		<!-- showDate -->
+		<!-- <DateInput label="End Date" id="ach-end" bind:value={endDate} showDate /> -->
 		<AutocompleteTags label="Category" id="ach-category" bind:value={selectedCategory} />
 	</div>
 </form>
