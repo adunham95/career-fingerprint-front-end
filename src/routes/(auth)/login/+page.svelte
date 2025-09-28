@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
+	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
@@ -78,10 +79,9 @@
 	{/if}
 	<form onsubmit={(e) => login(e)} class="space-y-2">
 		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
-		<TextInput
+		<PasswordInput
 			id="password"
 			label="Password"
-			type="password"
 			bind:value={password}
 			autocomplete={'current-password webauthn'}
 		/>
