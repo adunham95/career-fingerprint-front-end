@@ -116,7 +116,7 @@
 				{#if showNotification}
 					<button
 						type="button"
-						class="bg-surface-200 relative shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+						class="bg-surface-200 focus:ring-accent relative shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-offset-2 focus:outline-none"
 					>
 						<span class="absolute -inset-1.5"></span>
 						<span class="sr-only">View notifications</span>
@@ -145,7 +145,7 @@
 							<button
 								type="button"
 								onclick={() => (profileOpen = !profileOpen)}
-								class="focus:ring-primary relative flex cursor-pointer rounded-full bg-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
+								class="focus:ring-accent relative flex cursor-pointer rounded-full bg-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
 								id="user-menu-button"
 								aria-expanded="false"
 								aria-haspopup="true"
@@ -270,7 +270,7 @@
 					}}
 					class={`hover:bg-primary-300 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900 ${
 						$page.url.pathname.startsWith(route.path)
-							? 'bg-primary-200 text-primary-900'
+							? 'bg-accent-200 text-accent-900'
 							: 'hover:bg-primary-300 text-gray-900 hover:text-gray-900'
 					}`}
 				>
