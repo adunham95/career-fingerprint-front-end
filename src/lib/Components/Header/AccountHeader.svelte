@@ -359,7 +359,7 @@
 								}}
 								class={`block rounded-md px-3 py-2 text-base font-medium  ${
 									$page.url.pathname.startsWith(route.path)
-										? 'bg-primary-200 text-primary-900'
+										? 'bg-accent-200 text-accent-900'
 										: 'text-gray-900 hover:bg-gray-100 hover:text-gray-800'
 								}`}
 							>
