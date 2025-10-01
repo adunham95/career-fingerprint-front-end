@@ -123,7 +123,7 @@
 									/>
 								</svg>
 
-								<p class="ml-2 text-base font-medium text-gray-500">
+								<p class="ml-2 text-start text-base font-medium text-gray-500">
 									{day.myContribution}
 								</p>
 							</div>
