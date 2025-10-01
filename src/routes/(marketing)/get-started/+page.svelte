@@ -28,6 +28,7 @@
 	let profile = $state({
 		lookingFor: '',
 		firstName: '',
+		lastName: '',
 		companyName: '',
 		title: '',
 		institution: '',
@@ -40,7 +41,7 @@
 	});
 
 	async function createAccount() {
-		if (!profile.email || !profile.firstName) {
+		if (!profile.email || !profile.firstName || !profile.password) {
 			toastStore.show({ message: 'Missing account elements', type: 'error' });
 			return;
 		}
@@ -146,6 +147,12 @@
 				label="First name"
 				placeholder="First Name"
 				bind:value={profile.firstName}
+			/>
+			<InlineTextInput
+				id="lastName-growing"
+				label="Last name"
+				placeholder="Last Name"
+				bind:value={profile.lastName}
 			/> and I work at <InlineTextInput
 				id="companyName-gowing"
 				label="Company Name"
@@ -170,6 +177,12 @@
 				label="First name"
 				placeholder="First Name"
 				bind:value={profile.firstName}
+			/>
+			<InlineTextInput
+				id="lastName-job"
+				label="Last name"
+				placeholder="Last Name"
+				bind:value={profile.lastName}
 			/> and I worked at <InlineTextInput
 				id="companyName-job"
 				label="Company Name"
@@ -199,8 +212,14 @@
 			Hello, my name is <InlineTextInput
 				id="firstName-student"
 				label="First name"
-				placeholder="Adrian"
+				placeholder="Last Name"
 				bind:value={profile.firstName}
+			/>
+			<InlineTextInput
+				id="lastName-student"
+				label="Last name"
+				placeholder="Last Name"
+				bind:value={profile.lastName}
 			/> and I've been studying <InlineTextInput
 				id="degree-student"
 				label="Degree"
