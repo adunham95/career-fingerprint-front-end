@@ -64,8 +64,11 @@
 				isLoading = false;
 			}
 		} catch (error) {
-			if (error?.message) {
-				errorMessage = error?.message;
+			if (error instanceof Error) {
+				errorMessage = error.message;
+			} else {
+				// fallback for non-Error throwables
+				errorMessage = String(error);
 			}
 			showError = true;
 			// toastStore.show({ message: 'Error logging in', type: 'error' });
