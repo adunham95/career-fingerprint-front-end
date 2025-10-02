@@ -24,7 +24,7 @@
 		<div class="pb-4">
 			<MeetingForm id="update-meeting" meetingID={data.meetingID} meeting={$meeting.data || {}} />
 			<div class="flex justify-end py-2">
-				<button class="btn btn--primary">Save</button>
+				<button type="submit" form="update-meeting" class="btn btn--primary">Save</button>
 			</div>
 		</div>
 	</div>

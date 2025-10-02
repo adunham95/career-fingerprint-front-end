@@ -38,7 +38,7 @@
 	const saveHighlightMutation = useCreateHighlightMutation(data.meetingID || '');
 	const updateHighlightMutation = useUpdateHighlightMutation(data.meetingID || '');
 
-	let meetingText = $state($meeting.data?.agenda || $meeting.data?.jobApp?.jobDescription);
+	let meetingText = $state($meeting.data?.agenda || $meeting.data?.jobApp?.jobDescription || '');
 
 	function handleMouseUp(event: MouseEvent): void {
 		const target = event.target as HTMLElement | null;
@@ -132,7 +132,7 @@
 				{:else}
 					<Card>
 						<div class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
-							{#if $meeting.data?.jobApp?.jobDescription}
+							{#if meetingText !== ''}
 								<p id="job-description-area">
 									{meetingText}
 								</p>
@@ -158,7 +158,7 @@
 				{:else}
 					<Card>
 						<div class=" max-h-[300px] overflow-y-auto whitespace-pre-wrap">
-							{#if $meeting.data?.agenda}
+							{#if meetingText !== ''}
 								<p id="job-description-area">
 									{meetingText}
 								</p>
