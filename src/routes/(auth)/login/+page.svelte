@@ -15,6 +15,7 @@
 	let password = $state('');
 	let isLoading = $state(false);
 	let showError = $state(false);
+	let errorMessage = $state('Invalid login credentials. Please try again.');
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Login');
@@ -55,11 +56,17 @@
 			} else {
 				const data = await res.json();
 				console.log(res, data);
+				if (data.message) {
+					errorMessage = data.message;
+				}
 				showError = true;
 				// toastStore.show({ message: 'Error logging in', type: 'error' });
 				isLoading = false;
 			}
 		} catch (error) {
+			if (error?.message) {
+				errorMessage = error?.message;
+			}
 			showError = true;
 			// toastStore.show({ message: 'Error logging in', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
@@ -75,7 +82,7 @@
 		>
 	</p>
 	{#if showError}
-		<p class="text-error-600 text-sm">Invalid login credentials. Please try again.</p>
+		<p class="text-error-600 text-sm">{errorMessage}</p>
 	{/if}
 	<form onsubmit={(e) => login(e)} class="space-y-2">
 		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
