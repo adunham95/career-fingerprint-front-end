@@ -96,7 +96,7 @@
 				tabs={[
 					{ id: 'details', label: 'Job Details' },
 					{ id: 'resume', label: 'My Fingerprint' },
-					{ id: 'notes', label: 'Prior Notes' },
+					{ id: 'notes', label: 'Notes & Questions' },
 					{ id: 'highlights', label: 'Highlights' }
 				]}
 			/>
@@ -113,9 +113,27 @@
 								<p class="mb-2 border-b border-gray-300 pb-2">{job.description}</p>
 								{#if job?.achievements?.length > 0}
 									<Label id="" label="My Achievements" />
-									<ul class="list-disk list-inside">
+									<ul class="list-disk list-inside space-y-1 divide-y divide-gray-200">
 										{#each job.achievements as ach}
-											<li class="ml-5">{ach.myContribution}</li>
+											<li class="ml-5">
+												<div>
+													{#if ach.description}
+														<p>
+															Background: {ach.description}
+														</p>
+													{/if}
+													{#if ach.myContribution}
+														<p>
+															My Contribution: {ach.myContribution}
+														</p>
+													{/if}
+													{#if ach.result}
+														<p>
+															Result: {ach.result}
+														</p>
+													{/if}
+												</div>
+											</li>
 										{/each}
 									</ul>
 								{/if}
@@ -131,11 +149,29 @@
 								<p>{edu.description}</p>
 								{#if edu?.achievements?.length > 0}
 									<Label id="" label="My Achievements" />
-									<ol class="list-disk list-inside">
+									<ul class="list-disk list-inside space-y-1 divide-y divide-gray-200">
 										{#each edu.achievements as ach}
-											<li>{ach.myContribution}</li>
+											<li class="ml-5">
+												<div>
+													{#if ach.description}
+														<p>
+															Background: {ach.description}
+														</p>
+													{/if}
+													{#if ach.myContribution}
+														<p>
+															My Contribution: {ach.myContribution}
+														</p>
+													{/if}
+													{#if ach.result}
+														<p>
+															Result: {ach.result}
+														</p>
+													{/if}
+												</div>
+											</li>
 										{/each}
-									</ol>
+									</ul>
 								{/if}
 							</Card>
 						{/each}
@@ -159,6 +195,14 @@
 							<li>
 								<Card size="sm">
 									<p>{note.note}</p>
+								</Card>
+							</li>
+						{/each}
+
+						{#each data.questions || [] as answer}
+							<li>
+								<Card size="sm" headline={answer.question.question}>
+									<p>{answer.answer}</p>
 								</Card>
 							</li>
 						{/each}
