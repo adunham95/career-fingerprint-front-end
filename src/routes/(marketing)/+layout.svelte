@@ -3,6 +3,21 @@
 	import { queryClient } from '$lib/API/queryClient.js';
 	let { children } = $props();
 	let mobileNabOpen = $state(false);
+
+	import { onMount } from 'svelte';
+	import { PUBLIC_GTAG } from '$env/static/public';
+
+	onMount(async () => {
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+		gtag('config', PUBLIC_GTAG);
+		var s = document.createElement('script');
+		s.src = `https://www.googletagmanager.com/gtm.js?id=${PUBLIC_GTAG}`;
+		document.head.append(s);
+	});
 </script>
 
 <QueryClientProvider client={queryClient}>

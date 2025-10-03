@@ -53,6 +53,10 @@
 				type: 'success',
 				message: `User saved`
 			});
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({
+				event: 'sign_up_success'
+			});
 			goto('/dashboard');
 		} catch (error) {
 			toastStore.show({
