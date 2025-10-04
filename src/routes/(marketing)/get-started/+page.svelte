@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { PUBLIC_GTAG } from '$env/static/public';
 	import { useOrg } from '$lib/API/org';
 	import { useRegisterUserMutation } from '$lib/API/user';
 	import InlineTextInput from '$lib/Components/FormElements/InlineTextInput.svelte';
@@ -40,6 +41,25 @@
 		achievement: ''
 	});
 
+	// Define the conversion function
+	function gtag_report_conversion(url?: string) {
+		const callback = () => {
+			if (url) window.location.href = url;
+		};
+
+		if (typeof window.gtag === 'function') {
+			window.gtag('event', 'conversion', {
+				send_to: `${PUBLIC_GTAG}/94kXCPz816YbEJej6c5B`,
+				value: 1.0,
+				currency: 'USD',
+				event_callback: callback
+			});
+		} else {
+			console.warn('gtag not found');
+			callback(); // fallback
+		}
+	}
+
 	async function createAccount() {
 		if (!profile.email || !profile.firstName || !profile.password) {
 			toastStore.show({ message: 'Missing account elements', type: 'error' });
@@ -57,6 +77,7 @@
 			window.dataLayer.push({
 				event: 'sign_up_success'
 			});
+			gtag_report_conversion();
 			goto('/dashboard');
 		} catch (error) {
 			toastStore.show({
@@ -66,6 +87,20 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	{#if PUBLIC_GTAG}
+		<script async src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GTAG}`}></script>
+		{@html `
+			<script>
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', '${PUBLIC_GTAG}');
+			</script>
+		`}
+	{/if}
+</svelte:head>
 
 <div class="mx-auto max-w-4xl px-3 py-3">
 	<!-- Step 1 -->
