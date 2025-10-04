@@ -96,8 +96,9 @@
 				tabs={[
 					{ id: 'details', label: 'Job Details' },
 					{ id: 'resume', label: 'My Fingerprint' },
-					{ id: 'notes', label: 'Notes & Questions' },
-					{ id: 'highlights', label: 'Highlights' }
+					{ id: 'notes', label: 'Notes' },
+					{ id: 'highlights', label: 'Highlights' },
+					{ id: 'questions', label: 'Questions' }
 				]}
 			/>
 			<div class="overflow-y-auto px-1 py-1 md:max-h-[600px]">
@@ -198,6 +199,23 @@
 								</Card>
 							</li>
 						{/each}
+
+						{#each data.questions || [] as answer}
+							<li>
+								<Card size="sm" headline={answer.question.question}>
+									<p>{answer.answer}</p>
+								</Card>
+							</li>
+						{/each}
+					</ul>
+				{:else if current === 'questions'}
+					<ul class="space-y-2">
+						{#if (data.questions || []).length === 0}
+							<InfoBlock
+								title="No Prep Questions"
+								description="Your prepare questions will show up here"
+							/>
+						{/if}
 
 						{#each data.questions || [] as answer}
 							<li>
