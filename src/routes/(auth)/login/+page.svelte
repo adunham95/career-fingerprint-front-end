@@ -80,7 +80,7 @@
 
 <Card headline="Sign in" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<p>
-		Not a member? <a href="/get-started" class=" text-primary hover:text-primary-800"
+		Not a member? <a href="/register" class=" text-primary hover:text-primary-800"
 			>Create your account</a
 		>
 	</p>

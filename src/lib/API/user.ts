@@ -31,17 +31,18 @@ export interface RegisteredUserData {
 }
 
 export async function registerUser(newProfile: {
-	lookingFor: string;
+	lookingFor?: string;
 	firstName: string;
-	companyName: string;
-	title: string;
-	institution: string;
-	degree: string;
-	startDate: string;
-	endDate: string;
+	lastName?: string;
+	companyName?: string;
+	title?: string;
+	institution?: string;
+	degree?: string;
+	startDate?: string;
+	endDate?: string;
 	email: string;
 	password: string;
-	achievement: string;
+	achievement?: string;
 	orgID?: string;
 	timezone?: string;
 }): Promise<RegisteredUserData> {

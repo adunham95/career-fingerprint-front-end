@@ -185,6 +185,7 @@
 				id="firstName-growing"
 				label="First name"
 				placeholder="First Name"
+				required
 				bind:value={profile.firstName}
 			/>
 			<InlineTextInput
@@ -216,6 +217,7 @@
 				label="First name"
 				placeholder="First Name"
 				bind:value={profile.firstName}
+				required
 			/>
 			<InlineTextInput
 				id="lastName-job"
@@ -251,7 +253,8 @@
 			Hello, my name is <InlineTextInput
 				id="firstName-student"
 				label="First name"
-				placeholder="Last Name"
+				placeholder="First Name"
+				required
 				bind:value={profile.firstName}
 			/>
 			<InlineTextInput
@@ -331,10 +334,12 @@
 				type="email"
 				bind:value={profile.email}
 				autocomplete="email"
+				required
 			/>
 			<TextInput
 				id="password"
 				label="Password"
+				required
 				bind:value={profile.password}
 				autocomplete="new-password"
 			/>
@@ -346,7 +351,17 @@
 				disabled={$registerUser.isPending}
 				onclick={() => {
 					trackingStore.trackAction('Next Step Click', {
-						step: 'Create Account'
+						step: 'Create Account',
+						currentSituation: profile.lookingFor,
+						firstNameFilledOut: profile.firstName !== '',
+						companyFilledOut: profile.companyName !== '',
+						titleFilledOut: profile.title !== '',
+						startDateFilledOut: profile.startDate !== '',
+						endDateFilledOut: profile.endDate !== '',
+						degreeFilledOut: profile.degree !== '',
+						institutionFilledOut: profile.institution !== '',
+						emailFilledOut: profile.email !== '',
+						passwordFilledOut: profile.password !== ''
 					});
 				}}
 			>

@@ -83,7 +83,7 @@
 			<div class="hidden lg:flex lg:gap-x-12"></div>
 			<div class="hidden items-center md:flex md:flex-1 md:flex-row md:justify-end">
 				<a
-					href="https://careerfingerprint.app/get-started"
+					href="https://careerfingerprint.app/register"
 					class="mr-2 text-sm/6 font-semibold text-gray-900">Get started</a
 				>
 				<div class=" h-[1.5rem] w-0.5 bg-gray-900"></div>
@@ -152,7 +152,7 @@
 						</div>
 						<div class="mt-3 space-y-1 px-2">
 							<a
-								href="https://careerfingerprint.app/get-started"
+								href="https://careerfingerprint.app/register"
 								onclick={() => (mobileNabOpen = !mobileNabOpen)}
 								class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
 							>

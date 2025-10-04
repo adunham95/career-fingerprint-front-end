@@ -7,6 +7,7 @@
 		placeholder?: string;
 		width?: number;
 		disabled?: boolean;
+		required?: boolean;
 		onInput?: () => void;
 	}
 
@@ -17,6 +18,7 @@
 		value = $bindable(''),
 		placeholder,
 		width = 200,
+		required = false,
 		onInput = () => null
 	}: Props = $props();
 </script>
@@ -31,6 +33,7 @@
 			class="peer block w-full border-0 bg-gray-50 px-3 py-1.5 text-gray-900 placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
 			{placeholder}
 			bind:value
+			{required}
 			oninput={onInput}
 		/>
 		<div
