@@ -7,6 +7,19 @@
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { goto } from '$app/navigation';
+	import PriceBox from '$lib/Components/PriceBox.svelte';
+	import { useGetPlanByID } from '$lib/API/subscription';
+	import { PUBLIC_DEFAULT_SUBSCRIPTION_KEY } from '$env/static/public';
+	import { useUpdateUserMutation } from '$lib/API/user';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import { resumeObjectTypeMap, useAddResumeObjectMutation } from '$lib/API/resume.js';
+	import type { Education, JobPosition } from '../../../app.js';
+
+	const premiumPlan = useGetPlanByID(PUBLIC_DEFAULT_SUBSCRIPTION_KEY);
+	let addResumeObject = useAddResumeObjectMutation();
+	const updateUserMutation = useUpdateUserMutation();
+
+	const { data } = $props();
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Get Started');
@@ -18,7 +31,7 @@
 	}
 
 	let profile = $state({
-		lookingFor: '',
+		lookingFor: data.user.lookingFor || '',
 		companyName: '',
 		title: '',
 		institution: '',
@@ -33,34 +46,67 @@
 	let steps = [
 		{ title: 'Situation', key: 'situation' },
 		{ title: 'First Position', key: 'position' },
-		{ title: 'First Achievement', key: 'achievement' }
+		{ title: 'First Achievement', key: 'achievement' },
+		{ title: 'Start Free Trial', key: 'trial' }
 	];
 
 	let currentStep = $state('situation');
 
 	$inspect(steps.findIndex((s) => s.key === currentStep));
 
-	function goToNextStep(currentStep: string) {}
-
 	function setCurrentStep(stepKey: string) {
 		currentStep = stepKey;
 		scrollToView(stepKey);
 	}
 
-	function updateUser() {
-		completedSteps.push('situation');
-		setCurrentStep('position');
+	async function updateUserStatus() {
+		try {
+			await $updateUserMutation.mutateAsync({
+				userID: data.user.id,
+				userData: { lookingFor: profile.lookingFor }
+			});
+			completedSteps.push('situation');
+			setCurrentStep('position');
+		} catch (error) {
+			toastStore.show({ type: 'error', message: 'Could Not Update User' });
+		}
 	}
 
 	async function addNewResumeObject() {
-		completedSteps.push('position');
-		setCurrentStep('achievement');
+		try {
+			let type: keyof typeof resumeObjectTypeMap = 'job-positions';
+			let item = undefined;
+			if (profile.companyName) {
+				type = 'job-positions';
+				item = {
+					name: profile.title,
+					company: profile.companyName,
+					startDate: profile.startDate,
+					endDate: profile.endDate
+				} as Partial<JobPosition>;
+			} else if (profile.institution) {
+				type = 'education';
+				item = {
+					institution: profile.institution,
+					degree: profile.degree,
+					startDate: profile.startDate,
+					endDate: profile.endDate
+				} as Partial<Education>;
+			}
+			await $addResumeObject.mutateAsync({ type, item });
+			completedSteps.push('position');
+			setCurrentStep('achievement');
+		} catch (error) {
+			toastStore.show({ type: 'error', message: 'Could Not Add Item' });
+		}
 	}
 
 	async function addAchievement() {
 		completedSteps.push('achievement');
 		goto('/dashboard');
 	}
+
+	$inspect($premiumPlan.data);
 </script>
 
 <nav aria-label="Progress" class="mt-2 flex items-center justify-center lg:hidden">
@@ -143,7 +189,7 @@
 			class="flex min-h-screen flex-col items-center justify-center"
 			onsubmit={(e) => {
 				e.preventDefault();
-				updateUser();
+				updateUserStatus();
 			}}
 		>
 			<Card>
@@ -165,107 +211,134 @@
 				{/snippet}
 			</Card>
 		</form>
-		<div id="position" class="flex min-h-screen flex-col items-center justify-center">
-			<Card>
-				<h3 class="font-title pb-4 text-lg">Introduce Yourself</h3>
-				<div class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
-					I work at <InlineTextInput
-						id="companyName-gowing"
-						label="Company Name"
-						placeholder="Company"
-						bind:value={profile.companyName}
-					/> as <InlineTextInput
-						id="jobTitle-gowing"
-						label="Job Title"
-						placeholder="Job Title"
-						bind:value={profile.title}
-					/> since <InlineTextInput
-						id="start-date-growing"
-						label="Month"
-						bind:value={profile.startDate}
-						type="date"
-						width={130}
-					/>
-				</div>
-				<div class={profile.lookingFor === 'job' ? 'block' : 'hidden'}>
-					I worked at <InlineTextInput
-						id="companyName-job"
-						label="Company Name"
-						placeholder="Company"
-						bind:value={profile.companyName}
-					/> as <InlineTextInput
-						id="title-job"
-						label="Job Title"
-						placeholder="Job"
-						bind:value={profile.title}
-					/> from <InlineTextInput
-						id="start-job"
-						label="Starting Date"
-						bind:value={profile.startDate}
-						type="date"
-						width={130}
-					/> to
-					<InlineTextInput
-						id="end-job"
-						label="Ending Date"
-						bind:value={profile.endDate}
-						type="date"
-						width={130}
-					/>
-				</div>
-				<div class={profile.lookingFor === 'student' ? 'block' : 'hidden'}>
-					I've been studying <InlineTextInput
-						id="degree-student"
-						label="Degree"
-						placeholder="Business Administration"
-						bind:value={profile.degree}
-					/> at <InlineTextInput
-						id="schoolName-student"
-						label="School Name"
-						placeholder="Harvard"
-						bind:value={profile.institution}
-					/> since <InlineTextInput
-						id="start-student"
-						label="Starting Date"
-						bind:value={profile.startDate}
-						type="date"
-						width={130}
-					/>
-				</div>
-				{#snippet actions()}
-					<button class="btn btn--primary" type="submit">Continue</button>
-				{/snippet}
-			</Card>
-		</div>
-		<div id="achievement" class="flex min-h-screen flex-col items-center justify-center">
-			<Card>
-				<h3 class="font-title pb-4 text-lg">
-					Tell us one thing you’re proud of from your time at {profile.institution ||
-						profile.companyName}.
-				</h3>
-				<TextArea
-					className="w-full max-w-2xl"
-					id="tellus"
-					placeholder="E.g., Led a team project, built a new system, mentored a junior, etc."
-					bind:value={profile.achievement}
+
+		<form
+			id="position"
+			class="flex min-h-screen flex-col items-center justify-center"
+			onsubmit={(e) => {
+				e.preventDefault();
+				addNewResumeObject();
+			}}
+		>
+			{#if profile.lookingFor === ''}
+				<InfoBlock
+					title="Missing Details"
+					description="You have not selected a current situation please fill that out before continuing"
 				/>
-				{#snippet actions()}
-					<button class="btn btn--primary" type="submit">Continue</button>
-				{/snippet}
-			</Card>
+			{:else}
+				<Card>
+					<h3 class="font-title pb-4 text-lg">Introduce Yourself</h3>
+					<div class={profile.lookingFor === 'growing' ? 'block' : 'hidden'}>
+						I work at <InlineTextInput
+							id="companyName-gowing"
+							label="Company Name"
+							placeholder="Company"
+							bind:value={profile.companyName}
+						/> as <InlineTextInput
+							id="jobTitle-gowing"
+							label="Job Title"
+							placeholder="Job Title"
+							bind:value={profile.title}
+						/> since <InlineTextInput
+							id="start-date-growing"
+							label="Month"
+							bind:value={profile.startDate}
+							type="date"
+							width={130}
+						/>
+					</div>
+					<div class={profile.lookingFor === 'job' ? 'block' : 'hidden'}>
+						I worked at <InlineTextInput
+							id="companyName-job"
+							label="Company Name"
+							placeholder="Company"
+							bind:value={profile.companyName}
+						/> as <InlineTextInput
+							id="title-job"
+							label="Job Title"
+							placeholder="Job"
+							bind:value={profile.title}
+						/> from <InlineTextInput
+							id="start-job"
+							label="Starting Date"
+							bind:value={profile.startDate}
+							type="date"
+							width={130}
+						/> to
+						<InlineTextInput
+							id="end-job"
+							label="Ending Date"
+							bind:value={profile.endDate}
+							type="date"
+							width={130}
+						/>
+					</div>
+					<div class={profile.lookingFor === 'student' ? 'block' : 'hidden'}>
+						I've been studying <InlineTextInput
+							id="degree-student"
+							label="Degree"
+							placeholder="Business Administration"
+							bind:value={profile.degree}
+						/> at <InlineTextInput
+							id="schoolName-student"
+							label="School Name"
+							placeholder="Harvard"
+							bind:value={profile.institution}
+						/> since <InlineTextInput
+							id="start-student"
+							label="Starting Date"
+							bind:value={profile.startDate}
+							type="date"
+							width={130}
+						/>
+					</div>
+					{#snippet actions()}
+						<button class="btn btn--primary" type="submit">Continue</button>
+					{/snippet}
+				</Card>
+			{/if}
+		</form>
+
+		<div id="achievement" class="flex min-h-screen flex-col items-center justify-center">
+			{#if profile.institution === '' && profile.companyName === ''}
+				<InfoBlock
+					title="Missing Details"
+					description="Please add a current job or current eduction to continue"
+				/>
+			{:else}
+				<Card>
+					<h3 class="font-title pb-4 text-lg">
+						Tell us one thing you’re proud of from your time at {profile.institution ||
+							profile.companyName}.
+					</h3>
+					<TextArea
+						className="w-full max-w-2xl"
+						id="tellus"
+						placeholder="E.g., Led a team project, built a new system, mentored a junior, etc."
+						bind:value={profile.achievement}
+					/>
+					{#snippet actions()}
+						<button class="btn btn--primary" type="submit">Continue</button>
+					{/snippet}
+				</Card>
+			{/if}
 		</div>
 
-		<div id="finish" class="flex min-h-screen flex-col items-center justify-center">
-			<Card>
-				<h3 class="font-title pb-4 text-lg">
-					Tell us one thing you’re proud of from your time at {profile.institution ||
-						profile.companyName}.
-				</h3>
-
-				{#snippet actions()}
-					<button class="btn btn--primary" type="submit">Go To My Dashboard</button>
-				{/snippet}
-			</Card>
+		<div id="trial" class="flex min-h-screen flex-col items-center justify-center">
+			{#if $premiumPlan.data && !data.user.redeemedFreeTrial && profile.achievement !== ''}
+				<PriceBox
+					name={$premiumPlan.data.name}
+					description={$premiumPlan.data.description || ''}
+					featureList={$premiumPlan.data.featureList}
+					priceCents={$premiumPlan.data.priceCents}
+					startFreeTrial={() => null}
+				/>
+			{:else}
+				<InfoBlock
+					title="Missing Details or Already Redeemed"
+					description="Either you have not filled out all the getting started information or you have already redeemed a free trial on this account"
+				/>
+			{/if}
 		</div>
 	</main>
 </div>

@@ -73,6 +73,36 @@ export async function registerUser(newProfile: {
 	}
 }
 
+export async function updateUser({
+	userID,
+	userData
+}: {
+	userID: number;
+	userData: Partial<CurrentUser>;
+}) {
+	const url = `${PUBLIC_API_URL}/users/${userID}`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(userData)
+		});
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to update user: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to update user`);
+	}
+}
+
 export async function deleteUser(): Promise<{ success: boolean } | null> {
 	const url = `${PUBLIC_API_URL}/users`;
 
@@ -237,6 +267,16 @@ export const userKeys = {
 export const useDeleteUserMutation = () => {
 	return createMutation({
 		mutationFn: deleteUser,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to delete user:', error);
+		}
+	});
+};
+
+export const useUpdateUserMutation = () => {
+	return createMutation({
+		mutationFn: updateUser,
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to delete user:', error);

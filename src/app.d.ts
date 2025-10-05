@@ -153,6 +153,7 @@ interface CurrentUser {
 	emailVerified: boolean;
 	orgs: Organization[];
 	subscription: SubscriptionPlan;
+	redeemedFreeTrial: boolean;
 }
 
 interface User {

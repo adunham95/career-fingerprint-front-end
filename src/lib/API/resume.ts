@@ -113,6 +113,11 @@ interface ResumeObject {
 	item: JobPositionUpdate | EducationUpdate;
 }
 
+interface NewResumeObject {
+	type: keyof typeof resumeObjectTypeMap;
+	item?: Partial<JobPosition | Education>;
+}
+
 export async function updateResumeObject({
 	type,
 	item,
@@ -143,10 +148,9 @@ export async function updateResumeObject({
 }
 
 export async function addResumeObject({
-	type
-}: {
-	type: keyof typeof resumeObjectTypeMap;
-}): Promise<JobPosition | Education | null> {
+	type,
+	item
+}: NewResumeObject): Promise<JobPosition | Education | null> {
 	const url = `${PUBLIC_API_URL}/${type}`;
 
 	try {
@@ -155,7 +159,8 @@ export async function addResumeObject({
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json' // Set content type to JSON
-			}
+			},
+			body: JSON.stringify(item)
 		});
 
 		if (res.ok) {
