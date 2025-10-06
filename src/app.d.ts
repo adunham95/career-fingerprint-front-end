@@ -160,6 +160,7 @@ interface CurrentUser {
 	orgs: Organization[];
 	subscription: SubscriptionPlan;
 	redeemedFreeTrial: boolean;
+	userType: string;
 }
 
 interface User {
