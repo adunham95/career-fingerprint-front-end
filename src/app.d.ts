@@ -82,6 +82,12 @@ interface Achievement {
 	tags?: { name: string; color: string }[];
 }
 
+interface AchievementTag {
+	id?: string;
+	name: string;
+	color: string;
+}
+
 interface Meeting {
 	id: string;
 	time: Date | string | null;
@@ -232,5 +238,6 @@ export {
 	Resume,
 	SkillData,
 	User,
-	PrepAnswer
+	PrepAnswer,
+	AchievementTag
 };

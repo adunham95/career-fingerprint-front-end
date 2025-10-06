@@ -47,7 +47,7 @@
 						>
 							<div>
 								{#if day.startDate}
-									<p class="text-lg text-gray-800">
+									<p class="text-left text-lg text-gray-800">
 										{formatDate(day.startDate, 'PPP')}
 									</p>
 								{/if}
@@ -66,7 +66,7 @@
 											icon={schoolBuildingIcon}
 										/>
 									{/if}
-									{#each day.tags as tag}
+									{#each day.tags || [] as tag}
 										<TimelineCategory color={tag.color} text={tag.name} />
 									{/each}
 								</div>

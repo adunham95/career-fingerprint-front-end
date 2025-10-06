@@ -1,5 +1,5 @@
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
-import type { Achievement } from '../../app';
+import type { Achievement, AchievementTag } from '../../app';
 import { createApiClient } from './apiClient';
 
 interface NewAchievement {
@@ -69,7 +69,7 @@ export async function getAutocompleteAchievementTags(query: string) {
 	}
 }
 
-export async function getAchievementTags() {
+export async function getAchievementTags(): Promise<AchievementTag[]> {
 	try {
 		const api = createApiClient();
 		return api.get('/achievement-tags');
@@ -82,7 +82,8 @@ export async function getAchievementTags() {
 export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
-	educationID: string | null = null
+	educationID: string | null = null,
+	tagID: string | null = null
 ): Promise<Achievement[]> {
 	const api = createApiClient();
 
@@ -100,6 +101,10 @@ export async function getAchievements(
 		queries['educationID'] = educationID;
 	}
 
+	if (tagID) {
+		queries['tagID'] = tagID;
+	}
+
 	return api.get('/achievement/my', queries);
 }
 
@@ -110,8 +115,9 @@ export const achievementKeys = {
 	allWithOptions: (
 		includedDetails: boolean | null = false,
 		jobPositionID: string | null = null,
-		educationID: string | null = null
-	) => [...achievementKeys.all, includedDetails, jobPositionID, educationID] as const
+		educationID: string | null = null,
+		tagID: string | null = null
+	) => [...achievementKeys.all, includedDetails, jobPositionID, educationID, tagID] as const
 };
 
 export const useCreateAchievementMutation = () => {
@@ -177,14 +183,20 @@ export const useAchievementTags = () => {
 };
 
 export const useMyAchievements = (
+	initialData: Achievement[] = [],
 	includeLinked: null | boolean = null,
 	jobPositionID: () => string | null,
 	educationID: () => string | null,
-	initialData: Achievement[] = []
+	tagID: () => string | null
 ) => {
 	return createQuery({
-		queryKey: achievementKeys.allWithOptions(includeLinked, jobPositionID(), educationID()),
-		queryFn: () => getAchievements(includeLinked, jobPositionID(), educationID()),
+		queryKey: achievementKeys.allWithOptions(
+			includeLinked,
+			jobPositionID(),
+			educationID(),
+			tagID()
+		),
+		queryFn: () => getAchievements(includeLinked, jobPositionID(), educationID(), tagID()),
 		initialData
 	});
 };

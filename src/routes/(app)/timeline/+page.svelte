@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useMyAchievements } from '$lib/API/achievements.js';
+	import { useAchievementTags, useMyAchievements } from '$lib/API/achievements.js';
 	import { useMyEducationQuery } from '$lib/API/education.js';
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions.js';
 	import ExpandedTimeline from '$lib/Components/Calender/ExpandedTimeline.svelte';
@@ -14,19 +14,22 @@
 
 	let jobPositionID = $state<string | null>(null);
 	let educationID = $state<string | null>(null);
+	let selectedTag = $state<string | null>(null);
 
 	let selectedAchievement = $state<Achievement | null>(null);
 
 	let myAchievements = useMyAchievements(
+		data.achievements,
 		true,
 		() => jobPositionID,
 		() => educationID,
-		data.achievements
+		() => selectedTag
 	);
 	let myJobPositions = useMyJobPositionsQuery();
 	let myEducation = useMyEducationQuery();
+	let myAchTags = useAchievementTags();
 
-	console.log({ data });
+	console.log({ data, tags: $myAchTags.data });
 
 	let isAchievementOpen = $state(false);
 
@@ -71,6 +74,56 @@
 				<button
 					class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
 				>
+					{#if selectedTag !== null}
+						{@const category = ($myAchTags.data || []).find((j) => j.id == selectedTag)}
+						{category?.name || 'Category'}
+					{:else}
+						Select A Category
+					{/if}
+					<svg
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						data-slot="icon"
+						aria-hidden="true"
+						class="-mr-1 ml-1 size-5 shrink-0 text-gray-400 group-hover:text-gray-500"
+					>
+						<path
+							d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+							clip-rule="evenodd"
+							fill-rule="evenodd"
+						/>
+					</svg>
+				</button>
+
+				<el-menu
+					anchor="bottom start"
+					popover
+					class="w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+				>
+					<div class="py-1">
+						{#each $myAchTags.data || [] as ach}
+							<button
+								onclick={() => {
+									selectedTag = ach.id || null;
+									educationID = null;
+									selectedAchievement = null;
+									$myAchievements.refetch();
+								}}
+								class={`block w-full px-4 py-2 text-start text-base font-medium text-gray-900 focus:bg-gray-100 focus:outline-hidden ${selectedTag === ach.id ? 'bg-primary ' : ''} `}
+							>
+								<p>
+									{ach.name}
+								</p>
+							</button>
+						{/each}
+					</div>
+				</el-menu>
+			</el-dropdown>
+
+			<el-dropdown class="relative ml-2 inline-block text-left">
+				<button
+					class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+				>
 					{#if jobPositionID !== null}
 						{@const job = ($myJobPositions.data || []).find((j) => j.id == jobPositionID)}
 						{job?.name || 'Job'} || {job?.company}
@@ -101,6 +154,7 @@
 						{#each $myJobPositions.data || [] as jobPosition}
 							<button
 								onclick={() => {
+									selectedTag = null;
 									jobPositionID = jobPosition.id;
 									educationID = null;
 									$myAchievements.refetch();
@@ -154,6 +208,7 @@
 							<button
 								onclick={() => {
 									jobPositionID = null;
+									selectedTag = null;
 									educationID = edu.id;
 									$myAchievements.refetch();
 								}}
@@ -176,6 +231,7 @@
 				onclick={() => {
 					jobPositionID = null;
 					educationID = null;
+					selectedTag = null;
 					$myAchievements.refetch();
 				}}
 				>Reset
