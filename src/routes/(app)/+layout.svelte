@@ -7,6 +7,22 @@
 	let { children, data } = $props();
 
 	console.log({ data });
+
+	const profileRoutes = $derived(() => {
+		if (data.user.userType === 'platform-admin') {
+			return [
+				{ title: 'Account', path: '/settings/profile' },
+				{ title: 'Membership', path: '/settings/membership' },
+				{ title: 'Referrals', path: '/settings/referral' },
+				{ title: 'Admin Panel', path: '/admin' }
+			];
+		}
+		return [
+			{ title: 'Account', path: '/settings/profile' },
+			{ title: 'Membership', path: '/settings/membership' },
+			{ title: 'Referrals', path: '/settings/referral' }
+		];
+	});
 </script>
 
 <QueryClientProvider client={queryClient}>
@@ -25,11 +41,7 @@
 		lastName={data.user.lastName}
 		firstName={data.user.firstName}
 		profileImageURL={data.user.profileImage}
-		profileRoutes={[
-			{ title: 'Account', path: '/settings/profile' },
-			{ title: 'Membership', path: '/settings/membership' },
-			{ title: 'Referrals', path: '/settings/referral' }
-		]}
+		profileRoutes={profileRoutes()}
 	/>
 	<main class="pb-4">
 		{@render children()}
