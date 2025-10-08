@@ -13,6 +13,7 @@
 	let {
 		id,
 		label,
+		subLabel,
 		hideLabel,
 		className = '',
 		inputClassName,
@@ -25,7 +26,7 @@
 </script>
 
 <div class={`${className}`}>
-	<Label {id} {label} {hideLabel} {labelClassName} />
+	<Label {id} {label} {hideLabel} {labelClassName} {subLabel} />
 	<textarea
 		{id}
 		{...props}

@@ -146,19 +146,22 @@
 	<div class="grid gap-2">
 		<TextArea
 			id="ach-desc"
-			label="Background"
+			label="Situation"
+			subLabel="Describe the context or background of the task."
 			bind:value={description}
 			errorText={error?.description}
 		/>
 		<TextArea
 			id="ach-contriubution"
-			label="What I Did"
+			label="Task/Action"
+			subLabel="Describe the task or action that you took."
 			bind:value={myContribution}
 			errorText={error?.myContribution}
 		/>
 		<TextArea
 			id="ach-reult"
-			label="What was the outcome"
+			label="Result"
+			subLabel="Describe the impact of the task/action."
 			bind:value={result}
 			errorText={error?.result}
 		/>
