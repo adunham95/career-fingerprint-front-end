@@ -199,14 +199,6 @@
 								</Card>
 							</li>
 						{/each}
-
-						{#each data.questions || [] as answer}
-							<li>
-								<Card size="sm" headline={answer.question.question}>
-									<p>{answer.answer}</p>
-								</Card>
-							</li>
-						{/each}
 					</ul>
 				{:else if current === 'questions'}
 					<ul class="space-y-2">
