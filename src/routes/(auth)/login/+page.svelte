@@ -80,9 +80,9 @@
 
 <Card headline="Sign in" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<p>
-		Not a member? <a href="/register" class=" text-primary hover:text-primary-800"
-			>Create your account</a
-		>
+		Don't have an acount <a href="/register" class=" text-primary hover:text-primary-800">
+			Set it up for free
+		</a>
 	</p>
 	{#if showError}
 		<p class="text-error-600 text-sm">{errorMessage}</p>
