@@ -1,13 +1,20 @@
 <script>
+	import { PUBLIC_BOOK_DEMO_LINK } from '$env/static/public';
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import AchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 	let isAchievementOpen = $state(false);
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Demo Dashboard');
+	});
 </script>
 
 <PageContainer className="py-6">
@@ -52,15 +59,16 @@
 			actionName="Previous Meetings Click"
 			color="orange"
 		/>
-
-		<DashboardActionButton
-			title="Book A Demo"
-			subTitle="Schedule a demo with our sales team"
-			icon={computerIcon}
-			href="/"
-			actionName="Manage Organization Click"
-			color="pink"
-		/>
+		{#if PUBLIC_BOOK_DEMO_LINK}
+			<DashboardActionButton
+				title="Book A Demo"
+				subTitle="Schedule a demo with our sales team"
+				icon={computerIcon}
+				href={PUBLIC_BOOK_DEMO_LINK}
+				actionName="Book Demo Click"
+				color="pink"
+			/>
+		{/if}
 	</div>
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

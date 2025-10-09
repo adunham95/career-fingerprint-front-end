@@ -7,8 +7,13 @@
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { formatDate } from '$lib/Utils/formatDate';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Demo Meeting');
+	});
 
 	let current = $state('resume');
 </script>
