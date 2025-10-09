@@ -2,17 +2,23 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import type { Meeting } from '../../../app';
 	import { formatDistanceToNow } from 'date-fns';
-	import PremiumBadge from '../PremiumBadge.svelte';
-	import FeatureLocked from '../FeatureLocked.svelte';
 	import UnlockWithPremiumButton from '../Buttons/UnlockWithPremiumButton.svelte';
 
 	interface Props extends Meeting {
 		id: string;
 		type: string | 'interview' | 'review' | '1-1';
 		disableActions?: boolean;
+		hideActions?: boolean;
 	}
 
-	const { id, type = 'interview', title, time, disableActions = false }: Props = $props();
+	const {
+		id,
+		type = 'interview',
+		title,
+		time,
+		disableActions = false,
+		hideActions = false
+	}: Props = $props();
 
 	let eventTime = $derived.by(() => {
 		if (typeof time === 'string') {
@@ -82,7 +88,9 @@
 			</div>
 		</dl>
 	</div>
-	{#if !disableActions}
+	{#if hideActions}
+		<div></div>
+	{:else if !disableActions}
 		<div class="flex flex-col justify-end">
 			<a
 				href={`/prep/${id}`}

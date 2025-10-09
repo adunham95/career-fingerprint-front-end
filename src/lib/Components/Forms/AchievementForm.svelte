@@ -1,7 +1,6 @@
 <script lang="ts">
 	import TextArea from '../FormElements/TextArea.svelte';
 	import Select from '../FormElements/Select.svelte';
-	import DateInput from '../FormElements/DateInput.svelte';
 	import { toastStore } from '../Toasts/toast';
 	import { useMyEducationQuery } from '$lib/API/education';
 	import { useMyJobPositionsQuery } from '$lib/API/job-positions';
@@ -11,7 +10,6 @@
 		useUpdateAchievementMutation
 	} from '$lib/API/achievements';
 	import type { Achievement } from '../../../app';
-	import DateInputV2 from '../FormElements/DateInputV2.svelte';
 	import SplitDateInput from '../FormElements/SplitDateInput.svelte';
 	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
 
@@ -20,9 +18,15 @@
 		onSuccess?: () => void;
 		achievement?: Partial<Achievement> | null;
 		updateOnChange?: boolean;
+		isMocking?: boolean;
 	}
 
-	let { id, onSuccess = () => null, achievement = $bindable({}) }: Props = $props();
+	let {
+		id,
+		onSuccess = () => null,
+		achievement = $bindable({}),
+		isMocking = false
+	}: Props = $props();
 
 	$inspect(achievement);
 
@@ -88,6 +92,10 @@
 
 	async function submitFunction(e: SubmitEvent) {
 		e.preventDefault();
+		if (isMocking) {
+			toastStore.show({ message: 'New Achievement Added', type: 'success' });
+		}
+
 		error = {};
 
 		if (!myContribution) {

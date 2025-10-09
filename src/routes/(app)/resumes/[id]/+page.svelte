@@ -359,104 +359,128 @@
 				</Card>
 			</Accordion>
 			<Accordion title="Jobs">
-				{#snippet actions()}
-					<button
-						class="btn btn-outline--accent btn-small"
-						onclick={() => {
-							addObject('job-positions');
-							trackingStore.trackAction('Add Resume Object', { objectType: 'job-position' });
-						}}>Add Job</button
-					>
-				{/snippet}
 				<div class="space-y-4">
-					<!-- {#each $jobs.data || [] as job, idx} -->
+					<ul role="list">
+						{#each jobs || [] as job, idx}
+							<li class="py-1">
+								<Card contentClassName="flex" size="sm">
+									<div class=" flex flex-1 flex-row">
+										<div>
+											<div class="flex justify-between text-base font-medium text-gray-900">
+												<h3>
+													{job.name}
+												</h3>
+											</div>
+											<p class="mt-1 text-sm text-gray-500">{job.company}</p>
+										</div>
+										<div class="flex flex-1 items-end justify-end text-sm">
+											<div class="flex">
+												<button type="button" class="btn btn-text--primary btn-small">
+													Add To Resume
+												</button>
+											</div>
+										</div>
+									</div>
+								</Card>
+							</li>
+						{/each}
+					</ul>
 					{#each jobs || [] as job, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
-							<JobDetails bind:job={jobs[idx]} {idx} />
 							<div>
-								<Label id="" label="Achievements" />
-								<div class=" max-h-24 min-h-6 overflow-y-scroll">
-									{#if job.achievements?.length > 0}
-										<ul class=" space-y-1">
-											{#each job.achievements as achievement, idx}
-												<li class="text-sm text-gray-600">
-													<button
-														class="group/ach relative w-full rounded px-2 py-1 text-start"
-														onclick={() => {
-															trackingStore.trackAction('Updated Resume', {
-																section: 'Job Position',
-																button: 'Add Bullet Point From Achievement'
-															});
-															addBulletPoint({
-																jobPositionID: job.id,
-																text: achievement.myContribution
-															});
-														}}
-													>
-														<span>
-															{achievement.myContribution}
-														</span>
-														<span
-															class="bg-pastel-green-600/90 absolute inset-0 hidden items-center justify-end rounded px-1 group-hover/ach:flex"
+								<div class="flex justify-between text-base font-medium text-gray-900">
+									<h3>
+										{job.name}
+									</h3>
+								</div>
+								<p class="my-1 pb-1 text-sm text-gray-500">{job.company}</p>
+								<!-- <JobDetails bind:job={jobs[idx]} {idx} /> -->
+								<TextArea id="description" label="Summary" />
+								<div>
+									<Label id="" label="Achievements" />
+									<div class=" max-h-24 min-h-6 overflow-y-scroll">
+										{#if job.achievements?.length > 0}
+											<ul class=" space-y-1">
+												{#each job.achievements as achievement, idx}
+													<li class="text-sm text-gray-600">
+														<button
+															class="group/ach relative w-full rounded px-2 py-1 text-start"
+															onclick={() => {
+																trackingStore.trackAction('Updated Resume', {
+																	section: 'Job Position',
+																	button: 'Add Bullet Point From Achievement'
+																});
+																addBulletPoint({
+																	jobPositionID: job.id,
+																	text: achievement.myContribution
+																});
+															}}
 														>
-															Add Achievement Bullet Point
-														</span>
+															<span>
+																{achievement.myContribution}
+															</span>
+															<span
+																class="bg-pastel-green-600/90 absolute inset-0 hidden items-center justify-end rounded px-1 group-hover/ach:flex"
+															>
+																Add Achievement Bullet Point
+															</span>
+														</button>
+													</li>
+												{/each}
+											</ul>
+										{:else}
+											<p class="text-sm text-gray-400 italic">No achievements added yet</p>
+										{/if}
+									</div>
+								</div>
+								<div>
+									<Label id="" label="Bullet Points" />
+									<div class=" max-h-24 min-h-6 overflow-y-scroll">
+										<ul class=" space-y-1">
+											{#each job.bulletPoints as bulletPoint, idx}
+												<li class="flex items-center text-sm text-gray-600">
+													<TextInput
+														className="flex-1"
+														id={'bulletPoint' + idx}
+														label=""
+														bind:value={bulletPoint.text}
+													/>
+													<button
+														class="btn btn-text--error"
+														onclick={() => deleteBulletPoint(bulletPoint.id)}
+													>
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															stroke-width="1.5"
+															stroke="currentColor"
+															class="size-6"
+														>
+															<path
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																d="M6 18 18 6M6 6l12 12"
+															/>
+														</svg>
+														<span class="sr-only">Delete {bulletPoint.text}</span>
 													</button>
 												</li>
 											{/each}
+											<button
+												class="btn btn-text--success btn-small w-full text-start"
+												onclick={() => {
+													addBulletPoint({ jobPositionID: job.id });
+													trackingStore.trackAction('Updated Resume', {
+														section: 'Job Position',
+														button: 'Add Bullet Point'
+													});
+												}}
+											>
+												Add Bullet Point
+											</button>
 										</ul>
-									{:else}
-										<p class="text-sm text-gray-400 italic">No achievements added yet</p>
-									{/if}
-								</div>
-							</div>
-							<div>
-								<Label id="" label="Bullet Points" />
-								<div class=" max-h-24 min-h-6 overflow-y-scroll">
-									<ul class=" space-y-1">
-										{#each job.bulletPoints as bulletPoint, idx}
-											<li class="flex items-center text-sm text-gray-600">
-												<TextInput
-													className="flex-1"
-													id={'bulletPoint' + idx}
-													label=""
-													bind:value={bulletPoint.text}
-												/>
-												<button
-													class="btn btn-text--error"
-													onclick={() => deleteBulletPoint(bulletPoint.id)}
-												>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														fill="none"
-														viewBox="0 0 24 24"
-														stroke-width="1.5"
-														stroke="currentColor"
-														class="size-6"
-													>
-														<path
-															stroke-linecap="round"
-															stroke-linejoin="round"
-															d="M6 18 18 6M6 6l12 12"
-														/>
-													</svg>
-													<span class="sr-only">Delete {bulletPoint.text}</span>
-												</button>
-											</li>
-										{/each}
-										<button
-											class="btn btn-text--success btn-small w-full text-start"
-											onclick={() => {
-												addBulletPoint({ jobPositionID: job.id });
-												trackingStore.trackAction('Updated Resume', {
-													section: 'Job Position',
-													button: 'Add Bullet Point'
-												});
-											}}
-										>
-											Add Bullet Point
-										</button>
-									</ul>
+									</div>
 								</div>
 							</div>
 							{#snippet actions()}
