@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useOrgDashboard } from '$lib/API/dashboard.js';
+	import { useOrgDashboard, useOrgSeatUtilization } from '$lib/API/dashboard.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import DashboardStat from '$lib/Components/DashboardStat.svelte';
@@ -16,6 +16,7 @@
 	const { data } = $props();
 
 	const orgReport = useOrgDashboard(data.org?.id || '');
+	const seatUtilization = useOrgSeatUtilization(data.org?.id || '');
 
 	console.log({ data, orgReport: $orgReport.data });
 
@@ -69,26 +70,47 @@
 		/>
 	</div>
 	<p class="font-title mt-3 text-2xl">At a Glace</p>
-	{#if $orgReport.isLoading}
-		<div class="flex justify-center">
-			<Loader />
+	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+		<DashboardStat
+			isLoading={$seatUtilization.isLoading}
+			number={$seatUtilization?.data?.seatsUsed || 0}
+			ofNumber={$seatUtilization?.data?.seatLimit || 0}
+			name="Active Subscriptions"
+		/>
+		<DashboardStat
+			isLoading={$orgReport.isLoading}
+			number={$orgReport.data?.totalAchievements}
+			name="Total Achievements"
+			subLabel="This Week"
+		/>
+		<DashboardStat
+			isLoading={$orgReport.isLoading}
+			number={$orgReport.data?.avgAchievementsPerUser}
+			name="Avg Achievements"
+			subLabel="Per User"
+		/>
+		<DashboardStat
+			isLoading={$orgReport.isLoading}
+			text={$orgReport.data?.topTags?.[0]?.tagName || 'N/A'}
+			name="Most Popular Tag"
+			subLabel="Per User"
+		/>
+		<div class="border-t border-gray-200 pt-4">
+			<dt class="font-medium text-gray-900">Top Companies</dt>
+
+			{#if $orgReport.isLoading}
+				<Loader />
+			{:else}
+				<dd class="mt-2 text-sm text-gray-500">
+					<ul>
+						{#each $orgReport.data?.topEmployers || [] as company}
+							<li>{company.company}</li>
+						{/each}
+					</ul>
+				</dd>
+			{/if}
 		</div>
-	{:else}
-		<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-			<DashboardStat
-				number={$orgReport?.data?.seatUtilization?.seatsUsed || 0}
-				ofNumber={$orgReport?.data?.seatUtilization?.seatLimit || 0}
-				name="Active Subscriptions"
-			/>
-			<div>
-				<p>Users who are active</p>
-				{@render pieChart(
-					$orgReport?.data?.activeVSInActive?.activeUsers,
-					$orgReport?.data?.activeVSInActive?.inactiveUsers
-				)}
-			</div>
-		</div>
-	{/if}
+	</div>
 </PageContainer>
 
 {#snippet usersIcon()}
