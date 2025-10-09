@@ -10,7 +10,7 @@
 </script>
 
 <div class="@container/navbuttons">
-	<div class="grid grid-cols-1 @sm/navbuttons:hidden">
+	<div class="grid grid-cols-1 @[520px]/navbuttons:hidden">
 		<select
 			bind:value={currentTab}
 			aria-label="Select a tab"
@@ -21,7 +21,7 @@
 			{/each}
 		</select>
 	</div>
-	<div class="hidden @sm/navbuttons:block">
+	<div class="hidden @[520px]/navbuttons:block">
 		<nav class="flex space-x-4" aria-label="Tabs">
 			{#each tabs as tab}
 				<button
