@@ -3,10 +3,8 @@ import type { BulletPoint } from '../../app';
 import { createApiClient } from './apiClient';
 
 export async function addBulletPoint(data: {
-	jobPositionID?: string;
-	educationID?: string;
+	resumeObjectID: string;
 	text?: string;
-	resumeID: string;
 }): Promise<BulletPoint> {
 	try {
 		const api = createApiClient();

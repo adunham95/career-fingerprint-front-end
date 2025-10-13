@@ -1,8 +1,9 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
-import type { Education, JobPosition, Resume } from '../../app';
+import type { Resume, ResumeObject } from '../../app';
 import { jobPositionKeys } from './job-positions';
 import { educationKeys } from './education';
+import { createApiClient } from './apiClient';
 
 interface UpdateResumeInput {
 	id: string;
@@ -99,30 +100,23 @@ export async function duplicateResume(id: string): Promise<Resume | null> {
 	}
 }
 
-interface JobPositionUpdate extends JobPosition {
+interface ResumeObjectUpdate {
+	description?: string;
 	bulletPointsOptions?: string[];
-}
-
-interface EducationUpdate extends Education {
-	bulletPointsOptions?: string[];
-}
-
-interface ResumeObject {
-	type: keyof typeof resumeObjectTypeMap;
-	itemID: string;
-	item: JobPositionUpdate | EducationUpdate;
 }
 
 interface NewResumeObject {
 	type: keyof typeof resumeObjectTypeMap;
-	item?: Partial<JobPosition | Education>;
+	itemID: string;
+	resumeID: string;
+	item: ResumeObjectUpdate;
 }
 
 export async function updateResumeObject({
 	type,
 	item,
 	itemID
-}: ResumeObject): Promise<Resume | null> {
+}: NewResumeObject): Promise<Resume | null> {
 	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
 
 	try {
@@ -148,60 +142,55 @@ export async function updateResumeObject({
 }
 
 export async function addResumeObject({
-	type,
-	item
-}: NewResumeObject): Promise<JobPosition | Education | null> {
-	const url = `${PUBLIC_API_URL}/${type}`;
+	resumeID,
+	body
+}: {
+	resumeID: string;
+	body: { jobPositionID?: string; educationID?: string };
+}): Promise<ResumeObject | null> {
+	const api = createApiClient();
 
 	try {
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(item)
-		});
-
-		if (res.ok) {
-			return res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
-		}
+		return api.post(`/resume/${resumeID}/resume-object`, body);
 	} catch (error) {
 		console.log(error);
-		throw new Error(`Failed to patch resume`);
+		throw new Error(`Failed to add object to resume`);
 	}
 }
 
 export async function deleteResumeObject({
 	type,
+	resumeID,
 	itemID
 }: {
 	type: keyof typeof resumeObjectTypeMap;
+	resumeID: string;
 	itemID: string;
 }): Promise<Resume | null> {
-	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
+	const api = createApiClient();
 
 	try {
-		const res = await fetch(url, {
-			method: 'DELETE',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			}
-		});
-
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to delete resume object: ${res.status} ${message}`);
-		}
+		return api.del(`/resume/${resumeID}/${type}/${itemID}`);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to delete resume object`);
+	}
+}
+
+export async function updateResumeJobObject({
+	resumeID,
+	jobID
+}: {
+	resumeID: string;
+	jobID: string;
+}): Promise<Resume | null> {
+	const api = createApiClient();
+
+	try {
+		return api.patch(`/resume/${resumeID}/job-object/${jobID}`);
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to add job to resume`);
 	}
 }
 

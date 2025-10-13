@@ -27,12 +27,25 @@ interface JobPosition {
 	bulletPoints: BulletPoint[];
 }
 
+interface ResumeObject {
+	id: string;
+	description: string | null;
+	job?: JobPosition;
+	eduID: string | null;
+	eduction?: Education;
+	bulletPoints: BulletPoint[];
+}
+interface JobObject {
+	id: string;
+	description: string | null;
+	job: JobPosition;
+	bulletPoints: BulletPoint[];
+}
+
 interface BulletPoint {
 	id: string;
 	text: string | null;
-	jobPositionID?: string;
-	resumeID?: string;
-	educationID?: string;
+	resumeObjectID?: string;
 }
 
 interface Project {
@@ -240,5 +253,7 @@ export {
 	SkillData,
 	User,
 	PrepAnswer,
-	AchievementTag
+	AchievementTag,
+	JobObject,
+	ResumeObject
 };

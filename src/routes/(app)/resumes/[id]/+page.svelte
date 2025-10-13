@@ -3,11 +3,9 @@
 	import {
 		resumeObjectTypeMap,
 		useAddResumeObjectMutation,
-		useDeleteResumeObjectMutation,
 		useDuplicateResumeQuery,
 		useGetResumeByIDQuery,
-		useUpdateResumeMutation,
-		useUpdateResumeObjectMutation
+		useUpdateResumeMutation
 	} from '$lib/API/resume.js';
 	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -19,17 +17,17 @@
 	import BasicResume from '$lib/Components/Resumes/BasicResume.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
-	import type { Education, JobPosition } from '../../../../app.js';
 	import { onMount } from 'svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import { useCreateBulletPoint, useDeleteBulletPoint } from '$lib/API/bullet-points.js';
-	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
 	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
 	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
 	import { useUpdateSkillList } from '$lib/API/skill-list.js';
+	import type { JobObject, ResumeObject } from '../../../../app.js';
+	import { on } from 'svelte/events';
 
 	const { data } = $props();
 
@@ -57,15 +55,14 @@
 
 	let chipList = $state(data.mySkills?.skillList || []);
 
-	let jobs = $state(data.jobs || []);
+	let resumeObjects = $state<ResumeObject[]>(data.resumeObjects || []);
 	let education = $state(data.education || []);
 
 	let updateResumeMutation = useUpdateResumeMutation(data.resume?.id || '');
 	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume?.id || '');
 
-	let updateResumeObject = useUpdateResumeObjectMutation();
-	let deleteResumeObject = useDeleteResumeObjectMutation();
 	let addResumeObject = useAddResumeObjectMutation();
+
 	let addBulletPointMutation = useCreateBulletPoint();
 	let deleteBulletPointMutation = useDeleteBulletPoint();
 	const saveSkillList = useUpdateSkillList();
@@ -100,129 +97,6 @@
 		}
 	}
 
-	async function addObject(type: keyof typeof resumeObjectTypeMap) {
-		try {
-			let addedObject = await $addResumeObject.mutateAsync({ type });
-
-			console.log(addedObject, 'type', type);
-
-			switch (type) {
-				case 'job-positions':
-					jobs.push(addedObject as JobPosition);
-					break;
-				case 'education':
-					education.push(addedObject as Education);
-					break;
-
-				default:
-					break;
-			}
-
-			toastStore.show({
-				type: 'success',
-				message: `${resumeObjectTypeMap[type]} Added`
-			});
-		} catch (error) {
-			toastStore.show({
-				type: 'error',
-				message: `${resumeObjectTypeMap[type]} Added`
-			});
-		}
-	}
-
-	async function deleteObject(type: keyof typeof resumeObjectTypeMap, id: string) {
-		try {
-			let deletedObject = await $deleteResumeObject.mutateAsync({ type, itemID: id });
-
-			switch (type) {
-				case 'job-positions':
-					jobs = jobs?.filter((j) => j.id !== deletedObject?.id);
-					break;
-				case 'education':
-					education = education?.filter((j) => j.id !== deletedObject?.id);
-					break;
-
-				default:
-					break;
-			}
-			toastStore.show({
-				type: 'success',
-				message: `${resumeObjectTypeMap[type]} Deleted`
-			});
-		} catch (error) {
-			toastStore.show({
-				type: 'error',
-				message: `Failed to delete ${resumeObjectTypeMap[type]}`
-			});
-		}
-	}
-
-	function getObjectData(
-		type: keyof typeof resumeObjectTypeMap,
-		id: string
-	): JobPosition | Education {
-		switch (type) {
-			case 'job-positions':
-				let jobData = jobs.find((j) => j.id === id);
-				if (!jobData) throw 'missing job';
-				let job = { ...jobData };
-				console.log({ job });
-				if ('name' in job) {
-					job as JobPosition;
-					return {
-						name: job.name,
-						company: job.company,
-						location: job.location,
-						description: job.description,
-						startDate: job.startDate ? new Date(job.startDate).toISOString() : null,
-						endDate: job.endDate ? new Date(job.endDate).toISOString() : null,
-						currentPosition: job.currentPosition,
-						bulletPoints: job.bulletPoints
-					} as JobPosition;
-				}
-				return {} as JobPosition;
-			case 'education':
-				let item = education.find((j) => j.id === id);
-				if (!item) throw 'missing education';
-				if ('degree' in item) {
-					item as Education;
-					return {
-						degree: item.degree,
-						institution: item.institution,
-						description: item.description,
-						startDate: item.startDate ? new Date(item.startDate).toISOString() : null,
-						endDate: item.endDate ? new Date(item.endDate).toISOString() : null,
-						currentPosition: item.currentPosition,
-						bulletPoints: item.bulletPoints
-					} as Education;
-				}
-				return {} as Education;
-			default:
-				return {} as JobPosition;
-		}
-	}
-
-	async function saveObject(type: keyof typeof resumeObjectTypeMap, id: string) {
-		try {
-			let item = getObjectData(type, id);
-			console.log({ item });
-			await $updateResumeObject.mutateAsync({
-				type,
-				itemID: id,
-				item: getObjectData(type, id)
-			});
-			toastStore.show({
-				type: 'success',
-				message: `${resumeObjectTypeMap[type]} saved`
-			});
-		} catch (error) {
-			toastStore.show({
-				type: 'error',
-				message: `Error updating ${resumeObjectTypeMap[type]}`
-			});
-		}
-	}
-
 	async function duplicateResume() {
 		try {
 			await $duplicateResumeMutation.refetch();
@@ -234,41 +108,25 @@
 		}
 	}
 
-	async function addBulletPoint(newBulletPointData: {
-		jobPositionID?: string;
-		educationID?: string;
-		text?: string;
-	}) {
+	async function addBulletPoint(newBulletPointData: { resumeObjectID: string; text?: string }) {
 		try {
 			let newBulletPoint = await $addBulletPointMutation.mutateAsync({
-				...newBulletPointData,
-				resumeID: data.resume?.id || ''
+				...newBulletPointData
 			});
 
-			if (newBulletPointData.jobPositionID) {
-				let jobPosition = jobs.find((j) => j.id === newBulletPointData.jobPositionID);
-				jobPosition?.bulletPoints.push(newBulletPoint);
-			}
-			if (newBulletPointData.educationID) {
-				let eduPosition = education.find((j) => j.id === newBulletPointData.educationID);
-				eduPosition?.bulletPoints.push(newBulletPoint);
-			}
+			let obj = resumeObjects.find((r) => r.id === newBulletPointData.resumeObjectID);
+			console.log({ ...obj });
+			obj?.bulletPoints.push(newBulletPoint);
 		} catch (error) {}
 	}
 
 	async function deleteBulletPoint(bulletPointID: string) {
 		try {
 			let deletedBulletPoint = await $deleteBulletPointMutation.mutateAsync({ bulletPointID });
-			if (deletedBulletPoint.jobPositionID) {
-				const job = jobs.find((j) => j.id === deletedBulletPoint.jobPositionID);
-				if (!job) return;
-				job.bulletPoints = job.bulletPoints.filter((bp) => bp.id !== bulletPointID);
-			}
-			if (deletedBulletPoint?.educationID) {
-				const edu = education.find((j) => j.id === deletedBulletPoint?.educationID);
-				if (!edu) return;
-				edu.bulletPoints = edu.bulletPoints.filter((bp) => bp.id !== bulletPointID);
-			}
+
+			const obj = resumeObjects.find((j) => j.id === deletedBulletPoint?.resumeObjectID);
+			if (!obj) return;
+			obj.bulletPoints = obj.bulletPoints.filter((bp) => bp.id !== bulletPointID);
 		} catch (error) {
 			console.log(error);
 		}
@@ -280,6 +138,24 @@
 			toastStore.show({ message: 'Skill List Saved' });
 		} catch (error) {}
 	}
+
+	async function addResumeObjectToResume(jobPositionID?: string) {
+		try {
+			let newObject = await $addResumeObject.mutateAsync({
+				resumeID: data.resume?.id || '',
+				body: { jobPositionID }
+			});
+			console.log(newObject);
+			if (newObject !== null) {
+				resumeObjects.push(newObject);
+			}
+			toastStore.show({ message: 'Added to Resume' });
+		} catch (error) {
+			toastStore.show({ message: 'Error Adding to Resume', type: 'error' });
+		}
+	}
+
+	async function updateJobDescription() {}
 </script>
 
 <PageContainer>
@@ -361,47 +237,61 @@
 			<Accordion title="Jobs">
 				<div class="space-y-4">
 					<ul role="list">
-						{#each jobs || [] as job, idx}
-							<li class="py-1">
-								<Card contentClassName="flex" size="sm">
-									<div class=" flex flex-1 flex-row">
-										<div>
-											<div class="flex justify-between text-base font-medium text-gray-900">
-												<h3>
-													{job.name}
-												</h3>
+						{#each data.jobs || [] as job, idx}
+							{#if !resumeObjects.some((j) => j?.job?.id === job.id)}
+								<li class="py-1">
+									<Card contentClassName="flex" size="sm">
+										<div class=" flex flex-1 flex-row">
+											<div>
+												<div class="flex justify-between text-base font-medium text-gray-900">
+													<h3>
+														{job.name}
+													</h3>
+												</div>
+												<p class="mt-1 text-sm text-gray-500">{job.company}</p>
 											</div>
-											<p class="mt-1 text-sm text-gray-500">{job.company}</p>
-										</div>
-										<div class="flex flex-1 items-end justify-end text-sm">
-											<div class="flex">
-												<button type="button" class="btn btn-text--primary btn-small">
-													Add To Resume
-												</button>
+											<div class="flex flex-1 items-end justify-end text-sm">
+												<div class="flex">
+													<button
+														type="button"
+														class="btn btn-text--primary btn-small"
+														onclick={() => {
+															addResumeObjectToResume(job.id);
+														}}
+													>
+														Add To Resume
+													</button>
+												</div>
 											</div>
 										</div>
-									</div>
-								</Card>
-							</li>
+									</Card>
+								</li>
+							{/if}
 						{/each}
 					</ul>
-					{#each jobs || [] as job, idx}
+					{#each resumeObjects.filter((o) => o.eduID === null) || [] as jobObj, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<div>
 								<div class="flex justify-between text-base font-medium text-gray-900">
 									<h3>
-										{job.name}
+										{jobObj?.job?.name || 'Unnamed Job'}
 									</h3>
 								</div>
-								<p class="my-1 pb-1 text-sm text-gray-500">{job.company}</p>
-								<!-- <JobDetails bind:job={jobs[idx]} {idx} /> -->
-								<TextArea id="description" label="Summary" />
+								<p class="my-1 pb-1 text-sm text-gray-500">
+									{jobObj?.job?.company || 'Unnamed Company'}
+								</p>
+								<TextArea
+									id="description"
+									label="Summary"
+									bind:value={jobObj.description}
+									oninput={() => {}}
+								/>
 								<div>
 									<Label id="" label="Achievements" />
 									<div class=" max-h-24 min-h-6 overflow-y-scroll">
-										{#if job.achievements?.length > 0}
+										{#if (jobObj?.job?.achievements || []).length > 0}
 											<ul class=" space-y-1">
-												{#each job.achievements as achievement, idx}
+												{#each jobObj?.job?.achievements as achievement, idx}
 													<li class="text-sm text-gray-600">
 														<button
 															class="group/ach relative w-full rounded px-2 py-1 text-start"
@@ -411,7 +301,7 @@
 																	button: 'Add Bullet Point From Achievement'
 																});
 																addBulletPoint({
-																	jobPositionID: job.id,
+																	resumeObjectID: jobObj.id,
 																	text: achievement.myContribution
 																});
 															}}
@@ -437,7 +327,7 @@
 									<Label id="" label="Bullet Points" />
 									<div class=" max-h-24 min-h-6 overflow-y-scroll">
 										<ul class=" space-y-1">
-											{#each job.bulletPoints as bulletPoint, idx}
+											{#each jobObj.bulletPoints as bulletPoint, idx}
 												<li class="flex items-center text-sm text-gray-600">
 													<TextInput
 														className="flex-1"
@@ -470,7 +360,7 @@
 											<button
 												class="btn btn-text--success btn-small w-full text-start"
 												onclick={() => {
-													addBulletPoint({ jobPositionID: job.id });
+													addBulletPoint({ resumeObjectID: jobObj.id });
 													trackingStore.trackAction('Updated Resume', {
 														section: 'Job Position',
 														button: 'Add Bullet Point'
@@ -487,18 +377,15 @@
 								<button
 									class="btn btn-text--error btn-small"
 									onclick={() => {
-										deleteObject('job-positions', job.id);
 										trackingStore.trackAction('Updated Resume', {
 											section: 'Job Position',
 											button: 'Delete'
 										});
 									}}>Delete</button
 								>
-								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
 								<button
 									class="btn btn-text--success btn-small"
 									onclick={() => {
-										saveObject('job-positions', job.id);
 										trackingStore.trackAction('Updated Resume', {
 											section: 'Job Position',
 											button: 'Save'
@@ -511,15 +398,6 @@
 				</div>
 			</Accordion>
 			<Accordion title="Education">
-				{#snippet actions()}
-					<button
-						class="btn btn-outline--accent btn-small"
-						onclick={() => {
-							addObject('education');
-							trackingStore.trackAction('Add Resume Object', { objectType: 'education' });
-						}}>Add Education</button
-					>
-				{/snippet}
 				<div class="space-y-2">
 					{#each education || [] as edu, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
@@ -538,10 +416,10 @@
 																section: 'Education',
 																button: 'Add Bullet Point From Achievement'
 															});
-															addBulletPoint({
-																educationID: edu.id,
-																text: achievement.myContribution
-															});
+															// addBulletPoint({
+															// 	educationID: edu.id,
+															// 	text: achievement.myContribution
+															// });
 														}}
 													>
 														<span>
@@ -598,7 +476,7 @@
 										<button
 											class="btn btn-text--success btn-small w-full text-start"
 											onclick={() => {
-												addBulletPoint({ educationID: edu.id });
+												// addBulletPoint({ educationID: edu.id });
 												trackingStore.trackAction('Updated Resume', {
 													section: 'Education',
 													button: 'Add Bullet Point'
@@ -611,15 +489,9 @@
 								</div>
 							</div>
 							{#snippet actions()}
-								<button
-									class="btn btn-text--error btn-small"
-									onclick={() => deleteObject('education', edu.id)}>Delete</button
-								>
+								<button class="btn btn-text--error btn-small" onclick={() => {}}>Delete</button>
 								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
-								<button
-									class="btn btn-text--success btn-small"
-									onclick={() => saveObject('education', edu.id)}>Save</button
-								>
+								<button class="btn btn-text--success btn-small" onclick={() => {}}>Save</button>
 							{/snippet}
 						</Card>
 					{/each}
@@ -664,7 +536,15 @@
 		<div class="md:col-span-2">
 			<BasicResume
 				{personalInfo}
-				experience={jobs}
+				experience={resumeObjects
+					.filter((r) => r.eduID === null)
+					.map((j) => {
+						return {
+							...j?.job,
+							bulletPoints: j.bulletPoints,
+							description: j.description
+						};
+					})}
 				{education}
 				showIncomplete
 				skillList={chipList}
