@@ -33,7 +33,7 @@
 		routes={[
 			{ title: 'Dashboard', path: '/dashboard' },
 			{ title: 'My Fingerprint', path: '/my-fingerprint' },
-			// { title: 'Resumes', path: '/resumes' },
+			{ title: 'Resumes', path: '/resumes' },
 			{ title: 'Job Applications', path: '/job-applications' },
 			{ title: 'Achievement Timeline', path: '/timeline' },
 			{ title: 'Meetings', path: '/meetings' }
