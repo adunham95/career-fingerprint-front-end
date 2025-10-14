@@ -413,7 +413,7 @@
 											section: 'Job Position',
 											button: 'Delete'
 										});
-									}}>Delete</button
+									}}>Remove From Resume</button
 								>
 								<button
 									class="btn btn-text--success btn-small"
@@ -576,7 +576,7 @@
 											section: 'Eduction',
 											button: 'Delete'
 										});
-									}}>Delete</button
+									}}>Remove From Resume</button
 								>
 								<button
 									class="btn btn-text--success btn-small"
