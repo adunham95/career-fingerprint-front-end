@@ -30,9 +30,11 @@ interface JobPosition {
 interface ResumeObject {
 	id: string;
 	description: string | null;
+	type: 'job' | 'education';
+	jobID: string | null;
 	job?: JobPosition;
 	eduID: string | null;
-	eduction?: Education;
+	edu?: Education;
 	bulletPoints: BulletPoint[];
 }
 interface JobObject {

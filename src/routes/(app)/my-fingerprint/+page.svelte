@@ -1,9 +1,9 @@
 <script lang="ts">
 	import {
 		resumeObjectTypeMap,
-		useAddResumeObjectMutation,
-		useDeleteResumeObjectMutation,
-		useUpdateResumeObjectMutation
+		useAddResumeItemMutation,
+		useDeleteResumeItemMutation,
+		useUpdateResumeItemMutation
 	} from '$lib/API/resume.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -19,9 +19,9 @@
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	const { data } = $props();
 
-	let updateResumeObject = useUpdateResumeObjectMutation();
-	let deleteResumeObject = useDeleteResumeObjectMutation();
-	let addResumeObject = useAddResumeObjectMutation();
+	let updateResumeObject = useUpdateResumeItemMutation();
+	let deleteResumeObject = useDeleteResumeItemMutation();
+	let addResumeObject = useAddResumeItemMutation();
 
 	const skillList = useMySkills();
 	const saveSkillList = useUpdateSkillList();

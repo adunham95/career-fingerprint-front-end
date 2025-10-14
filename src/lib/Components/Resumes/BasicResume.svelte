@@ -30,7 +30,7 @@
 		skillList = []
 	}: Props = $props();
 
-	console.log(education);
+	console.log('education', education);
 
 	function formatDate(dateString?: string | null) {
 		if (!dateString) {

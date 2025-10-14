@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
-import type { Resume, ResumeObject } from '../../app';
+import type { BulletPoint, Education, JobPosition, Resume, ResumeObject } from '../../app';
 import { jobPositionKeys } from './job-positions';
 import { educationKeys } from './education';
 import { createApiClient } from './apiClient';
@@ -25,6 +25,8 @@ export const resumeObjectTypeMap = {
 	education: 'Education',
 	'job-positions': 'Job'
 };
+
+// Resume Features
 
 export async function getResumeByID(id: string) {
 	const url = `${PUBLIC_API_URL}/resume/${id}`;
@@ -100,41 +102,30 @@ export async function duplicateResume(id: string): Promise<Resume | null> {
 	}
 }
 
+/**
+ * Resume Object Functions
+ * These are where you can edit the resume objects, this are objects that link jobs + education and the resume
+ * Along with tracking the bullet points, and description that happen per interview
+ */
 interface ResumeObjectUpdate {
 	description?: string;
-	bulletPointsOptions?: string[];
+	bulletPointOptions?: BulletPoint[];
 }
 
-interface NewResumeObject {
-	type: keyof typeof resumeObjectTypeMap;
-	itemID: string;
+interface UpdateResumeObject {
 	resumeID: string;
+	resumeObjectID?: string;
 	item: ResumeObjectUpdate;
 }
 
 export async function updateResumeObject({
-	type,
-	item,
-	itemID
-}: NewResumeObject): Promise<Resume | null> {
-	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
+	resumeObjectID,
+	item
+}: UpdateResumeObject): Promise<Resume | null> {
+	const api = createApiClient();
 
 	try {
-		const res = await fetch(url, {
-			method: 'PATCH',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(item)
-		});
-
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
-		}
+		return api.patch(`/resume/resume-object/${resumeObjectID}`, item);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to patch resume`);
@@ -159,38 +150,124 @@ export async function addResumeObject({
 }
 
 export async function deleteResumeObject({
-	type,
-	resumeID,
-	itemID
+	resumeObjectID
 }: {
-	type: keyof typeof resumeObjectTypeMap;
-	resumeID: string;
-	itemID: string;
+	resumeObjectID: string;
 }): Promise<Resume | null> {
 	const api = createApiClient();
 
 	try {
-		return api.del(`/resume/${resumeID}/${type}/${itemID}`);
+		return api.del(`/resume/resume-object/${resumeObjectID}`);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to delete resume object`);
 	}
 }
 
-export async function updateResumeJobObject({
-	resumeID,
-	jobID
-}: {
-	resumeID: string;
-	jobID: string;
-}): Promise<Resume | null> {
-	const api = createApiClient();
+/**
+ * Resume Items Functions
+ * Jobs and Education
+ * These are where you can edit the job positions and education
+ */
+interface JobPositionUpdate extends JobPosition {
+	bulletPointsOptions?: string[];
+}
+
+interface EducationUpdate extends Education {
+	bulletPointsOptions?: string[];
+}
+
+interface ResumeItem {
+	type: keyof typeof resumeObjectTypeMap;
+	itemID: string;
+	item: JobPositionUpdate | EducationUpdate;
+}
+
+interface NewResumeItem {
+	type: keyof typeof resumeObjectTypeMap;
+	item?: Partial<JobPosition | Education>;
+}
+
+export async function updateResumeItem({ type, item, itemID }: ResumeItem): Promise<Resume | null> {
+	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
 
 	try {
-		return api.patch(`/resume/${resumeID}/job-object/${jobID}`);
+		const res = await fetch(url, {
+			method: 'PATCH',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(item)
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
+		}
 	} catch (error) {
 		console.log(error);
-		throw new Error(`Failed to add job to resume`);
+		throw new Error(`Failed to patch resume`);
+	}
+}
+
+export async function addResumeItem({
+	type,
+	item
+}: NewResumeItem): Promise<JobPosition | Education | null> {
+	const url = `${PUBLIC_API_URL}/${type}`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			},
+			body: JSON.stringify(item)
+		});
+
+		if (res.ok) {
+			return res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to patch resume`);
+	}
+}
+
+export async function deleteResumeItem({
+	type,
+	itemID
+}: {
+	type: keyof typeof resumeObjectTypeMap;
+	itemID: string;
+}): Promise<Resume | null> {
+	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
+
+	try {
+		const res = await fetch(url, {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json' // Set content type to JSON
+			}
+		});
+
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to delete resume object: ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to delete resume object`);
 	}
 }
 
@@ -256,6 +333,24 @@ export const useUpdateResumeObjectMutation = () => {
 	});
 };
 
+export const useUpdateResumeItemMutation = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: updateResumeItem,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: jobPositionKeys.my
+			});
+			queryClient.invalidateQueries({
+				queryKey: educationKeys.my
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to update resume object:', error);
+		}
+	});
+};
+
 export const useDeleteResumeObjectMutation = () => {
 	const queryClient = useQueryClient();
 	return createMutation({
@@ -274,10 +369,46 @@ export const useDeleteResumeObjectMutation = () => {
 	});
 };
 
+export const useDeleteResumeItemMutation = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: deleteResumeItem,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: jobPositionKeys.my
+			});
+			queryClient.invalidateQueries({
+				queryKey: educationKeys.my
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete resume object:', error);
+		}
+	});
+};
+
 export const useAddResumeObjectMutation = () => {
 	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: addResumeObject,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: jobPositionKeys.my
+			});
+			queryClient.invalidateQueries({
+				queryKey: educationKeys.my
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete resume object:', error);
+		}
+	});
+};
+
+export const useAddResumeItemMutation = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: addResumeItem,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: jobPositionKeys.my

@@ -3,9 +3,11 @@
 	import {
 		resumeObjectTypeMap,
 		useAddResumeObjectMutation,
+		useDeleteResumeObjectMutation,
 		useDuplicateResumeQuery,
 		useGetResumeByIDQuery,
-		useUpdateResumeMutation
+		useUpdateResumeMutation,
+		useUpdateResumeObjectMutation
 	} from '$lib/API/resume.js';
 	import Accordion from '$lib/Components/Accordion.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -26,8 +28,7 @@
 	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
 	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
 	import { useUpdateSkillList } from '$lib/API/skill-list.js';
-	import type { JobObject, ResumeObject } from '../../../../app.js';
-	import { on } from 'svelte/events';
+	import type { ResumeObject } from '../../../../app.js';
 
 	const { data } = $props();
 
@@ -62,6 +63,8 @@
 	let duplicateResumeMutation = useDuplicateResumeQuery(data.resume?.id || '');
 
 	let addResumeObject = useAddResumeObjectMutation();
+	let deleteResumeObjectMutation = useDeleteResumeObjectMutation();
+	let updateResumeObjectMutation = useUpdateResumeObjectMutation();
 
 	let addBulletPointMutation = useCreateBulletPoint();
 	let deleteBulletPointMutation = useDeleteBulletPoint();
@@ -114,9 +117,13 @@
 				...newBulletPointData
 			});
 
-			let obj = resumeObjects.find((r) => r.id === newBulletPointData.resumeObjectID);
-			console.log({ ...obj });
-			obj?.bulletPoints.push(newBulletPoint);
+			const index = resumeObjects.findIndex((r) => r.id === newBulletPointData.resumeObjectID);
+
+			if (index !== -1) {
+				resumeObjects = resumeObjects.map((r, i) =>
+					i === index ? { ...r, bulletPoints: [...(r.bulletPoints || []), newBulletPoint] } : r
+				);
+			}
 		} catch (error) {}
 	}
 
@@ -139,11 +146,11 @@
 		} catch (error) {}
 	}
 
-	async function addResumeObjectToResume(jobPositionID?: string) {
+	async function addResumeObjectToResume(jobPositionID?: string, educationID?: string) {
 		try {
 			let newObject = await $addResumeObject.mutateAsync({
 				resumeID: data.resume?.id || '',
-				body: { jobPositionID }
+				body: { jobPositionID, educationID }
 			});
 			console.log(newObject);
 			if (newObject !== null) {
@@ -155,7 +162,31 @@
 		}
 	}
 
-	async function updateJobDescription() {}
+	async function deleteResumeObject(id: string) {
+		try {
+			let object = await $deleteResumeObjectMutation.mutateAsync({ resumeObjectID: id });
+			if (object) {
+				resumeObjects = resumeObjects.filter((r) => r.id !== object.id);
+				toastStore.show({ message: 'Item Deleted' });
+			}
+		} catch (error) {
+			toastStore.show({ message: 'Could not delete item', type: 'error' });
+		}
+	}
+
+	async function updateResumeObject(id: string) {
+		try {
+			let currentObject = resumeObjects.find((o) => o.id === id);
+			let object = await $updateResumeObjectMutation.mutateAsync({
+				resumeID: data.resume?.id || '',
+				resumeObjectID: id,
+				item: {
+					description: currentObject?.description || '',
+					bulletPointOptions: currentObject?.bulletPoints || []
+				}
+			});
+		} catch (error) {}
+	}
 </script>
 
 <PageContainer>
@@ -269,7 +300,7 @@
 							{/if}
 						{/each}
 					</ul>
-					{#each resumeObjects.filter((o) => o.eduID === null) || [] as jobObj, idx}
+					{#each resumeObjects.filter((o) => o.type === 'job') || [] as jobObj, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
 							<div>
 								<div class="flex justify-between text-base font-medium text-gray-900">
@@ -377,6 +408,7 @@
 								<button
 									class="btn btn-text--error btn-small"
 									onclick={() => {
+										deleteResumeObject(jobObj.id);
 										trackingStore.trackAction('Updated Resume', {
 											section: 'Job Position',
 											button: 'Delete'
@@ -386,6 +418,7 @@
 								<button
 									class="btn btn-text--success btn-small"
 									onclick={() => {
+										updateResumeObject(jobObj.id);
 										trackingStore.trackAction('Updated Resume', {
 											section: 'Job Position',
 											button: 'Save'
@@ -399,15 +432,61 @@
 			</Accordion>
 			<Accordion title="Education">
 				<div class="space-y-2">
-					{#each education || [] as edu, idx}
+					<ul role="list">
+						{#each data.education || [] as edu, idx}
+							{#if !resumeObjects.some((j) => j?.edu?.id === edu.id)}
+								<li class="py-1">
+									<Card contentClassName="flex" size="sm">
+										<div class=" flex flex-1 flex-row">
+											<div>
+												<div class="flex justify-between text-base font-medium text-gray-900">
+													<h3>
+														{edu.degree}
+													</h3>
+												</div>
+												<p class="mt-1 text-sm text-gray-500">{edu.institution}</p>
+											</div>
+											<div class="flex flex-1 items-end justify-end text-sm">
+												<div class="flex">
+													<button
+														type="button"
+														class="btn btn-text--primary btn-small"
+														onclick={() => {
+															addResumeObjectToResume(undefined, edu.id);
+														}}
+													>
+														Add To Resume
+													</button>
+												</div>
+											</div>
+										</div>
+									</Card>
+								</li>
+							{/if}
+						{/each}
+					</ul>
+					{#each resumeObjects.filter((o) => o.type === 'education') || [] as eduObj, idx}
 						<Card contentClassName="space-y-2 px-4 py-4">
-							<EducationDetails bind:education={education[idx]} {idx} />
 							<div>
+								<div class="flex justify-between text-base font-medium text-gray-900">
+									<h3>
+										{eduObj.edu?.degree || 'Unnamed Degree'}
+									</h3>
+								</div>
+								<p class="my-1 pb-1 text-sm text-gray-500">
+									{eduObj.edu?.institution || 'Unnamed Institution'}
+								</p>
+								<TextArea
+									id="description"
+									label="Summary"
+									bind:value={eduObj.description}
+									oninput={() => {}}
+								/>
 								<Label id="" label="Achievements" />
 								<div class=" max-h-24 min-h-6 overflow-y-scroll">
-									{#if edu.achievements?.length > 0}
+									{#if (eduObj?.edu?.achievements || []).length > 0}
 										<ul class=" space-y-1">
-											{#each edu.achievements as achievement, idx}
+											{#each eduObj?.edu?.achievements as achievement, idx}
 												<li class="text-sm text-gray-600">
 													<button
 														class="group/ach relative w-full rounded px-2 py-1 text-start"
@@ -416,10 +495,10 @@
 																section: 'Education',
 																button: 'Add Bullet Point From Achievement'
 															});
-															// addBulletPoint({
-															// 	educationID: edu.id,
-															// 	text: achievement.myContribution
-															// });
+															addBulletPoint({
+																resumeObjectID: eduObj.id,
+																text: achievement.myContribution
+															});
 														}}
 													>
 														<span>
@@ -442,8 +521,8 @@
 							<div>
 								<Label id="" label="Bullet Points" />
 								<div class=" max-h-24 min-h-6 overflow-y-scroll">
-									<ul class=" space-y-1">
-										{#each edu.bulletPoints as bulletPoint, idx}
+									<ul class="space-y-1">
+										{#each eduObj.bulletPoints as bulletPoint, idx}
 											<li class="flex items-center text-sm text-gray-600">
 												<TextInput
 													className="flex-1"
@@ -476,7 +555,7 @@
 										<button
 											class="btn btn-text--success btn-small w-full text-start"
 											onclick={() => {
-												// addBulletPoint({ educationID: edu.id });
+												addBulletPoint({ resumeObjectID: eduObj.id });
 												trackingStore.trackAction('Updated Resume', {
 													section: 'Education',
 													button: 'Add Bullet Point'
@@ -489,9 +568,26 @@
 								</div>
 							</div>
 							{#snippet actions()}
-								<button class="btn btn-text--error btn-small" onclick={() => {}}>Delete</button>
-								<!-- <button class="btn btn-text--success btn-small">Save For This Resume</button> -->
-								<button class="btn btn-text--success btn-small" onclick={() => {}}>Save</button>
+								<button
+									class="btn btn-text--error btn-small"
+									onclick={() => {
+										deleteResumeObject(eduObj.id);
+										trackingStore.trackAction('Updated Resume', {
+											section: 'Eduction',
+											button: 'Delete'
+										});
+									}}>Delete</button
+								>
+								<button
+									class="btn btn-text--success btn-small"
+									onclick={() => {
+										updateResumeObject(eduObj.id);
+										trackingStore.trackAction('Updated Resume', {
+											section: 'Education',
+											button: 'Save'
+										});
+									}}>Save</button
+								>
 							{/snippet}
 						</Card>
 					{/each}
@@ -537,7 +633,7 @@
 			<BasicResume
 				{personalInfo}
 				experience={resumeObjects
-					.filter((r) => r.eduID === null)
+					.filter((r) => r.type === 'job')
 					.map((j) => {
 						return {
 							...j?.job,
@@ -545,7 +641,15 @@
 							description: j.description
 						};
 					})}
-				{education}
+				education={resumeObjects
+					.filter((r) => r.type === 'education')
+					.map((r) => {
+						return {
+							...r.edu,
+							bulletPoints: r.bulletPoints,
+							description: r.description
+						};
+					})}
 				showIncomplete
 				skillList={chipList}
 			/>
