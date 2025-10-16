@@ -67,10 +67,6 @@
 
 		<!-- Page Numbers -->
 		<div class="flex items-center gap-1">
-			{#if showFirstLast && firstPageInRange() > 2}
-				<span class="px-2 text-gray-400">…</span>
-			{/if}
-
 			{#each pages() as page}
 				<button
 					onclick={() => goToPage(page)}
@@ -85,10 +81,6 @@
 					<span class="sr-only">Go To Page {page}</span>
 				</button>
 			{/each}
-
-			{#if showFirstLast && lastPageInRange() < totalPages - 1}
-				<span class="px-2 text-gray-400">…</span>
-			{/if}
 		</div>
 
 		<!-- Right Controls -->
