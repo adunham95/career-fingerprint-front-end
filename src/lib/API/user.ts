@@ -73,6 +73,33 @@ export async function registerUser(newProfile: {
 	}
 }
 
+export async function registerOrgUserUpload(updateData: { file: File; orgID: string }) {
+	const url = `${PUBLIC_API_URL}/register/upload`;
+
+	try {
+		const formData = new FormData();
+		formData.append('file', updateData.file);
+		formData.append('orgID', updateData.orgID);
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			// headers: {
+			// 	'Content-Type': 'multipart/form-data' // Set content type to JSON
+			// },
+			body: formData
+		});
+		if (res.ok) {
+			return await res.json();
+		} else {
+			const message = await res.text();
+			throw new Error(`Failed to upload file. ${res.status} ${message}`);
+		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to upload file`);
+	}
+}
+
 export async function updateUser({
 	userID,
 	userData
@@ -303,6 +330,12 @@ export const useNewInviteCodeQuery = () => {
 export const useStartEmailVerification = () => {
 	return createMutation({
 		mutationFn: startVerifyEmail
+	});
+};
+
+export const useUploadOrgUsers = () => {
+	return createMutation({
+		mutationFn: registerOrgUserUpload
 	});
 };
 

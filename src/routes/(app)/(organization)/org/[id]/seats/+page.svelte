@@ -1,16 +1,23 @@
 <script lang="ts">
 	import { useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
+	import { useUploadOrgUsers } from '$lib/API/user.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import FileUpload from '$lib/Components/FormElements/FileUpload.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
+	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import TablePagination from '$lib/Components/TablePagination.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
 
 	let page = $state(1);
+	let showUploadModal = $state(false);
+	let uploadFile: File | null = $state(null);
 
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
+	let uploadOrgUsersMutation = useUploadOrgUsers();
 
 	let removeUser = useRemoveUserFromOrg();
 
@@ -19,6 +26,24 @@
 			await $removeUser.mutateAsync({ userID, orgID: data.org?.id || '' });
 			$users.refetch();
 		} catch (error) {}
+	}
+
+	async function uploadOrgUsers() {
+		try {
+			if (!uploadFile) {
+				throw Error('Missing File');
+			}
+			$uploadOrgUsersMutation.mutateAsync({ file: uploadFile, orgID: data.org?.id || '' });
+			showUploadModal = false;
+			uploadFile = null;
+			toastStore.show({
+				message: 'CSV Uploaded successfully',
+				details: 'Check back shortly to see the added users'
+			});
+			$users.refetch();
+		} catch (error) {
+			toastStore.show({ message: 'Error Uploading File', type: 'error' });
+		}
 	}
 
 	onMount(() => {
@@ -33,6 +58,12 @@
 				<h1 class="text-base font-semibold text-gray-900">Users</h1>
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
+			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+				<button class="btn btn--primary" onclick={() => (showUploadModal = true)}
+					>Upload Users</button
+				>
+			</div>
+
 			<!-- <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
 				<button type="button" class="btn btn--primary">Add user</button>
 			</div> -->
@@ -108,7 +139,20 @@
 		<TablePagination
 			bind:currentPage={page}
 			totalPages={$users?.data?.totalPages || 1}
+			range={2}
+			showFirstLast
 			onPageChange={() => $users.refetch()}
 		/>
 	{/if}
 </PageContainer>
+
+<Modal title="Upload Users" bind:isOpen={showUploadModal} onClose={() => (uploadFile = null)}>
+	<FileUpload setFile={(file) => (uploadFile = file)} />
+	{#snippet actions()}
+		<button
+			disabled={$uploadOrgUsersMutation.isPending}
+			class="btn btn--success"
+			onclick={uploadOrgUsers}>Upload Users</button
+		>
+	{/snippet}
+</Modal>

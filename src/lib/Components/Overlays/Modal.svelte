@@ -6,9 +6,10 @@
 		children: Snippet;
 		actions?: Snippet;
 		title: string;
+		onClose?: () => void;
 	}
 
-	let { isOpen = $bindable(false), children, title, actions }: Props = $props();
+	let { isOpen = $bindable(false), children, title, actions, onClose }: Props = $props();
 
 	let element: HTMLDialogElement;
 	$effect(() => {
@@ -20,6 +21,7 @@
 		} else {
 			isOpen = false;
 			element.close();
+			onClose?.();
 		}
 	});
 </script>
