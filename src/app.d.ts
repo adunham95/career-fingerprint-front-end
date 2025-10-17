@@ -239,6 +239,12 @@ interface SkillData {
 	userID: number;
 }
 
+interface MyFingerprint {
+	user: { firstName: string; lastName: string; id: string };
+	jobs: JobPosition[];
+	education: Education[];
+}
+
 export {
 	JobPosition,
 	Education,
@@ -257,5 +263,6 @@ export {
 	PrepAnswer,
 	AchievementTag,
 	JobObject,
-	ResumeObject
+	ResumeObject,
+	MyFingerprint
 };

@@ -107,10 +107,10 @@
 						{#each $users?.data?.users || [] as user}
 							<tr>
 								<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
-									<span>
+									<a href={`/org/${data.org?.id || ''}/seats/${user.id}`}>
 										{user.firstName}
 										{user.lastName}
-									</span>
+									</a>
 									<p class="table-cell text-sm text-gray-500 sm:hidden">{user.email}</p>
 									<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
 									<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
