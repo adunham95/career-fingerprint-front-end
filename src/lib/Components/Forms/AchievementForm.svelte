@@ -103,13 +103,14 @@
 			return;
 		}
 
-		if (!jobPositionID && !educationID) {
-			error = {
-				jobPositionID: 'Link Job or Education',
-				educationID: 'Link Job or Education'
-			};
-			return;
-		}
+		// Removing the Job or Education Requirement
+		// if (!jobPositionID && !educationID) {
+		// 	error = {
+		// 		jobPositionID: 'Link Job or Education',
+		// 		educationID: 'Link Job or Education'
+		// 	};
+		// 	return;
+		// }
 
 		let achDetails = {
 			description,
