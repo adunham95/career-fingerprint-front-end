@@ -1,5 +1,7 @@
 <script>
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
+	import TabNav from '$lib/Components/Header/TabNav.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import { formatDate } from '$lib/Utils/formatDate';
 
@@ -9,10 +11,19 @@
 </script>
 
 <PageContainer className="py-6">
-	{#if data.myFingerprint}
+	<div class="flex justify-between">
 		<h2 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-			{data.myFingerprint.user.firstName} Fingerprint
+			{data.myFingerprint?.user.firstName || 'User'}
 		</h2>
+	</div>
+	<TabNav
+		options={[
+			{ path: 'my-fingerprint', label: 'My Fingerprint' },
+			{ path: 'achievements', label: 'Achievements' },
+			{ path: 'meetings', label: 'Meetings' }
+		]}
+	/>
+	{#if data.myFingerprint}
 		{#each data.myFingerprint.jobs as job}
 			<dl class="grid grid-cols-1 sm:grid-cols-2">
 				<div class="px-4 py-6 sm:col-span-1 sm:px-0">
