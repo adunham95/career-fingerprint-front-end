@@ -9,7 +9,7 @@ export const load = async (event) => {
 
 	try {
 		const api = createApiClient(event);
-		const org = await api.get<Organization>(`/org/${event.params.id}`);
+		const org = await api.get<Organization>(`/org/${event.params.id}?includeSubscription=true`);
 
 		return { org, user };
 	} catch (error) {

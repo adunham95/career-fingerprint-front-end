@@ -9,6 +9,7 @@
 	import Chart from '$lib/Components/Chart.svelte';
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
+	import { PUBLIC_CONTACT_SALES } from '$env/static/public';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
@@ -69,7 +70,22 @@
 			href={`/org/${data.org?.id}/settings`}
 		/>
 	</div>
-	<p class="font-title mt-3 text-2xl">At a Glace</p>
+	{#if (data.org?.orgSubscription || []).length === 0}
+		<div
+			class="border-primary bg-primary-500/25 focus:ring-pastel-red-5 mt-5 rounded-lg border-3 p-2 text-lg transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
+		>
+			<p>
+				Partner with our sales team for a personalized onboarding experience. We’ll walk you through
+				subscription setup, account management, and best practices for your organization.
+			</p>
+			<div class="flex justify-end">
+				<a href={PUBLIC_CONTACT_SALES} target="_blank" class="btn btn--secondary">
+					Contact Sales for Guided Setup
+				</a>
+			</div>
+		</div>
+	{/if}
+	<p class="font-title mt-3 text-2xl">At a Glance</p>
 	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<DashboardStat
 			isLoading={$seatUtilization.isLoading}

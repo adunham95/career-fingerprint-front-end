@@ -11,6 +11,8 @@
 		contentClassName?: string;
 		actionsClassName?: string;
 		size?: 'sm' | 'md' | 'lg';
+		onSubmit?: () => void;
+		formID?: string;
 	}
 
 	const {
@@ -21,7 +23,9 @@
 		headlineClassName = '',
 		actionsClassName = '',
 		contentClassName = '',
-		size = 'md'
+		size = 'md',
+		onSubmit,
+		formID
 	}: Props = $props();
 
 	function getStyleProps() {
@@ -49,7 +53,24 @@
 	}
 </script>
 
-<div class={twMerge('bg-surface-50 shadow-xs ring-3 ring-gray-900/5 sm:rounded-xl', className)}>
+{#if formID}
+	<form
+		class={twMerge('bg-surface-50 shadow-xs ring-3 ring-gray-900/5 sm:rounded-xl', className)}
+		id={formID}
+		onsubmit={(e) => {
+			e.preventDefault();
+			onSubmit?.();
+		}}
+	>
+		{@render inner()}
+	</form>
+{:else}
+	<div class={twMerge('bg-surface-50 shadow-xs ring-3 ring-gray-900/5 sm:rounded-xl', className)}>
+		{@render inner()}
+	</div>
+{/if}
+
+{#snippet inner()}
 	{#if headline}
 		<h4
 			class={`font-title  font-semibold text-gray-900 ${getStyleProps().title} ${headlineClassName}`}
@@ -67,4 +88,4 @@
 			{@render actions()}
 		</div>
 	{/if}
-</div>
+{/snippet}

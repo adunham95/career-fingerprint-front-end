@@ -9,8 +9,8 @@ export async function registerOrg(newProfile: {
 	email: string;
 	password: string;
 	orgName: string;
-	orgSize: number;
-	orgDomain: string;
+	orgSize?: number;
+	orgDomain?: string;
 	orgEmail: string;
 }) {
 	const url = `${PUBLIC_API_URL}/register/org`;

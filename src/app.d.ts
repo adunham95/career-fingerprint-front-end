@@ -204,6 +204,7 @@ interface Organization {
 	updatedAt: string;
 	logoURL: string;
 	domains: OrgDomain[];
+	orgSubscription: Subscription[];
 }
 
 interface OrgDomain {
