@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { useRegisterOrg } from '$lib/API/org';
 	import Card from '$lib/Components/Containers/Card.svelte';
+	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 
 	let orgName = $state('');
 	let orgEmail = $state('');
+	let streetAddress = $state('');
+	let city = $state('');
+	let providence = $state('');
+	let zip = $state('');
+	let country = $state('US');
 
 	let firstName = $state('');
 	let lastName = $state('');
@@ -27,7 +33,9 @@
 				password,
 				orgEmail,
 				orgName,
-				orgSize: 0
+				orgSize: 0,
+				postalCode: zip,
+				country
 			});
 		} catch (error) {}
 	}
@@ -35,7 +43,7 @@
 
 <Card
 	headline="Create Organization"
-	className=" w-full max-w-[500px] mx-2 @container/create-org"
+	className=" w-full max-w-[750px] md:mx-2 @container/create-org"
 	contentClassName="space-y-3"
 	formID="new-org"
 	onSubmit={createOrganization}
@@ -43,15 +51,58 @@
 	<div class={``}>
 		<h2 class="text-lg font-medium text-gray-900">Organization information</h2>
 
-		<div class="mt-4 grid grid-cols-4 gap-x-4 gap-y-6">
-			<TextInput bind:value={orgName} required id="name" label="Name" className="col-span-4" />
+		<div class="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-6">
+			<TextInput bind:value={orgName} required id="name" label="Name" className="md:col-span-6" />
 			<TextInput
 				required
 				id="org-email"
 				bind:value={orgEmail}
 				label="Billing Email"
-				className="col-span-4"
+				className="md:col-span-3"
 				type="email"
+			/>
+			<!-- Collect Billing Address -->
+			<TextInput
+				bind:value={streetAddress}
+				required
+				id="street-address"
+				label="Billing Street Address"
+				className="md:col-span-3"
+			/>
+			<TextInput
+				bind:value={city}
+				required
+				id="address-city"
+				label="City"
+				className="md:col-span-2"
+			/>
+			<TextInput
+				bind:value={providence}
+				required
+				id="address-state"
+				label="State/Providence"
+				className="md:col-span-1"
+			/>
+			<TextInput
+				bind:value={zip}
+				required
+				id="address-zip"
+				label="Zip/Postal Cose"
+				className="md:col-span-1"
+			/>
+			<Select
+				bind:value={country}
+				className="md:col-span-2"
+				id="address-country"
+				label="County"
+				options={[
+					{ label: 'United States', id: 'US' },
+					{ label: 'Bahamas', id: 'BS' },
+					{ label: 'Canada', id: 'CA' },
+					{ label: 'Jamaica', id: 'JM' },
+					{ label: 'United Kingdom', id: 'GB' },
+					{ label: 'Virgin Islands, U.S.', id: 'VI' }
+				]}
 			/>
 		</div>
 	</div>

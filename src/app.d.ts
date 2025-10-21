@@ -205,6 +205,10 @@ interface Organization {
 	logoURL: string;
 	domains: OrgDomain[];
 	orgSubscription: Subscription[];
+	_count?: {
+		orgSubscription: number;
+		orgAdmins: number;
+	};
 }
 
 interface OrgDomain {
