@@ -6,9 +6,10 @@
 
 	interface Props {
 		meetings: Meeting[];
+		disableViewClick?: boolean;
 	}
 
-	const { meetings }: Props = $props();
+	const { meetings, disableViewClick = false }: Props = $props();
 </script>
 
 <table class="min-w-full divide-y divide-gray-300">
@@ -30,9 +31,11 @@
 				class=" hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
 				>Type</th
 			>
-			<th scope="col" class="relative py-3.5 pr-4 pl-3 sm:pr-0">
-				<span class="sr-only">Select</span>
-			</th>
+			{#if !disableViewClick}
+				<th scope="col" class="relative py-3.5 pr-4 pl-3 sm:pr-0">
+					<span class="sr-only">Select</span>
+				</th>
+			{/if}
 		</tr>
 	</thead>
 	<tbody class="divide-y divide-gray-200 bg-white">
@@ -57,17 +60,19 @@
 					{format(date, 'PPP p')}
 				</td>
 				<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
-				<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
-					<a
-						href={`/meetings/${meeting.id}`}
-						onclick={() => {
-							trackingStore.trackAction('View Meeting Click');
-						}}
-						class="btn btn-text--primary"
-					>
-						View
-					</a>
-				</td>
+				{#if !disableViewClick}
+					<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
+						<a
+							href={`/meetings/${meeting.id}`}
+							onclick={() => {
+								trackingStore.trackAction('View Meeting Click');
+							}}
+							class="btn btn-text--primary"
+						>
+							View
+						</a>
+					</td>
+				{/if}
 			</tr>
 		{/each}
 	</tbody>

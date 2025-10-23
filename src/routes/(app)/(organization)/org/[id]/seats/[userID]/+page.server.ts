@@ -1,16 +1,5 @@
-import { createApiClient } from '$lib/API/apiClient';
-import type { MyFingerprint } from '../../../../../../../app.js';
+import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
-	try {
-		const api = createApiClient(event);
-
-		const [myFingerprint] = await Promise.all([
-			await api.get<MyFingerprint>('/my-fingerprint/user/2')
-		]);
-
-		return { myFingerprint };
-	} catch (error) {
-		console.error(error);
-	}
+	redirect(308, `/org/${event.params.id}/seats/${event.params.userID}/my-fingerprint`);
 };
