@@ -6,11 +6,12 @@
 	}
 
 	interface Props {
+		size?: string;
 		buttons: ButtonOption[];
 	}
 
 	let isOpen = $state(false);
-	const { buttons }: Props = $props();
+	const { buttons, size = 'size-5' }: Props = $props();
 </script>
 
 <div class="relative flex-none">
@@ -23,7 +24,13 @@
 	>
 		<span class="absolute -inset-2.5"></span>
 		<span class="sr-only">Open options</span>
-		<svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+		<svg
+			viewBox="0 0 20 20"
+			fill="currentColor"
+			data-slot="icon"
+			aria-hidden="true"
+			class={`${size}`}
+		>
 			<path
 				d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"
 			/>
@@ -60,6 +67,12 @@
 					>
 						{button.title}
 					</button>
+				{:else}
+					<div
+						class=" block w-full cursor-not-allowed px-3 py-1 text-start text-sm/6 text-gray-900"
+					>
+						{button.title}
+					</div>
 				{/if}
 			{/each}
 		</div>

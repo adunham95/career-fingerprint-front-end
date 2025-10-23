@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { useDeleteMeetingMutation } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
+	import MenuButton from '$lib/Components/Buttons/MenuButton.svelte';
 	import UnlockWithPremiumButton from '$lib/Components/Buttons/UnlockWithPremiumButton.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -14,6 +17,7 @@
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
+	import { redirect } from '@sveltejs/kit';
 	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
@@ -23,6 +27,7 @@
 
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
+	let deleteMeetingMutation = useDeleteMeetingMutation(data.meetingID || '');
 
 	function isUpcomingOrRecent(meetingTime: Date | string): boolean {
 		const tenMinutesAgo = Date.now() - 10 * 60 * 1000; // timestamp
@@ -44,6 +49,16 @@
 			newNote = '';
 		} catch (error) {
 			toastStore.show({ message: 'Could not save note', type: 'error' });
+		}
+	}
+
+	async function deleteMeeting() {
+		try {
+			await $deleteMeetingMutation.mutateAsync(data.meetingID || '');
+			toastStore.show({ message: 'Meeting Deleted', type: 'success' });
+			goto('/meetings');
+		} catch (error) {
+			toastStore.show({ message: 'Could delete meeting', type: 'error' });
 		}
 	}
 </script>
@@ -121,6 +136,10 @@
 							</div>
 						{/if}
 					{/if}
+					<MenuButton
+						size="size-8"
+						buttons={[{ title: 'Delete Meeting', onClick: () => deleteMeeting() }]}
+					/>
 				</div>
 			</div>
 		</div>

@@ -1,3 +1,4 @@
+import { createApiClient } from './apiClient';
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Meeting } from '../../app';
@@ -27,6 +28,17 @@ export interface UpdateMeetingInput {
 	educationID?: string | null;
 	agenda?: string | null;
 	attendees?: string[];
+}
+
+export async function deleteMeeting(id: string) {
+	const api = createApiClient();
+
+	try {
+		api.del(`/meetings/${id}`);
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to delete meeting`);
+	}
 }
 
 export async function updateMeeting(meeting: Partial<UpdateMeetingInput>): Promise<Meeting | null> {
@@ -191,6 +203,24 @@ export const useUpdateMeetingMutation = (meetingID: string) => {
 		},
 		onError: (error) => {
 			console.error('Failed to update meeting:', error);
+		}
+	});
+};
+
+export const useDeleteMeetingMutation = (meetingID: string) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: deleteMeeting,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: meetingKeys.all
+			});
+			queryClient.invalidateQueries({
+				queryKey: meetingKeys.meeting(meetingID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete meeting:', error);
 		}
 	});
 };
