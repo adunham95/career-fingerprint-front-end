@@ -39,9 +39,7 @@
 		trackingStore.pageViewEvent('Register');
 	});
 
-	async function login(e: SubmitEvent) {
-		e.preventDefault();
-
+	async function login() {
 		if (!email || !firstName || !password) {
 			toastStore.show({ message: 'Missing account elements', type: 'error' });
 			return;
@@ -82,8 +80,9 @@
 <Card headline="Create Account" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<form
 		onsubmit={(e) => {
+			e.preventDefault();
 			trackingStore.trackAction('Submit New Account');
-			login(e);
+			login();
 		}}
 		class="gap-2 space-y-2 md:grid md:grid-cols-2"
 	>
