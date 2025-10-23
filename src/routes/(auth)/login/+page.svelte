@@ -47,11 +47,11 @@
 				toastStore.show({ message: 'Successfully logged in', type: 'success' });
 				const data = await res.json();
 				console.log(data);
-				mixpanel.identify(data.user.id);
-				mixpanel.people.set({
-					$email: data.user.email
-				});
-				await goto(pageData.redirectPath);
+				// mixpanel.identify(data.user.id);
+				// mixpanel.people.set({
+				// 	$email: data.user.email
+				// });
+				goto(pageData.redirectPath);
 				isLoading = false;
 			} else {
 				const data = await res.json();
