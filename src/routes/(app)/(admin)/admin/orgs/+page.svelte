@@ -7,6 +7,7 @@
 	import type { Organization } from '../../../../../app.js';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import Select from '$lib/Components/FormElements/Select.svelte';
 
 	const { data } = $props();
 
@@ -119,6 +120,15 @@
 		/>
 		<TextInput id="user-count" label="User Count" type="number" step={10} min={1} />
 		<TextInput id="stripe-subscription" label="Stripe Subscription" />
+		<Select
+			value=""
+			id="sub-type"
+			label="Select A Subscription Type"
+			options={[
+				{ id: 'org-basic', label: 'Basic' },
+				{ id: 'org-premium', label: 'Premium' }
+			]}
+		/>
 	</div>
 	{#snippet actions()}
 		<button class="btn btn--success">Save</button>
