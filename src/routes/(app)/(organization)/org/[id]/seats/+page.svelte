@@ -154,7 +154,11 @@
 	{/if}
 </PageContainer>
 
-<Modal title="Upload Users" bind:isOpen={showUploadModal} onClose={() => (uploadFile = null)}>
+<Modal
+	title="Upload Users"
+	bind:isOpen={showUploadModal}
+	onClose={() => ((uploadFile = null), (uploadError = null))}
+>
 	<InfoBlock
 		title="CSV Template"
 		description="Download the template fill in the user data. Then upload to add users to your organization"
