@@ -8,11 +8,19 @@
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
+	import { useAddOrgSubscription } from '$lib/API/org.js';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 
 	const { data } = $props();
 
 	let selectedOrg = $state<Organization | null>(null);
 	let showAddSubscription = $state<boolean>(false);
+	let userCount = $state(0);
+	let stripeSubID = $state('');
+	let subType = $state('');
+	let updateSubscriptionError = $state<string | null>(null);
+
+	const addSubscriptionMutation = useAddOrgSubscription();
 
 	console.log({ data });
 
@@ -22,6 +30,35 @@
 			toastStore.show({ message: 'Text Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Error Coping Text', type: 'error' });
+		}
+	}
+
+	async function addSubscription() {
+		try {
+			console.log({
+				id: selectedOrg?.id || '',
+				userCount,
+				stripeSubscriptionID: stripeSubID,
+				subscriptionType: subType
+			});
+			await $addSubscriptionMutation.mutateAsync({
+				id: selectedOrg?.id || '',
+				userCount,
+				stripeSubscriptionID: stripeSubID,
+				subscriptionType: subType
+			});
+			showAddSubscription = false;
+			selectedOrg = null;
+			userCount = 0;
+			stripeSubID = '';
+			subType = '';
+		} catch (error) {
+			let message = 'Something went wrong.';
+			if (error instanceof Error) {
+				message = error.message;
+			}
+
+			updateSubscriptionError = message;
 		}
 	}
 </script>
@@ -104,6 +141,9 @@
 	}}
 >
 	<div class="space-y-2">
+		{#if updateSubscriptionError}
+			<ErrorText errorText={updateSubscriptionError} />
+		{/if}
 		{#if selectedOrg}
 			<h2>{selectedOrg.name}</h2>
 			{#if selectedOrg.stripeCustomerID}
@@ -118,10 +158,17 @@
 			title="To Add Subscription"
 			description="To add a new subscription to an organization. Copy the stripe id, and create a new subscription in stripe with the stripe id. When created add the stripe subscriptionID here along with the seat count. Stripe will handle sending the invoice and collecting payment. "
 		/>
-		<TextInput id="user-count" label="User Count" type="number" step={10} min={1} />
-		<TextInput id="stripe-subscription" label="Stripe Subscription" />
+		<TextInput
+			id="user-count"
+			label="User Count"
+			type="number"
+			step={10}
+			min={1}
+			bind:value={userCount}
+		/>
+		<TextInput id="stripe-subscription" label="Stripe Subscription" bind:value={stripeSubID} />
 		<Select
-			value=""
+			bind:value={subType}
 			id="sub-type"
 			label="Select A Subscription Type"
 			options={[
@@ -131,6 +178,6 @@
 		/>
 	</div>
 	{#snippet actions()}
-		<button class="btn btn--success">Save</button>
+		<button class="btn btn--success" onclick={addSubscription}>Save</button>
 	{/snippet}
 </Modal>

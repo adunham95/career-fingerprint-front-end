@@ -2,6 +2,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import type { User } from '@sentry/sveltekit';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import { queryClient } from './queryClient';
+import { createApiClient } from './apiClient';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -216,6 +217,30 @@ export async function createDomain({ orgID, domain }: { orgID: string; domain: s
 	}
 }
 
+export async function updateOrgSubscription({
+	userCount,
+	stripeSubscriptionID,
+	subscriptionType,
+	id
+}: {
+	id: string;
+	userCount: number;
+	stripeSubscriptionID: string;
+	subscriptionType: string;
+}) {
+	try {
+		const apiClient = createApiClient();
+		apiClient.patch(`/org/${id}/add-subscription`, {
+			userCount,
+			subscriptionType,
+			stripeSubscriptionID
+		});
+	} catch (error) {
+		console.error(error);
+		throw new Error(`Failed to create organization`);
+	}
+}
+
 export async function updateDomain({
 	id,
 	orgID,
@@ -400,6 +425,20 @@ export const useCreateOrg = () => {
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create org:', error);
+		}
+	});
+};
+
+export const useAddOrgSubscription = () => {
+	return createMutation({
+		mutationFn: updateOrgSubscription,
+		onSuccess: () => {
+			// queryClient.invalidateQueries({
+			// 	queryKey: orgKeys.orgDomains(orgID)
+			// });
+		},
+		onError: (error) => {
+			console.error('Failed to delete domain:', error);
 		}
 	});
 };

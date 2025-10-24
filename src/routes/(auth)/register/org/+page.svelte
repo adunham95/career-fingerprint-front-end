@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { useRegisterOrg } from '$lib/API/org';
 	import Card from '$lib/Components/Containers/Card.svelte';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast';
 
 	let orgName = $state('');
 	let orgEmail = $state('');
@@ -11,6 +14,8 @@
 	let providence = $state('');
 	let zip = $state('');
 	let country = $state('US');
+
+	let errorMessage = $state<string | null>(null);
 
 	let firstName = $state('');
 	let lastName = $state('');
@@ -26,6 +31,10 @@
 			if (password !== confirmPassword) {
 				error.confirmPassword = 'Passwords Do not match';
 			}
+			if (!email || !firstName || !password || !orgName || !orgEmail) {
+				toastStore.show({ message: 'Missing account elements', type: 'error' });
+				return;
+			}
 			await $createOrgAndUser.mutateAsync({
 				firstName,
 				lastName,
@@ -37,7 +46,19 @@
 				postalCode: zip,
 				country
 			});
-		} catch (error) {}
+			toastStore.show({
+				type: 'success',
+				message: `Organization Created`
+			});
+			goto('/dashboard');
+		} catch (error) {
+			let message = 'Something went wrong.';
+			if (error instanceof Error) {
+				message = error.message;
+			}
+
+			errorMessage = message;
+		}
 	}
 </script>
 
@@ -49,6 +70,9 @@
 	onSubmit={createOrganization}
 >
 	<div class={``}>
+		{#if errorMessage}
+			<ErrorText errorText={errorMessage} />
+		{/if}
 		<h2 class="text-lg font-medium text-gray-900">Organization information</h2>
 
 		<div class="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-6">
