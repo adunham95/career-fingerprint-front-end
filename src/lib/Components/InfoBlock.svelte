@@ -1,11 +1,14 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	interface Props {
 		title: string;
 		description: string;
 		className?: string;
+		actions?: Snippet;
 	}
 
-	const { title, description, className = '' }: Props = $props();
+	const { title, description, className = '', actions }: Props = $props();
 </script>
 
 <div class={`bg-info-100 border-info-200 rounded-md border-3 p-4 ${className}`}>
@@ -32,6 +35,11 @@
 					{description}
 				</p>
 			</div>
+			{#if actions}
+				<div>
+					{@render actions()}
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

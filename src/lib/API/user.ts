@@ -88,14 +88,28 @@ export async function registerOrgUserUpload(updateData: { file: File; orgID: str
 			// },
 			body: formData
 		});
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to upload file. ${res.status} ${message}`);
+		if (!res.ok) {
+			let message = `Failed to upload file (${res.status})`;
+			try {
+				// Try to read structured error (NestJS often returns JSON)
+				const errJson = await res.json();
+				message = errJson.message || message;
+			} catch {
+				// Fall back to raw text if JSON parse fails
+				const errText = await res.text();
+				message = errText || message;
+			}
+			throw new Error(message);
 		}
+
+		// Success response
+		const data = await res.json();
+		return data;
 	} catch (error) {
 		console.log(error);
+		if (error instanceof Error) {
+			throw new Error(error?.message || `Failed to upload file`);
+		}
 		throw new Error(`Failed to upload file`);
 	}
 }

@@ -3,6 +3,7 @@
 	import { useUploadOrgUsers } from '$lib/API/user.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import FileUpload from '$lib/Components/FormElements/FileUpload.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import TablePagination from '$lib/Components/TablePagination.svelte';
@@ -15,6 +16,7 @@
 	let page = $state(1);
 	let showUploadModal = $state(false);
 	let uploadFile: File | null = $state(null);
+	let uploadError = $state<string | null>(null);
 
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
 	let uploadOrgUsersMutation = useUploadOrgUsers();
@@ -33,7 +35,7 @@
 			if (!uploadFile) {
 				throw Error('Missing File');
 			}
-			$uploadOrgUsersMutation.mutateAsync({ file: uploadFile, orgID: data.org?.id || '' });
+			await $uploadOrgUsersMutation.mutateAsync({ file: uploadFile, orgID: data.org?.id || '' });
 			showUploadModal = false;
 			uploadFile = null;
 			toastStore.show({
@@ -42,7 +44,13 @@
 			});
 			$users.refetch();
 		} catch (error) {
-			toastStore.show({ message: 'Error Uploading File', type: 'error' });
+			console.log({ error });
+			let message = 'Something went wrong.';
+			if (error instanceof Error) {
+				message = error.message;
+			}
+
+			uploadError = message;
 		}
 	}
 
@@ -59,9 +67,9 @@
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
 			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button class="btn btn--primary" onclick={() => (showUploadModal = true)}
-					>Upload Users</button
-				>
+				<button class="btn btn--primary" onclick={() => (showUploadModal = true)}>
+					Upload Users
+				</button>
 			</div>
 
 			<!-- <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
@@ -147,6 +155,22 @@
 </PageContainer>
 
 <Modal title="Upload Users" bind:isOpen={showUploadModal} onClose={() => (uploadFile = null)}>
+	<InfoBlock
+		title="CSV Template"
+		description="Download the template fill in the user data. Then upload to add users to your organization"
+	>
+		{#snippet actions()}
+			<div class="flex justify-end">
+				<a href="/template-org-user.csv" download="" class="btn btn-tiny btn-text--info"
+					>Download Template</a
+				>
+			</div>
+		{/snippet}
+	</InfoBlock>
+	{#if uploadError}
+		<p class=" text-error-500 pt-3 font-bold">{uploadError}</p>
+	{/if}
+
 	<FileUpload setFile={(file) => (uploadFile = file)} />
 	{#snippet actions()}
 		<button

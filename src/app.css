@@ -51,6 +51,12 @@ button {
 		line-height: var(--text-sm--line-height);
 	}
 
+	.btn-tiny {
+		padding-block: --spacing(1);
+		font-size: var(--text-xs);
+		line-height: var(--text-xs--line-height);
+	}
+
 	.btn-custom {
 		background-color: var(--color-custom);
 		&:hover {
