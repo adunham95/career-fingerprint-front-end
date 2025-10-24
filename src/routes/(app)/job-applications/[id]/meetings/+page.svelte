@@ -14,7 +14,7 @@
 </script>
 
 {#if (data.meetings?.length || 0) > 0}
-	<MeetingTable meetings={data.meetings || []} />
+	<MeetingTable meetings={data.meetings || []} hrefBase="/meetings" />
 {:else}
 	<!-- TODO Create Copy -->
 	<InfoBlock title="Empty Meetings" description="Your meetings list is empty. " />

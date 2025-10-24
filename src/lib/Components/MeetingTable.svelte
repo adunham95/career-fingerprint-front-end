@@ -7,9 +7,11 @@
 	interface Props {
 		meetings: Meeting[];
 		disableViewClick?: boolean;
+		onViewClick?: (id: string) => void; // Optional callback
+		hrefBase?: string; // Optional base href, e.g. "/meetings"
 	}
 
-	const { meetings, disableViewClick = false }: Props = $props();
+	const { meetings, disableViewClick = false, onViewClick, hrefBase }: Props = $props();
 </script>
 
 <table class="min-w-full divide-y divide-gray-300">
@@ -62,15 +64,25 @@
 				<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
 				{#if !disableViewClick}
 					<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
-						<a
-							href={`/meetings/${meeting.id}`}
-							onclick={() => {
-								trackingStore.trackAction('View Meeting Click');
-							}}
-							class="btn btn-text--primary"
-						>
-							View
-						</a>
+						{#if hrefBase}
+							<a
+								href={`${hrefBase}/${meeting.id}`}
+								onclick={() => trackingStore.trackAction('View Meeting Click')}
+								class="btn btn-text--primary"
+							>
+								View
+							</a>
+						{:else if onViewClick}
+							<button
+								onclick={() => {
+									trackingStore.trackAction('View Meeting Click');
+									onViewClick(meeting.id);
+								}}
+								class="btn btn-text--primary"
+							>
+								View
+							</button>
+						{/if}
 					</td>
 				{/if}
 			</tr>

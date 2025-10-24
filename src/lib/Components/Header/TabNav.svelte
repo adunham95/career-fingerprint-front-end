@@ -60,7 +60,7 @@
 {#snippet navItem(path: string, label: string, currentPath: string)}
 	<a
 		href={path}
-		class={`w-1/4 border-b-2  px-1 py-4 text-center text-sm font-medium  ${currentPath === path ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+		class={`w-1/4 border-b-2  px-1 py-4 text-center text-sm font-medium  ${currentPath.endsWith(path) ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
 	>
 		{label}</a
 	>

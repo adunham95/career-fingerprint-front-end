@@ -8,7 +8,7 @@
 		onActionClick?: (a: Achievement) => void;
 	}
 
-	const { dates = [], onActionClick = () => null }: Props = $props();
+	const { dates = [], onActionClick }: Props = $props();
 </script>
 
 <div class="flow-root">
@@ -42,8 +42,9 @@
 							</div>
 						</div>
 						<button
-							onclick={() => onActionClick(day)}
-							class="hover:bg-secondary/20 min-w-0 flex-1 rounded p-2 transition-colors duration-300"
+							onclick={() => onActionClick?.(day)}
+							disabled={!onActionClick}
+							class="hover:bg-secondary/20 !disabled:hover:cursor-default min-w-0 flex-1 rounded p-2 transition-colors duration-300 disabled:hover:bg-transparent"
 						>
 							<div>
 								{#if day.startDate}
