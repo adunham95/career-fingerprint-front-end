@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Loader from '$lib/Components/Loader.svelte';
 	import Label, { type LabelProps } from './Label.svelte';
 	interface Props extends LabelProps {
 		className?: string;
@@ -22,6 +21,7 @@
 	let fileName = $state<string | null>(null);
 
 	function handleFileSelect(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		previewRows = [];
 		isLoading = true;
 		const file = e.currentTarget?.files?.[0];
 		if (!file) {
