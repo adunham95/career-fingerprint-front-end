@@ -41,7 +41,6 @@ export async function registerOrg(newProfile: {
 
 export async function createOrg(newOrg: {
 	orgName: string;
-	orgSize: number;
 	orgDomain: string;
 	orgEmail: string;
 	orgLogo: string;
