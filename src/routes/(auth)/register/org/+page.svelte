@@ -30,6 +30,7 @@
 		try {
 			if (password !== confirmPassword) {
 				error.confirmPassword = 'Passwords Do not match';
+				return;
 			}
 			if (!email || !firstName || !password || !orgName || !orgEmail) {
 				toastStore.show({ message: 'Missing account elements', type: 'error' });
