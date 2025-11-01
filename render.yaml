@@ -1,22 +1,51 @@
-services:
-  - type: web
-    name: app-frontend
-    runtime: 'node'
-    plan: starter
-    buildCommand: yarn install && yarn build
-    startCommand: node build
-    envVars:
-      - key: PUBLIC_API_URL
-        value: https://api.careerfingerprint.app # replace with your actual NestJS URL
-      - key: NODE_ENV
-        value: production
-      - key: PUBLIC_DEFAULT_SUBSCRIPTION_KEY
-        value: 'pro-beta'
-      - key: SENTRY_DSN
-        sync: false
-      - key: PUBLIC_STRIPE_API_KEY
-        sync: false
-      - key: CLOUDFLARE_ACCOUNT_ID
-        sync: false
-      - key: CLOUDFLARE_API_TOKEN
-        sync: false
+projects:
+  - name: Career Fingerprint
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: app-frontend
+            runtime: 'node'
+            plan: starter
+            branch: 'production'
+            buildCommand: yarn install && yarn build
+            startCommand: node build
+            envVars:
+              - key: PUBLIC_API_URL
+                value: https://api.careerfingerprint.app # replace with your actual NestJS URL
+              - key: NODE_ENV
+                value: production
+              - key: PUBLIC_DEFAULT_SUBSCRIPTION_KEY
+                value: 'pro-beta'
+              - key: SENTRY_DSN
+                sync: false
+              - key: PUBLIC_STRIPE_API_KEY
+                sync: false
+              - key: CLOUDFLARE_ACCOUNT_ID
+                sync: false
+              - key: CLOUDFLARE_API_TOKEN
+                sync: false
+      - name: Stage
+        services:
+          - type: web
+            name: app-frontend
+            runtime: 'node'
+            plan: starter
+            branch: 'main'
+            buildCommand: yarn install && yarn build
+            startCommand: node build
+            envVars:
+              - key: PUBLIC_API_URL
+                value: https://api-stage.careerfingerprint.app # replace with your actual NestJS URL
+              - key: NODE_ENV
+                value: production
+              - key: PUBLIC_DEFAULT_SUBSCRIPTION_KEY
+                value: 'pro-beta'
+              - key: SENTRY_DSN
+                sync: false
+              - key: PUBLIC_STRIPE_API_KEY
+                sync: false
+              - key: CLOUDFLARE_ACCOUNT_ID
+                sync: false
+              - key: CLOUDFLARE_API_TOKEN
+                sync: false
