@@ -30,7 +30,7 @@ projects:
           - type: web
             name: app-frontend-stage
             runtime: 'node'
-            plan: starter
+            plan: free
             branch: 'main'
             buildCommand: yarn install && yarn build
             startCommand: node build
