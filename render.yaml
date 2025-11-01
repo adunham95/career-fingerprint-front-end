@@ -28,7 +28,7 @@ projects:
       - name: Stage
         services:
           - type: web
-            name: app-frontend
+            name: app-frontend-stage
             runtime: 'node'
             plan: starter
             branch: 'main'
