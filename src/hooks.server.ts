@@ -22,6 +22,25 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 		return new Response('Forbidden', { status: 403 });
 	}
 
+	const token = event.url.searchParams.get('token');
+	if (token) {
+		console.log(token);
+		event.cookies.set('accessToken', token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+			maxAge: 60 * 60 * 24 * 7, // 7 days
+			path: '/',
+			// optional if both api + app share root domain:
+			domain: process.env.COOKIE_DOMAIN
+		});
+		event.locals.tokens = { accessToken: token };
+		event.locals.user = null; // not fetched yet
+
+		// Optionally redirect user cleanly without token in URL
+		return resolve(event);
+	}
+
 	const accessToken = event.cookies.get('accessToken');
 	event.locals.tokens = { accessToken };
 	event.locals.user = null; // not fetched yet
