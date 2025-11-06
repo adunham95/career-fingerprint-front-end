@@ -1,0 +1,21 @@
+name: Production Release PR
+
+on:
+  pull_request:
+    # Only following types are handled by the action, but one can default to all as well
+    types: [opened, reopened, synchronize]
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: write
+    steps:
+      - name: Generate Release Notes
+        uses: release-drafter/release-drafter@v6
+        with:
+          config_file: .github/release-drafter.yml
