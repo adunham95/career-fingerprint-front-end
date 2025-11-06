@@ -27,11 +27,3 @@ jobs:
         run: |
           echo "### Release Notes Draft"
           echo "${{ steps.drafter.outputs.releaseNotes }}"
-
-      - name: Update PR Description With Release Notes
-        uses: thomaseizinger/auto-update-pr-description@v2
-        with:
-          pull-request-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## 🚀 Release Notes Preview
-            ${{ steps.drafter.outputs.releaseNotes }}
