@@ -3,6 +3,8 @@
 	import { page } from '$app/state';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
+	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
@@ -18,13 +20,21 @@
 	});
 
 	let password = $state('');
+	let confirmPassword = $state('');
 	let isLoading = $state(false);
+	let errorText = $state<null | string>(null);
 
 	async function resetPassword(e: SubmitEvent) {
 		e.preventDefault();
 
 		if (!email || !token) {
 			toastStore.show({ message: 'No Email Or token', type: 'error' });
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			errorText = 'Passwords do not match';
+			return;
 		}
 
 		isLoading = true;
@@ -52,6 +62,9 @@
 			} else {
 				const data = await res.json();
 				console.log(res, data);
+				if (data.message) {
+					errorText = data.message;
+				}
 				isLoading = false;
 			}
 		} catch (error) {
@@ -65,6 +78,14 @@
 <Card headline="Reset Password" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<form onsubmit={resetPassword} class="space-y-2">
 		<TextInput id="password" label="Password" bind:value={password} autocomplete="new-password" />
+		<TextInput
+			id="confirmPassword"
+			label="Confirm Password"
+			bind:value={confirmPassword}
+			autocomplete="new-password"
+		/>
+		<ErrorText {errorText} />
+		<PasswordRequirements {confirmPassword} {password} />
 		<div class="flex w-full justify-between pt-2">
 			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
 			<button disabled={isLoading} class="btn btn-text--primary btn-small">Reset Password</button>
