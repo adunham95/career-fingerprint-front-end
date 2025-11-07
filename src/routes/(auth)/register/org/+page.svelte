@@ -3,6 +3,7 @@
 	import { useRegisterOrg } from '$lib/API/org';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
+	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
@@ -112,7 +113,7 @@
 				bind:value={zip}
 				required
 				id="address-zip"
-				label="Zip/Postal Cose"
+				label="Zip/PostalCode"
 				className="md:col-span-1"
 			/>
 			<Select
@@ -173,8 +174,14 @@
 				errorText={error?.confirmPassword}
 				className="md:col-span-2 col-span-1"
 			/>
+			<PasswordRequirements {password} className="md:col-span-4 col-span-1" {confirmPassword} />
 		</div>
 	</div>
+	<p class="col-span-2 text-[10px] text-gray-500">
+		By creating an account, you agree to our
+		<a href="https://mycareerfingerprint.com/terms" class="underline">Terms of Service</a> and
+		<a href="https://mycareerfingerprint.com/privacy" class="underline">Privacy Policy</a>.
+	</p>
 	{#snippet actions()}
 		<a href="/login" class="btn btn-text--primary btn-small">Login</a>
 		<button class="btn btn-text--primary btn-small" type="submit">Create Account</button>

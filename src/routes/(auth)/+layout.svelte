@@ -2,8 +2,17 @@
 	import { PUBLIC_GTAG } from '$env/static/public';
 	import { queryClient } from '$lib/API/queryClient';
 	import { QueryClientProvider } from '@tanstack/svelte-query';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	onMount(() => {
+		document.body.classList.add('login-page');
+
+		return () => {
+			document.body.classList.remove('login-page');
+		};
+	});
 </script>
 
 <svelte:head>
@@ -21,12 +30,20 @@
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
-	<div class="inset-0 flex h-screen w-screen items-center justify-center">
-		<img
-			src="/images/pexels-pixabay-434337.jpg"
-			alt="background"
-			class="absolute inset-0 -z-10 size-full object-cover object-top"
-		/>
+	<div class=" flex h-screen w-full items-center justify-center overflow-hidden">
 		{@render children()}
 	</div>
 </QueryClientProvider>
+
+<style>
+	:global(.login-page) {
+		background-image: url('/images/pexels-pixabay-434337.jpg');
+		background-size: cover;
+		overflow: hidden;
+		height: 100vh;
+	}
+	:global(.login-page html),
+	:global(.login-page body) {
+		overflow: hidden;
+	}
+</style>
