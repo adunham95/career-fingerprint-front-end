@@ -172,7 +172,7 @@ interface CurrentUser {
 	lookingFor: string;
 	inviteCode: string | null;
 	emailVerified: boolean;
-	orgs: Organization[];
+	orgAdminLinks: { organization: Organization }[];
 	subscription: SubscriptionPlan;
 	redeemedFreeTrial: boolean;
 	userType: string;

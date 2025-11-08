@@ -2,9 +2,11 @@
 	import { useAddAdmin, useOrgAdmins, useRemoveAdminFromOrg } from '$lib/API/org.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { permissionGate } from '$lib/Utils/permissionGate.js';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -63,14 +65,16 @@
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
 			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button
-					type="button"
-					class="btn btn--primary"
-					onclick={() => {
-						showNewAdmin = true;
-						trackingStore.trackAction('Add Admin Click');
-					}}>Add Admin</button
-				>
+				{#if permissionGate(['admins:manage'], data.myPermissions)}
+					<button
+						type="button"
+						class="btn btn--primary"
+						onclick={() => {
+							showNewAdmin = true;
+							trackingStore.trackAction('Add Admin Click');
+						}}>Add Admin</button
+					>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -101,37 +105,48 @@
 						</th>
 					</tr>
 				</thead>
-				<tbody>
-					{#each $orgAdmins.data || [] as user}
-						<tr>
-							<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
-								<span>
-									{user.firstName}
-									{user.lastName}
-								</span>
-								<p class="table-cell text-sm text-gray-500 sm:hidden">{user.email}</p>
-								<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
-								<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
-							</td>
-							<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-								{user.email}
-							</td>
-							<td class="py-4 pl-3 text-right text-sm font-medium">
-								<button
-									class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
-									disabled={data?.user?.id === user.id}
-									onclick={() => {
-										removeAdminFromOrg(user.id);
-										trackingStore.trackAction('Remove Admin Click');
-									}}
-								>
-									Remove
-									<span class="sr-only">, {user.firstName} {user.lastName}</span>
-								</button>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
+				{#if permissionGate(['admins:view'], data.myPermissions)}
+					<tbody>
+						{#each $orgAdmins.data || [] as user}
+							<tr>
+								<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
+									<span>
+										{user.firstName}
+										{user.lastName}
+									</span>
+									<p class="table-cell text-sm text-gray-500 sm:hidden">{user.email}</p>
+									<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
+									<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
+								</td>
+								<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
+									{user.email}
+								</td>
+								<td class="py-4 pl-3 text-right text-sm font-medium">
+									{#if permissionGate(['admins:manage'], data.myPermissions)}
+										<button
+											class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
+											disabled={data?.user?.id === user.id}
+											onclick={() => {
+												removeAdminFromOrg(user.id);
+												trackingStore.trackAction('Remove Admin Click');
+											}}
+										>
+											Remove
+											<span class="sr-only">, {user.firstName} {user.lastName}</span>
+										</button>
+									{:else}
+										<span class="sr-only">You Do Not Have Permission To Remove Users</span>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				{:else}
+					<InfoBlock
+						title="Missing Permission"
+						description="You do not have the correct permission to view admins"
+					/>
+				{/if}
 			</table>
 		</div>
 	</div>

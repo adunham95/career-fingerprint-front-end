@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -14,6 +14,7 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
+	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
 
 	let { data } = $props();
 
@@ -23,6 +24,7 @@
 	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 	let showSelectOrg = $state(false);
+	let isLoadingInOrg = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -30,6 +32,7 @@
 
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const upcomingMeetings = useUpcomingMeetings(data.meetings);
+	const loadIntoOrgMutation = useLoginOrgAdminMutation();
 
 	async function createNewMeeting() {
 		isLoadingNewMeeting = true;
@@ -45,12 +48,23 @@
 			toastStore.show({ message: 'There was an error starting your meeting', type: 'error' });
 		}
 	}
+
+	async function logIntoOrg(orgID: string) {
+		isLoadingInOrg = true;
+		try {
+			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
+			goto(`org/${orgID}`);
+		} catch (error) {
+			isLoadingInOrg = false;
+			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
+		}
+	}
 </script>
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div
-		class={`mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 ${data.user.orgs.length > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}
+		class={`mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 ${data.user.orgAdminLinks.length > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}
 	>
 		<DashboardActionButton
 			title="Add Achievement"
@@ -103,16 +117,22 @@
 			color="orange"
 		/>
 
-		{#if data.user.orgs.length === 1}
+		{#if data.user.orgAdminLinks.length === 1}
 			<DashboardActionButton
 				title="Manage Organization"
 				subTitle="View and manage your organization"
 				icon={buildingIcon}
-				href={`/org/${data.user.orgs[0].id}`}
+				onClick={() => logIntoOrg(data.user.orgAdminLinks[0].organization.id)}
 				actionName="Manage Organization Click"
 				color="red"
-			/>
-		{:else if data.user.orgs.length > 1}
+			>
+				{#if isLoadingInOrg}
+					<div class="absolute inset-0 flex items-center justify-center">
+						<Loader />
+					</div>
+				{/if}
+			</DashboardActionButton>
+		{:else if data.user.orgAdminLinks.length > 1}
 			<DashboardActionButton
 				title="Manage Organizations"
 				subTitle="View and manage your organization"
@@ -196,11 +216,18 @@
 <Drawer bind:isOpen={showSelectOrg} title="Select an Organization">
 	<div></div>
 	<ul role="list" class="divide-y divide-gray-100">
-		{#each data.user.orgs as org}
+		{#each data.user.orgAdminLinks as orgAdmin}
 			<li class="flex justify-between gap-x-6 py-5">
-				<a href={`/org/${org.id}`} class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200">
-					{#if org.logoURL}
-						<img src={org.logoURL} alt="" class="size-12 flex-none rounded-full bg-gray-50" />
+				<a
+					href={`/org/${orgAdmin.organization.id}`}
+					class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200"
+				>
+					{#if orgAdmin.organization.logoURL}
+						<img
+							src={orgAdmin.organization.logoURL}
+							alt=""
+							class="size-12 flex-none rounded-full bg-gray-50"
+						/>
 					{:else}
 						<div
 							class="flex size-12 flex-none items-center justify-center overflow-hidden rounded-full bg-gray-50"
@@ -222,7 +249,7 @@
 						</div>
 					{/if}
 					<div class="min-w-0 flex-auto pt-2">
-						<p class="text-sm font-semibold text-gray-900">{org.name}</p>
+						<p class="text-sm font-semibold text-gray-900">{orgAdmin.organization.name}</p>
 					</div>
 				</a>
 			</li>
