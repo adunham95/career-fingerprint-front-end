@@ -1,6 +1,13 @@
 <script lang="ts">
-	import { useAddAdmin, useOrgAdmins, useRemoveAdminFromOrg } from '$lib/API/org.js';
+	import {
+		useAddAdmin,
+		useOrgAdmins,
+		useOrgRoles,
+		useRemoveAdminFromOrg,
+		useUpdateOrgAdmin
+	} from '$lib/API/org.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
@@ -16,10 +23,32 @@
 	let firstName = $state('');
 	let lastName = $state('');
 	let email = $state('');
+	let orgRole = $state('viewer');
 
 	const removeAdminFunction = useRemoveAdminFromOrg();
 	const orgAdmins = useOrgAdmins(data.org?.id || '', data.admins);
 	const addAdminMutation = useAddAdmin(data.org?.id || '');
+	const orgRolesQuery = useOrgRoles(data.org?.id || '');
+	const updateAdminMutation = useUpdateOrgAdmin(data.org?.id || '');
+
+	const transformedRoles = $derived.by(() => {
+		let data = $orgRolesQuery.data as { id: string; label: string };
+		if (!data) return [] as { id: string; label: string }[];
+		return data;
+	});
+
+	async function updateAdminRole(userID: number, role?: string) {
+		if (role) {
+			try {
+				await $updateAdminMutation.mutateAsync({ orgID: data.org?.id || '', role, userID });
+				toastStore.show({
+					message: 'Admin Role Update. The user will need to logout and login again'
+				});
+			} catch (error) {
+				toastStore.show({ message: 'Could not update admin', type: 'error' });
+			}
+		}
+	}
 
 	async function removeAdminFromOrg(userID: number) {
 		try {
@@ -39,7 +68,8 @@
 				firstName,
 				lastName,
 				email,
-				orgID: data.org?.id || ''
+				orgID: data.org?.id || '',
+				role: orgRole
 			});
 			toastStore.show({ message: 'Added New Admin' });
 			await $orgAdmins.refetch();
@@ -47,6 +77,7 @@
 			firstName = '';
 			lastName = '';
 			email = '';
+			orgRole = 'viewer';
 		} catch (error) {
 			toastStore.show({ message: 'Error new admin', type: 'error' });
 		}
@@ -100,6 +131,11 @@
 							class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
 							>Email</th
 						>
+						<th
+							scope="col"
+							class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+							>Roles</th
+						>
 						<th scope="col" class="py-3.5 pl-3">
 							<span class="sr-only">Remove User</span>
 						</th>
@@ -114,12 +150,29 @@
 										{user.firstName}
 										{user.lastName}
 									</span>
-									<p class="table-cell text-sm text-gray-500 sm:hidden">{user.email}</p>
-									<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
-									<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
+									<p class="text-sm text-gray-500 sm:hidden">{user.email}</p>
+									<p class="text-sm text-gray-500 sm:hidden">
+										{user?.orgAdminLink?.roles.join(',')}
+									</p>
 								</td>
 								<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
 									{user.email}
+								</td>
+								<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
+									{#if permissionGate(['admins:view'], data.myPermissions) && transformedRoles}
+										<Select
+											id={`update-role-${user.id}`}
+											label="Update Org Role"
+											value={user?.orgAdminLink?.roles[0]}
+											oninput={(e) => {
+												console.log('data');
+												updateAdminRole(user.id, e?.currentTarget?.value);
+											}}
+											options={transformedRoles}
+										/>
+									{:else}
+										<p>{user?.orgAdminLink?.roles[0]}</p>
+									{/if}
 								</td>
 								<td class="py-4 pl-3 text-right text-sm font-medium">
 									{#if permissionGate(['admins:manage'], data.myPermissions)}
@@ -162,5 +215,6 @@
 		<TextInput id="firstName" label="First Name" bind:value={firstName} />
 		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
 		<TextInput id="email" label="Email" type="email" bind:value={email} />
+		<Select id="role" label="Org Role" bind:value={orgRole} options={transformedRoles} />
 	</form>
 </Drawer>

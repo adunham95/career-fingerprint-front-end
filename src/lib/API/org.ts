@@ -1,8 +1,8 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { User } from '@sentry/sveltekit';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import { queryClient } from './queryClient';
 import { createApiClient } from './apiClient';
+import type { OrgAdminUser } from '../../app';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -110,7 +110,7 @@ export async function getOrgUsers(orgID: string, page = 1, size = 20) {
 	}
 }
 
-export async function getOrgAdmins(orgID: string) {
+export async function getOrgAdmins(orgID: string): Promise<OrgAdminUser[]> {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admins`, {
 			credentials: 'include'
@@ -118,7 +118,17 @@ export async function getOrgAdmins(orgID: string) {
 		return res.json();
 	} catch (error) {
 		console.error(error);
-		return null;
+		return [];
+	}
+}
+
+export async function getOrgRoles(orgID: string) {
+	try {
+		const api = createApiClient();
+		return api.get(`/org/${orgID}/roles`);
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
 }
 
@@ -152,11 +162,8 @@ export async function removeUserFromOrg({ userID, orgID }: { userID: number; org
 
 export async function removeAdminFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admin/${userID}`, {
-			method: 'DELETE',
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.del(`/org/${orgID}/admin/${userID}`);
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -181,18 +188,23 @@ export async function createAdmin(data: {
 	lastName: string;
 	email: string;
 	orgID: string;
+	role: string;
 }) {
 	try {
-		const { orgID, ...newUsers } = data;
-		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admins`, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(newUsers)
-		});
-		return res.json();
+		const { orgID, role, ...newUsers } = data;
+		const api = createApiClient();
+		return api.post(`/org/${orgID}/admins`, { ...newUsers, roles: [role] });
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function updateAdmin(data: { orgID: string; userID: number; role: string }) {
+	try {
+		const { orgID, userID, role } = data;
+		const api = createApiClient();
+		return api.patch(`/org/${orgID}/admin/${userID}`, { roles: [role] });
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -281,7 +293,8 @@ export const orgKeys = {
 	org: (id: string) => ['org', id] as const,
 	orgAdmins: (id: string) => ['orgAdmins', id] as const,
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
-	orgDomains: (id: string) => ['orgDomains', id] as const
+	orgDomains: (id: string) => ['orgDomains', id] as const,
+	orgRoles: (id: string) => ['orgRoles', id] as const
 };
 
 // QUERIES
@@ -293,7 +306,7 @@ export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size =
 	});
 };
 
-export const useOrgAdmins = (orgID: string, initialData?: User[]) => {
+export const useOrgAdmins = (orgID: string, initialData?: OrgAdminUser[]) => {
 	return createQuery({
 		queryKey: orgKeys.orgAdmins(orgID),
 		queryFn: () => getOrgAdmins(orgID),
@@ -316,6 +329,14 @@ export const useOrg = (orgID?: string) => {
 	return createQuery({
 		queryKey: orgKeys.org(orgID || ''),
 		queryFn: () => getOrg(orgID),
+		enabled: !!orgID
+	});
+};
+
+export const useOrgRoles = (orgID?: string) => {
+	return createQuery({
+		queryKey: orgKeys.orgRoles(orgID || ''),
+		queryFn: () => getOrgRoles(orgID || ''),
 		enabled: !!orgID
 	});
 };
@@ -409,7 +430,21 @@ export const useAddAdmin = (orgID: string) => {
 		mutationFn: createAdmin,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: orgKeys.orgDomains(orgID)
+				queryKey: orgKeys.orgAdmins(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useUpdateOrgAdmin = (orgID: string) => {
+	return createMutation({
+		mutationFn: updateAdmin,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgAdmins(orgID)
 			});
 		},
 		onError: (error) => {

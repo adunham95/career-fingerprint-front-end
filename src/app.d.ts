@@ -192,6 +192,16 @@ interface User {
 	inviteCode: string | null;
 }
 
+interface OrgAdminUser {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+	orgAdminLink: {
+		roles: string[];
+	};
+}
+
 interface Organization {
 	createdAt: string;
 	domain: string;
@@ -269,5 +279,6 @@ export {
 	AchievementTag,
 	JobObject,
 	ResumeObject,
-	MyFingerprint
+	MyFingerprint,
+	OrgAdminUser
 };
