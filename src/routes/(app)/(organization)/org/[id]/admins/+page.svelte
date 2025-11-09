@@ -32,7 +32,7 @@
 	const updateAdminMutation = useUpdateOrgAdmin(data.org?.id || '');
 
 	const transformedRoles = $derived.by(() => {
-		let data = $orgRolesQuery.data as { id: string; label: string };
+		let data = $orgRolesQuery.data as { id: string; label: string }[];
 		if (!data) return [] as { id: string; label: string }[];
 		return data;
 	});
