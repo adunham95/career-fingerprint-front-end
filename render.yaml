@@ -25,6 +25,8 @@ projects:
                 sync: false
               - key: CLOUDFLARE_API_TOKEN
                 sync: false
+              - key: PUBLIC_MIXPANEL_ENABLED
+                sync: true
       - name: Stage
         services:
           - type: web
@@ -48,4 +50,6 @@ projects:
               - key: CLOUDFLARE_ACCOUNT_ID
                 sync: false
               - key: CLOUDFLARE_API_TOKEN
+                sync: false
+              - key: PUBLIC_MIXPANEL_ENABLED
                 sync: false
