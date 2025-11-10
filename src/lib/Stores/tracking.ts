@@ -1,5 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import { writable, get } from 'svelte/store';
+import { browser } from '$app/environment';
+import { PUBLIC_MIXPANEL_ENABLED } from '$env/static/public';
 
 interface TrackingObject {
 	pageName?: string;
@@ -8,12 +10,13 @@ interface TrackingObject {
 
 function createTrackingStore() {
 	const { subscribe, update } = writable<TrackingObject>({});
+	const trackingEnabled = browser && PUBLIC_MIXPANEL_ENABLED === 'true';
 
 	function pageViewEvent(pageName: string, options: { [key: string]: string | boolean } = {}) {
 		console.log('Tracking', { pageName, options });
 
-		if (process.env.NODE_ENV === 'production') {
-			mixpanel.track('Page View', {
+		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
+			safeMixpanelTrack('Page View', {
 				pageName,
 				...options
 			});
@@ -35,8 +38,8 @@ function createTrackingStore() {
 
 		console.log('Tracking Action', { actionName, pageName, options });
 
-		if (process.env.NODE_ENV === 'production') {
-			mixpanel.track(actionName, {
+		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
+			safeMixpanelTrack(actionName, {
 				pageName,
 				...options
 			});
@@ -48,6 +51,19 @@ function createTrackingStore() {
 		pageViewEvent,
 		trackAction
 	};
+}
+
+function safeMixpanelTrack(event: string, props: Record<string, any>) {
+	if (!mixpanel || typeof mixpanel.track !== 'function') return;
+
+	// Mixpanel sometimes sets a flag when not initialized
+	if (mixpanel.__loaded !== true) return;
+
+	try {
+		mixpanel.track(event, props);
+	} catch (err) {
+		console.warn('Mixpanel track failed:', err);
+	}
 }
 
 export const trackingStore = createTrackingStore();

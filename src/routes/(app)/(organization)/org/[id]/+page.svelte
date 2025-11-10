@@ -10,6 +10,7 @@
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { PUBLIC_CONTACT_SALES } from '$env/static/public';
+	import { permissionGate } from '$lib/Utils/permissionGate.js';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
@@ -41,6 +42,7 @@
 			subTitle="Manage Current Users"
 			color="green"
 			href={`/org/${data.org?.id}/seats`}
+			locked={!permissionGate(['users:list'], data.myPermissions)}
 		/>
 		<DashboardActionButton
 			icon={linkIcon}
@@ -48,6 +50,7 @@
 			title="Copy Sign Up Link"
 			subTitle="Share the copy link to allow people to sign up"
 			color="blue"
+			locked={!permissionGate(['users:add'], data.myPermissions)}
 			onClick={() => {
 				trackingStore.trackAction('Org Share Sign Up Link');
 				copySignUpLink();
@@ -59,6 +62,7 @@
 			title="Manage Administrators"
 			subTitle="Add and remove the admins on this account"
 			color="purple"
+			locked={!permissionGate(['admins:manage'], data.myPermissions)}
 			href={`/org/${data.org?.id}/admins`}
 		/>
 		<DashboardActionButton
@@ -67,6 +71,7 @@
 			title="Org Settings"
 			subTitle="Manage this Organizations"
 			color="red"
+			locked={!permissionGate(['org:update_details'], data.myPermissions)}
 			href={`/org/${data.org?.id}/settings`}
 		/>
 	</div>

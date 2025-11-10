@@ -10,8 +10,9 @@ export const load = async (event) => {
 	try {
 		const api = createApiClient(event);
 		const org = await api.get<Organization>(`/org/${event.params.id}?includeSubscription=true`);
+		const myPermissions = await api.get<string[]>(`/org/${event.params.id}/permissions`);
 
-		return { org, user };
+		return { org, user, myPermissions };
 	} catch (error) {
 		console.error(error);
 	}

@@ -11,9 +11,11 @@
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
 	import ImageUpload from '$lib/Components/FormElements/ImageUpload.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import { permissionGate } from '$lib/Utils/permissionGate.js';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -75,88 +77,95 @@
 </script>
 
 <PageContainer>
-	<TwoColumn title={'Details'}>
-		<Card className="md:col-span-2">
-			<form>
-				<div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-					<TextInput
-						className="sm:col-span-3"
-						id="orgName"
-						label="Org Name"
-						bind:value={profile.name}
-					/>
+	{#if permissionGate(['org:update_details'], data.myPermissions)}
+		<TwoColumn title={'Details'}>
+			<Card className="md:col-span-2">
+				<form>
+					<div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+						<TextInput
+							className="sm:col-span-3"
+							id="orgName"
+							label="Org Name"
+							bind:value={profile.name}
+						/>
 
-					<ImageUpload className="sm:col-span-6" label="Org Logo" bind:value={profile.logoURL} />
-				</div>
-			</form>
-			{#snippet actions()}
-				<button
-					type="submit"
-					class="btn btn--primary"
-					onclick={() => {
-						updateOrg();
-						trackingStore.trackAction('Update Org Click');
-					}}>Update</button
-				>
-			{/snippet}
-		</Card>
-	</TwoColumn>
-	<TwoColumn title={'Domains'}>
-		<Card className="md:col-span-2 relative overflow-hidden">
-			{#if $orgDomains.isFetching}
-				<div class="absolute inset-0 overflow-hidden">
-					<div class="flex h-full w-full items-center justify-center bg-gray-500/25">
-						<Loader />
+						<ImageUpload className="sm:col-span-6" label="Org Logo" bind:value={profile.logoURL} />
 					</div>
-				</div>
-			{/if}
-			<div class=" space-y-4">
-				{#each $orgDomains.data as domainData}
+				</form>
+				{#snippet actions()}
+					<button
+						type="submit"
+						class="btn btn--primary"
+						onclick={() => {
+							updateOrg();
+							trackingStore.trackAction('Update Org Click');
+						}}>Update</button
+					>
+				{/snippet}
+			</Card>
+		</TwoColumn>
+		<TwoColumn title={'Domains'}>
+			<Card className="md:col-span-2 relative overflow-hidden">
+				{#if $orgDomains.isFetching}
+					<div class="absolute inset-0 overflow-hidden">
+						<div class="flex h-full w-full items-center justify-center bg-gray-500/25">
+							<Loader />
+						</div>
+					</div>
+				{/if}
+				<div class=" space-y-4">
+					{#each $orgDomains.data as domainData}
+						<div class="flex gap-1">
+							<TextInput
+								className=" flex-1 w-full"
+								id="domain"
+								label="Domain"
+								bind:value={domainData.domain}
+							/>
+							<div class="mt-2 flex flex-col justify-end">
+								<button
+									class="btn btn-text--success"
+									onclick={() => {
+										updateDomain(domainData.domain, domainData.id);
+										trackingStore.trackAction('Update Org Domain');
+									}}>Update</button
+								>
+							</div>
+							<div class="mt-2 flex flex-col justify-end">
+								<button
+									class="btn btn-text--error"
+									onclick={() => {
+										deleteDomain(domainData.id);
+										trackingStore.trackAction('Delete Org Domain');
+									}}>Delete</button
+								>
+							</div>
+						</div>
+					{/each}
 					<div class="flex gap-1">
 						<TextInput
 							className=" flex-1 w-full"
 							id="domain"
-							label="Domain"
-							bind:value={domainData.domain}
+							label="New Domain"
+							bind:value={newDomain}
 						/>
 						<div class="mt-2 flex flex-col justify-end">
 							<button
 								class="btn btn-text--success"
 								onclick={() => {
-									updateDomain(domainData.domain, domainData.id);
-									trackingStore.trackAction('Update Org Domain');
-								}}>Update</button
+									addDomain();
+									trackingStore.trackAction('Add Org Domain');
+								}}>Save</button
 							>
 						</div>
-						<div class="mt-2 flex flex-col justify-end">
-							<button
-								class="btn btn-text--error"
-								onclick={() => {
-									deleteDomain(domainData.id);
-									trackingStore.trackAction('Delete Org Domain');
-								}}>Delete</button
-							>
-						</div>
-					</div>
-				{/each}
-				<div class="flex gap-1">
-					<TextInput
-						className=" flex-1 w-full"
-						id="domain"
-						label="New Domain"
-						bind:value={newDomain}
-					/>
-					<div class="mt-2 flex flex-col justify-end">
-						<button
-							class="btn btn-text--success"
-							onclick={() => {
-								addDomain();
-								trackingStore.trackAction('Add Org Domain');
-							}}>Save</button
-						>
 					</div>
 				</div>
-			</div>
-		</Card>
-	</TwoColumn>
+			</Card>
+		</TwoColumn>
+	{:else}
+		<InfoBlock
+			title="Missing Permissions"
+			description="You have missing permissions. If you need to access this contact your admin to add those permissions"
+		/>
+	{/if}
 </PageContainer>

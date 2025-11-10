@@ -1,5 +1,5 @@
 <script lang="ts">
-	const { errorText }: { errorText?: string } = $props();
+	const { errorText }: { errorText?: string | null } = $props();
 </script>
 
 {#if errorText}

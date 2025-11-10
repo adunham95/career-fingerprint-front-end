@@ -6,7 +6,6 @@
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
-	import mixpanel from 'mixpanel-browser';
 	import { onMount } from 'svelte';
 
 	const { data: pageData } = $props();
@@ -44,14 +43,18 @@
 				})
 			});
 			if (res.ok) {
-				toastStore.show({ message: 'Successfully logged in', type: 'success' });
 				const data = await res.json();
 				console.log(data);
 				// mixpanel.identify(data.user.id);
 				// mixpanel.people.set({
 				// 	$email: data.user.email
 				// });
-				goto(pageData.redirectPath);
+				if (data.resetToken) {
+					goto(`/reset-password?email=${data.user.email}&token=${data.resetToken}`);
+				} else {
+					toastStore.show({ message: 'Successfully logged in', type: 'success' });
+					goto(pageData.redirectPath);
+				}
 				isLoading = false;
 			} else {
 				const data = await res.json();
@@ -60,7 +63,6 @@
 					errorMessage = data.message;
 				}
 				showError = true;
-				// toastStore.show({ message: 'Error logging in', type: 'error' });
 				isLoading = false;
 			}
 		} catch (error) {
@@ -71,7 +73,6 @@
 				errorMessage = String(error);
 			}
 			showError = true;
-			// toastStore.show({ message: 'Error logging in', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
 			isLoading = false;
 		}

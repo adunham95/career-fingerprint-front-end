@@ -3,16 +3,21 @@
 	import { PUBLIC_GTAG } from '$env/static/public';
 	import { useRegisterUserMutation } from '$lib/API/user';
 	import Card from '$lib/Components/Containers/Card.svelte';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
+	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 
 	let email = $state('');
 	let password = $state('');
+	let confirmPassword = $state('');
 	let firstName = $state('');
 	let lastName = $state('');
 	let isLoading = $state(false);
+	let errorText = $state<{ [key: string]: string }>({});
 
 	let registerUser = useRegisterUserMutation();
 
@@ -22,8 +27,8 @@
 			if (url) window.location.href = url;
 		};
 
-		if (typeof window.gtag === 'function') {
-			window.gtag('event', 'conversion', {
+		if (typeof window?.gtag === 'function') {
+			window?.gtag('event', 'conversion', {
 				send_to: `${PUBLIC_GTAG}/94kXCPz816YbEJej6c5B`,
 				value: 1.0,
 				currency: 'USD',
@@ -40,8 +45,18 @@
 	});
 
 	async function login() {
-		if (!email || !firstName || !password) {
-			toastStore.show({ message: 'Missing account elements', type: 'error' });
+		errorText = {};
+		if (!email) {
+			errorText['email'] = 'Required';
+		}
+		if (!email) {
+			errorText['firstName'] = 'Required';
+		}
+		if (validatePassword(password, confirmPassword).isValid) {
+			errorText['password'] = 'Password not valid';
+		}
+
+		if (Object.keys(errorText).length > 0) {
 			return;
 		}
 
@@ -66,6 +81,7 @@
 			window.dataLayer.push({
 				event: 'sign_up_success'
 			});
+			trackingStore.trackAction('Register User');
 			gtag_report_conversion();
 			goto('/dashboard');
 			isLoading = false;
@@ -79,6 +95,7 @@
 
 <Card headline="Create Account" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<form
+		id="create-account"
 		onsubmit={(e) => {
 			e.preventDefault();
 			trackingStore.trackAction('Submit New Account');
@@ -92,9 +109,24 @@
 			bind:value={firstName}
 			autocomplete="given-name"
 			required
+			errorText={errorText['firstName']}
 		/>
-		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
-		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email'} required />
+		<TextInput
+			id="lastName"
+			label="Last Name"
+			bind:value={lastName}
+			errorText={errorText['lastName']}
+		/>
+		<TextInput
+			className="col-span-2"
+			id="email"
+			label="Email"
+			type="email"
+			bind:value={email}
+			autocomplete={'email'}
+			required
+			errorText={errorText['email']}
+		/>
 		<TextInput
 			required
 			id="password"
@@ -103,11 +135,33 @@
 			bind:value={password}
 			autocomplete={'new-password'}
 		/>
-		<div class="col-span-2 flex w-full justify-between pt-2">
-			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
-			<button disabled={isLoading} class="btn btn-text--primary btn-small" type="submit"
-				>Create Account</button
-			>
-		</div>
+		<TextInput
+			required
+			id="confirmPassword"
+			label="Confirm Password"
+			type="password"
+			bind:value={confirmPassword}
+			autocomplete={'new-password'}
+		/>
+		<ErrorText errorText={errorText['password']} />
+		<PasswordRequirements {password} className="col-span-2" {confirmPassword} />
+		<p class="col-span-2 text-[10px] text-gray-500">
+			By creating an account, you agree to our
+			<a href="https://mycareerfingerprint.com/terms" class="underline">Terms of Service</a> and
+			<a href="https://mycareerfingerprint.com/privacy" class="underline">Privacy Policy</a>.
+		</p>
 	</form>
+	{#snippet actions()}
+		<div class="col-span-2 flex w-full justify-between">
+			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
+			<button
+				disabled={isLoading}
+				class="btn btn-text--primary btn-small"
+				type="submit"
+				form="create-account"
+			>
+				Create Account
+			</button>
+		</div>
+	{/snippet}
 </Card>
