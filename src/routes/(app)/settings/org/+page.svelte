@@ -3,12 +3,30 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 	import NewOrg from './newOrg.svelte';
+	import { useLoginOrgAdminMutation } from '$lib/API/auth';
+	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { goto } from '$app/navigation';
+	import Loader from '$lib/Components/Loader.svelte';
 
 	const { data } = $props();
+
+	const loadIntoOrgMutation = useLoginOrgAdminMutation();
+	let isLoadingInOrg = $state<string | null>(null);
 
 	onMount(async () => {
 		trackingStore.pageViewEvent('New Org Settings');
 	});
+
+	async function logIntoOrg(orgID: string) {
+		isLoadingInOrg = orgID;
+		try {
+			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
+			goto(`/org/${orgID}`);
+		} catch (error) {
+			isLoadingInOrg = null;
+			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
+		}
+	}
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
@@ -19,6 +37,13 @@
 		>
 			{#each data.user.orgAdminLinks as org}
 				<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
+					{#if isLoadingInOrg === org.organization.id}
+						<div
+							class="absolute inset-0 inset-x-0 -top-px bottom-0 flex items-center justify-center bg-white/50 p-2"
+						>
+							<Loader size="md" />
+						</div>
+					{/if}
 					<div class="flex min-w-0 gap-x-4">
 						{#if org.organization.logoURL}
 							<img
@@ -48,10 +73,14 @@
 						{/if}
 						<div class="min-w-0 flex-auto">
 							<p class="text-sm/6 font-semibold text-gray-900">
-								<a href={`/org/${org.organization.id}`}>
+								<button
+									onclick={() => {
+										logIntoOrg(org.organization.id);
+									}}
+								>
 									<span class="absolute inset-x-0 -top-px bottom-0"></span>
-									{org.organization.id}
-								</a>
+									{org.organization.name}
+								</button>
 							</p>
 						</div>
 					</div>

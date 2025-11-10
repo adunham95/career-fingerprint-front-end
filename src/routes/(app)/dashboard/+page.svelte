@@ -24,7 +24,7 @@
 	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 	let showSelectOrg = $state(false);
-	let isLoadingInOrg = $state(false);
+	let isLoadingInOrg = $state<string | null>(null);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -50,12 +50,12 @@
 	}
 
 	async function logIntoOrg(orgID: string) {
-		isLoadingInOrg = true;
+		isLoadingInOrg = orgID;
 		try {
 			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
-			goto(`org/${orgID}`);
+			goto(`/org/${orgID}`);
 		} catch (error) {
-			isLoadingInOrg = false;
+			isLoadingInOrg = null;
 			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
 		}
 	}
@@ -126,7 +126,7 @@
 				actionName="Manage Organization Click"
 				color="red"
 			>
-				{#if isLoadingInOrg}
+				{#if isLoadingInOrg == data.user.orgAdminLinks[0].organization.id}
 					<div class="absolute inset-0 flex items-center justify-center">
 						<Loader />
 					</div>
@@ -218,10 +218,19 @@
 	<ul role="list" class="divide-y divide-gray-100">
 		{#each data.user.orgAdminLinks as orgAdmin}
 			<li class="flex justify-between gap-x-6 py-5">
-				<a
-					href={`/org/${orgAdmin.organization.id}`}
+				<button
+					onclick={() => {
+						logIntoOrg(orgAdmin.organization.id);
+					}}
 					class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200"
 				>
+					{#if isLoadingInOrg === orgAdmin.organization.id}
+						<div
+							class="absolute inset-0 inset-x-0 -top-px bottom-0 flex items-center justify-center bg-white/50 p-2"
+						>
+							<Loader size="md" />
+						</div>
+					{/if}
 					{#if orgAdmin.organization.logoURL}
 						<img
 							src={orgAdmin.organization.logoURL}
@@ -251,7 +260,7 @@
 					<div class="min-w-0 flex-auto pt-2">
 						<p class="text-sm font-semibold text-gray-900">{orgAdmin.organization.name}</p>
 					</div>
-				</a>
+				</button>
 			</li>
 		{/each}
 	</ul>
