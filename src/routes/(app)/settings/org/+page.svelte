@@ -12,16 +12,20 @@
 </script>
 
 <PageContainer className="divide-y divide-gray-300">
-	{#if data.user.orgs.length > 0}
+	{#if data.user.orgAdminLinks.length > 0}
 		<ul
 			role="list"
 			class="my-4 divide-y divide-gray-100 overflow-hidden bg-white shadow-xs outline-1 outline-gray-900/5 sm:rounded-xl"
 		>
-			{#each data.user.orgs as org}
+			{#each data.user.orgAdminLinks as org}
 				<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
 					<div class="flex min-w-0 gap-x-4">
-						{#if org.logoURL}
-							<img src={org.logoURL} alt="" class="size-12 flex-none rounded-full bg-gray-50" />
+						{#if org.organization.logoURL}
+							<img
+								src={org.organization.logoURL}
+								alt=""
+								class="size-12 flex-none rounded-full bg-gray-50"
+							/>
 						{:else}
 							<div
 								class="flex size-12 flex-none items-center justify-center overflow-hidden rounded-full bg-gray-50"
@@ -44,9 +48,9 @@
 						{/if}
 						<div class="min-w-0 flex-auto">
 							<p class="text-sm/6 font-semibold text-gray-900">
-								<a href={`/org/${org.id}`}>
+								<a href={`/org/${org.organization.id}`}>
 									<span class="absolute inset-x-0 -top-px bottom-0"></span>
-									{org.name}
+									{org.organization.id}
 								</a>
 							</p>
 						</div>
