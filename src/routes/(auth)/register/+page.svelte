@@ -81,6 +81,7 @@
 			window.dataLayer.push({
 				event: 'sign_up_success'
 			});
+			trackingStore.trackAction('Register User');
 			gtag_report_conversion();
 			goto('/dashboard');
 			isLoading = false;

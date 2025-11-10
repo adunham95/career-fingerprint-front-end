@@ -7,6 +7,12 @@
 	import Select from '$lib/Components/FormElements/Select.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Register Org');
+	});
 
 	let orgName = $state('');
 	let orgEmail = $state('');
@@ -52,6 +58,7 @@
 				type: 'success',
 				message: `Organization Created`
 			});
+			trackingStore.trackAction('Register Organization');
 			goto('/dashboard');
 		} catch (error) {
 			let message = 'Something went wrong.';
