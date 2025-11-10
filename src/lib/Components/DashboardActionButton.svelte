@@ -15,6 +15,7 @@
 		premiumLocked?: boolean;
 		demoLocked?: boolean;
 		disabled?: boolean;
+		locked?: boolean;
 	}
 
 	const {
@@ -29,6 +30,7 @@
 		premiumLocked = false,
 		demoLocked = false,
 		disabled = false,
+		locked = false,
 		children
 	}: Props = $props();
 
@@ -53,6 +55,8 @@
 
 	let baseStyles =
 		'relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-lg border-3 p-2 text-center transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden md:aspect-video';
+
+	let lockedStyles = 'border-gray-600 bg-gray-600/10 hover:cursor-default opacity-50';
 </script>
 
 {#if premiumLocked}
@@ -94,6 +98,11 @@
 		<div class="opacity-30">
 			{@render internal()}
 		</div>
+	</div>
+{:else if locked}
+	<div class={`${baseStyles} ${lockedStyles}`}>
+		{@render internal()}
+		{@render children?.()}
 	</div>
 {:else if onClick}
 	<button
