@@ -10,28 +10,40 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
 	import type { Achievement } from '../../../app.js';
+	import Select from '$lib/Components/FormElements/Select.svelte';
+	import DateInputV2 from '$lib/Components/FormElements/DateInputV2.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
 	const { data } = $props();
 
 	let jobPositionID = $state<string | null>(null);
 	let educationID = $state<string | null>(null);
 	let selectedTag = $state<string | null>(null);
+	let startDate = $state<string | null>(null);
+	let endDate = $state<string | null>(null);
 
 	let selectedAchievement = $state<Achievement | null>(null);
+
+	const getJob = () => jobPositionID;
+	const getEdu = () => educationID;
+	const getTag = () => selectedTag;
+	const getStart = () => startDate;
+	const getEnd = () => endDate;
 
 	let myAchievements = useMyAchievements(
 		data.achievements,
 		true,
-		() => jobPositionID,
-		() => educationID,
-		() => selectedTag
+		getJob,
+		getEdu,
+		getTag,
+		getStart,
+		getEnd
 	);
 	let myJobPositions = useMyJobPositionsQuery();
 	let myEducation = useMyEducationQuery();
 	let myAchTags = useAchievementTags();
 
-	console.log({ data, tags: $myAchTags.data });
-
 	let isAchievementOpen = $state(false);
+	let isMobileFiltersOpen = $state(true);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Achievement Timeline');
@@ -69,10 +81,66 @@
 	</div>
 
 	<div class="pb-5 print:hidden">
-		<div class="flex items-center justify-end">
+		<div class="flex items-center justify-end md:hidden">
+			<button class="btn btn-text--primary" onclick={() => (isMobileFiltersOpen = true)}
+				>Show Filters</button
+			>
+		</div>
+		<div class="hidden items-center justify-end md:flex">
+			<div class="relative">
+				<button
+					popovertarget="desktop-menu-solutions"
+					class="group relative ml-2 inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+				>
+					Date Range
+					<svg
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						data-slot="icon"
+						aria-hidden="true"
+						class="size-5"
+					>
+						<path
+							d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+							clip-rule="evenodd"
+							fill-rule="evenodd"
+						/>
+					</svg>
+				</button>
+
+				<el-popover
+					id="desktop-menu-solutions"
+					anchor="bottom"
+					popover
+					class="w-screen max-w-max overflow-visible bg-transparent px-4 transition transition-discrete [--anchor-gap:--spacing(5)] backdrop:bg-transparent open:flex data-closed:translate-y-1 data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in"
+				>
+					<div
+						class="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white p-4 text-sm/6 shadow-lg outline-1 outline-gray-900/5"
+					>
+						<DateInputV2 showDate value={startDate} onChange={(v) => (startDate = v)} />
+						<DateInputV2 showDate value={endDate} onChange={(v) => (endDate = v)} />
+						<div class="flex justify-end py-2">
+							<button
+								class="btn btn-small btn-text--primary mr-2"
+								onclick={() => {
+									startDate = null;
+									endDate = null;
+									$myAchievements.refetch();
+								}}>Clear</button
+							>
+							<button
+								class="btn btn-small btn--primary"
+								onclick={() => {
+									$myAchievements.refetch();
+								}}>Load</button
+							>
+						</div>
+					</div>
+				</el-popover>
+			</div>
 			<el-dropdown class="relative inline-block text-left">
 				<button
-					class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+					class="group relative ml-2 inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
 				>
 					{#if selectedTag !== null}
 						{@const category = ($myAchTags.data || []).find((j) => j.id == selectedTag)}
@@ -232,6 +300,8 @@
 					jobPositionID = null;
 					educationID = null;
 					selectedTag = null;
+					startDate = null;
+					endDate = null;
 					$myAchievements.refetch();
 				}}
 				>Reset
@@ -249,7 +319,66 @@
 			}}
 		/>
 	</div>
+	{#if $myAchievements.isLoading}
+		<div class="flex justify-center">
+			<Loader />
+		</div>
+	{/if}
+	{#if $myAchievements.data.length === 0}
+		<InfoBlock
+			title="Empty Achievements"
+			description="You don't have any achievements. Click add achievements"
+		/>
+	{/if}
 </PageContainer>
+
+<Drawer
+	bind:isOpen={isMobileFiltersOpen}
+	title="Filters"
+	onSave={() => {
+		$myAchievements.refetch();
+		isMobileFiltersOpen = false;
+	}}
+	onCancel={() => {
+		jobPositionID = null;
+		educationID = null;
+		selectedTag = null;
+		startDate = null;
+		endDate = null;
+		$myAchievements.refetch();
+		isMobileFiltersOpen = false;
+	}}
+>
+	<div class="divide-y divide-gray-200">
+		<div class="py-4">
+			<DateInputV2 showDate value={startDate} onChange={(v) => (startDate = v)} />
+			<DateInputV2 showDate value={endDate} onChange={(v) => (endDate = v)} />
+		</div>
+		<div class="py-4">
+			<Select bind:value={jobPositionID} label="Job" />
+		</div>
+		<div class="py-4">
+			<Select bind:value={educationID} label="Education" />
+		</div>
+		<div class="py-4">
+			<Select bind:value={selectedTag} label="Category" />
+		</div>
+	</div>
+	{#snippet actions()}
+		<button
+			class="btn btn-text--secondary"
+			onclick={() => {
+				jobPositionID = null;
+				educationID = null;
+				selectedTag = null;
+				startDate = null;
+				endDate = null;
+				$myAchievements.refetch();
+				isMobileFiltersOpen = false;
+			}}>Reset</button
+		>
+	{/snippet}
+</Drawer>
 
 <Drawer
 	bind:isOpen={isAchievementOpen}
