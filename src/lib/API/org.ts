@@ -2,7 +2,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import { queryClient } from './queryClient';
 import { createApiClient } from './apiClient';
-import type { OrgAdminUser } from '../../app';
+import type { OrgAdminUser, Organization } from '../../app';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -45,24 +45,12 @@ export async function createOrg(newOrg: {
 	orgEmail: string;
 	orgLogo: string;
 	admin: number;
+	postalCode: string;
+	country: string;
 }) {
-	const url = `${PUBLIC_API_URL}/org`;
-
 	try {
-		const res = await fetch(url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
-			},
-			body: JSON.stringify(newOrg)
-		});
-		if (res.ok) {
-			return await res.json();
-		} else {
-			const message = await res.text();
-			throw new Error(`Failed to create org ${res.status} ${message}`);
-		}
+		const api = createApiClient();
+		await api.post('/org', newOrg);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to register org`);
@@ -289,7 +277,18 @@ export async function getOrgDomains(orgID: string) {
 	}
 }
 
+export async function getMyOrgs() {
+	try {
+		const api = createApiClient();
+		return api.get<Organization[]>('/org/my');
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
+	orgs: ['orgs'] as const,
 	org: (id: string) => ['org', id] as const,
 	orgAdmins: (id: string) => ['orgAdmins', id] as const,
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
@@ -303,6 +302,13 @@ export const useOrgUsersByPageQuery = (orgID: string, page: () => number, size =
 	return createQuery({
 		queryKey: orgKeys.orgUsers(orgID, page(), size),
 		queryFn: () => getOrgUsers(orgID, page(), size)
+	});
+};
+
+export const useMyOrgs = () => {
+	return createQuery({
+		queryKey: orgKeys.orgs,
+		queryFn: () => getMyOrgs()
 	});
 };
 
