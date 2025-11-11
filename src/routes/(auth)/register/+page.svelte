@@ -52,7 +52,7 @@
 		if (!email) {
 			errorText['firstName'] = 'Required';
 		}
-		if (!validatePassword(password, confirmPassword).isValid) {
+		if (validatePassword(password, confirmPassword).isValid) {
 			errorText['password'] = 'Password not valid';
 		}
 
