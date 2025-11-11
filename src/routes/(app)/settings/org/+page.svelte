@@ -106,5 +106,4 @@
 	{:else}
 		<NewOrg userID={data.user.id} onSuccess={() => $myOrganizations.refetch()} />
 	{/if}
-	<NewOrg userID={data.user.id} onSuccess={() => $myOrganizations.refetch()} />
 </PageContainer>
