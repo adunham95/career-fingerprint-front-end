@@ -188,6 +188,21 @@ export async function createAdmin(data: {
 	}
 }
 
+export async function createOrgClient(data: {
+	firstName: string;
+	lastName: string;
+	email: string;
+	orgID: string;
+}) {
+	try {
+		const api = createApiClient();
+		return api.post(`/client`, data);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export async function updateAdmin(data: { orgID: string; userID: number; role: string }) {
 	try {
 		const { orgID, userID, role } = data;
@@ -441,6 +456,15 @@ export const useAddAdmin = (orgID: string) => {
 		},
 		onError: (error) => {
 			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useAddOrgClient = () => {
+	return createMutation({
+		mutationFn: createOrgClient,
+		onError: (error) => {
+			console.error('Failed to create org client:', error);
 		}
 	});
 };
