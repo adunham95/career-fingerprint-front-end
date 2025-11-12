@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
+	import { useAddOrgClient, useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
 	import { useUploadOrgUsers } from '$lib/API/user.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import FileUpload from '$lib/Components/FormElements/FileUpload.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
@@ -21,8 +22,13 @@
 	let uploadFile: File | null = $state(null);
 	let uploadError = $state<string | null>(null);
 
+	let newUserEmail = $state('');
+	let newUserFirstName = $state('');
+	let newUserLastName = $state('');
+
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
 	let uploadOrgUsersMutation = useUploadOrgUsers();
+	let createOrgClientMutation = useAddOrgClient();
 
 	let removeUser = useRemoveUserFromOrg();
 
@@ -57,6 +63,22 @@
 		}
 	}
 
+	async function addNewUser() {
+		try {
+			await $createOrgClientMutation.mutateAsync({
+				orgID: data.org?.id || '',
+				firstName: newUserFirstName,
+				lastName: newUserLastName,
+				email: newUserEmail
+			});
+			showAddUser = false;
+			newUserEmail = '';
+			newUserFirstName = '';
+			newUserLastName = '';
+			$users.refetch();
+		} catch (error) {}
+	}
+
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Seats');
 	});
@@ -69,7 +91,7 @@
 				<h1 class="text-base font-semibold text-gray-900">Users</h1>
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
-			{#if permissionGate(['users:add'], data.myPermissions)}
+			{#if permissionGate(['clients:add'], data.myPermissions)}
 				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
 					<button class="btn btn--primary" onclick={() => (showUploadModal = true)}>
 						Upload Users
@@ -163,8 +185,18 @@
 	{/if}
 </PageContainer>
 
-<Drawer title="Add User" bind:isOpen={showAddUser}>
-	<h1>THIS NEEDS TO BE ADDED</h1>
+<Drawer title="Add User" bind:isOpen={showAddUser} saveFormID="newOrgClient">
+	<form
+		class="space-y-4"
+		id="newOrgClient"
+		onsubmit={(e) => {
+			e.preventDefault(), addNewUser();
+		}}
+	>
+		<TextInput id="new-email" type="email" required label="Email" bind:value={newUserEmail} />
+		<TextInput id="new-firstName" label="First Name" bind:value={newUserFirstName} />
+		<TextInput id="new-lastName" label="Last Name" bind:value={newUserLastName} />
+	</form>
 </Drawer>
 
 <Modal

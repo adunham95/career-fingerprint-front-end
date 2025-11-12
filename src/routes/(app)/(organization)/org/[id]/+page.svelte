@@ -42,7 +42,7 @@
 			subTitle="Manage Current Users"
 			color="green"
 			href={`/org/${data.org?.id}/seats`}
-			locked={!permissionGate(['users:list'], data.myPermissions)}
+			locked={!permissionGate(['client:list'], data.myPermissions)}
 		/>
 		<DashboardActionButton
 			icon={linkIcon}
@@ -50,7 +50,7 @@
 			title="Copy Sign Up Link"
 			subTitle="Share the copy link to allow people to sign up"
 			color="blue"
-			locked={!permissionGate(['users:add'], data.myPermissions)}
+			locked={!permissionGate(['client:add'], data.myPermissions)}
 			onClick={() => {
 				trackingStore.trackAction('Org Share Sign Up Link');
 				copySignUpLink();
