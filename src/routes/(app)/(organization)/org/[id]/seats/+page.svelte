@@ -91,7 +91,7 @@
 				<h1 class="text-base font-semibold text-gray-900">Users</h1>
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
-			{#if permissionGate(['users:add'], data.myPermissions)}
+			{#if permissionGate(['clients:add'], data.myPermissions)}
 				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
 					<button class="btn btn--primary" onclick={() => (showUploadModal = true)}>
 						Upload Users
