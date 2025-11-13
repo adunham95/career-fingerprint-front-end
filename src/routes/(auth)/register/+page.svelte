@@ -10,6 +10,7 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	let email = $state('');
 	let password = $state('');
@@ -18,6 +19,7 @@
 	let lastName = $state('');
 	let isLoading = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
+	const orgID = page.url.searchParams.get('org') || undefined;
 
 	let registerUser = useRegisterUserMutation();
 
@@ -70,7 +72,8 @@
 				lastName,
 				email,
 				password,
-				timezone
+				timezone,
+				orgID
 			});
 
 			toastStore.show({

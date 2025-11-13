@@ -24,7 +24,7 @@
 
 	async function copySignUpLink() {
 		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/get-started?org=${data?.org?.id}`);
+			await copyTextToClipboard(`https://careerfingerprint.app/register?org=${data?.org?.id}`);
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
