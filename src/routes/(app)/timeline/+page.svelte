@@ -355,13 +355,39 @@
 			<DateInputV2 showDate value={endDate} onChange={(v) => (endDate = v)} />
 		</div>
 		<div class="py-4">
-			<Select bind:value={jobPositionID} label="Job" />
+			<Select
+				options={$myJobPositions.data?.map((e) => {
+					return { id: e.id, label: e.name || undefined };
+				}) || []}
+				bind:value={jobPositionID}
+				label="Job"
+				oninput={() => {
+					selectedTag = null;
+					educationID = null;
+				}}
+			/>
 		</div>
 		<div class="py-4">
-			<Select bind:value={educationID} label="Education" />
+			<Select
+				options={$myEducation.data?.map((e) => {
+					return { id: e.id, label: e.institution || undefined };
+				}) || []}
+				bind:value={educationID}
+				label="Education"
+				oninput={() => {
+					jobPositionID = null;
+					selectedTag = null;
+				}}
+			/>
 		</div>
 		<div class="py-4">
-			<Select bind:value={selectedTag} label="Category" />
+			<Select
+				options={$myAchTags.data?.map((a) => {
+					return { id: a.id || '', label: a.name || undefined };
+				}) || []}
+				bind:value={selectedTag}
+				label="Category"
+			/>
 		</div>
 	</div>
 	{#snippet actions()}
