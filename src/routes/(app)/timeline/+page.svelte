@@ -43,7 +43,7 @@
 	let myAchTags = useAchievementTags();
 
 	let isAchievementOpen = $state(false);
-	let isMobileFiltersOpen = $state(true);
+	let isMobileFiltersOpen = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Achievement Timeline');
