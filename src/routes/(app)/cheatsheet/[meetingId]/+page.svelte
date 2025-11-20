@@ -2,14 +2,12 @@
 	import { goto } from '$app/navigation';
 	import { useMeetingByID } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
-	import { useAddThankYouMutation } from '$lib/API/thankYouNotes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
-	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
+	import NewThankYouNote from '$lib/Components/Forms/NewThankYouNote.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
@@ -24,16 +22,11 @@
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
 	let meetingDetails = useMeetingByID(data.meetingID || '');
-	let thankYouNotesMutation = useAddThankYouMutation();
 
 	console.log({ data, meetingDetails });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
 	let showThankYouNote = $state(false);
-
-	let thankYouMessage = $state('');
-	let contacts = $state<{ firstName: string; email: string }[]>([]);
-	let thankYouErrors = $state<{ [key: string]: string }>({});
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Cheatsheet', { type: data?.interviewData?.type || ' ' });
@@ -56,34 +49,6 @@
 		trackingStore.trackAction('Finish Meeting Click');
 		showMeetingDetails = true;
 		saveNote();
-	}
-
-	function removeContact(idx: number) {
-		console.log(idx);
-		contacts = contacts.filter((_, i) => i !== idx);
-	}
-
-	function sendThankYouNote() {
-		thankYouErrors = {};
-		try {
-			if (contacts.length <= 0) {
-				thankYouErrors['contacts'] = 'No Contacts';
-				return;
-			}
-			if (thankYouMessage === '') {
-				thankYouErrors['message'] = 'Missing Thank You Message';
-				return;
-			}
-			$thankYouNotesMutation.mutateAsync({
-				message: thankYouMessage,
-				contacts,
-				meetingID: data.meetingID || ''
-			});
-			showThankYouNote = false;
-			toastStore.show({ message: 'Sent Thank Notes', type: 'success' });
-		} catch (error) {
-			toastStore.show({ message: 'Could not send thank you note', type: 'error' });
-		}
 	}
 
 	let current = $state('resume');
@@ -327,56 +292,16 @@
 </Drawer>
 
 <Modal title="Add Thank You Note" size="lg" bind:isOpen={showThankYouNote}>
-	<div class="grid grid-cols-2 gap-x-2">
-		<TextArea
-			id="thank-you-note"
-			label="Thank You Note"
-			rows={5}
-			bind:value={thankYouMessage}
-			placeholder="Thank you for the interview today. I appreciated the chance to hear more about the position and how the team works. Please let me know if you need anything else from me as you move forward."
-			errorText={thankYouErrors.message}
-		/>
-		<div>
-			<Label id="idx" label="Add Contacts" />
-			{#if thankYouErrors.contacts}
-				<ErrorText errorText={thankYouErrors.contacts} />
-			{/if}
-			<div class=" max-h-32 space-y-2 overflow-y-auto">
-				{#each contacts as contact, idx}
-					<div class="flex gap-x-1">
-						<TextInput id="firstName" placeholder="First Name" bind:value={contact.firstName} />
-						<TextInput id="email" placeholder="Email" bind:value={contact.email} />
-						<button class="btn btn-text--error btn-small" onclick={() => removeContact(idx)}>
-							<span class="sr-only"> Delete </span>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								stroke="currentColor"
-								class="size-4"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-								/>
-							</svg>
-						</button>
-					</div>
-				{/each}
-				<button
-					type="button"
-					class="w-full rounded-md border border-gray-400 p-2 text-center text-sm hover:bg-gray-400"
-					onclick={() => contacts.push({ firstName: '', email: '' })}
-				>
-					Add Contact
-				</button>
-			</div>
-		</div>
-	</div>
+	<NewThankYouNote
+		formID="newThankYouNote"
+		meetingID={data.meetingID || ''}
+		onSuccess={() => {
+			showThankYouNote = false;
+			goto('/dashboard');
+		}}
+	/>
 	{#snippet actions()}
-		<button class="btn btn-text--secondary">Do Not Send Thank You Note</button>
-		<button class="btn btn--primary" onclick={sendThankYouNote}>Send Note</button>
+		<a href="/dashboard" class="btn btn-text--secondary"> Do Not Send Thank You Note</a>
+		<button class="btn btn--primary" form="newThankYouNote">Send Note</button>
 	{/snippet}
 </Modal>
