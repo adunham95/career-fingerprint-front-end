@@ -3,6 +3,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { useDeleteMeetingMutation } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
+	import { useGetThankYouNotesForMeeting } from '$lib/API/thankYouNotes.js';
 	import MenuButton from '$lib/Components/Buttons/MenuButton.svelte';
 	import UnlockWithPremiumButton from '$lib/Components/Buttons/UnlockWithPremiumButton.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
@@ -10,6 +11,7 @@
 	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import NewThankYouNote from '$lib/Components/Forms/NewThankYouNote.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
@@ -28,6 +30,14 @@
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
 	let deleteMeetingMutation = useDeleteMeetingMutation(data.meetingID || '');
+
+	let thankYouNotes = useGetThankYouNotesForMeeting(data.meetingID || '');
+
+	$effect(() => {
+		if (current === 'thankYouNotes') {
+			$thankYouNotes.refetch();
+		}
+	});
 
 	function isUpcomingOrRecent(meetingTime: Date | string): boolean {
 		const tenMinutesAgo = Date.now() - 10 * 60 * 1000; // timestamp
@@ -155,7 +165,8 @@
 				bind:currentTab={current}
 				tabs={[
 					{ id: 'notes', label: 'Notes' },
-					{ id: 'highlights', label: 'Highlights' }
+					{ id: 'highlights', label: 'Highlights' },
+					{ id: 'thankYouNotes', label: 'Thank You Notes' }
 				]}
 			/>
 			<div class="px-1 py-1">
@@ -240,6 +251,46 @@
 							</li>
 						{/each}
 					</ul>
+				{:else if current === 'thankYouNotes'}
+					<div>
+						<NewThankYouNote meetingID={data.meetingID || ''} formID="newThankYouNote" />
+						<div class="flex justify-end">
+							<button class="btn btn--primary" form="newThankYouNote">Send Note</button>
+						</div>
+						<ul>
+							{#each $thankYouNotes.data as thankYou}
+								<li>
+									<p>
+										{thankYou.message}
+									</p>
+									<p></p>
+									<div class="mt-6 divide-y divide-gray-200 border-t border-b border-gray-200">
+										<div class="py-10 lg:grid lg:grid-cols-12 lg:gap-x-8">
+											<div
+												class="lg:col-span-8 lg:col-start-5 xl:col-span-9 xl:col-start-4 xl:grid xl:grid-cols-3 xl:items-start xl:gap-x-8"
+											>
+												<div class="xl:col-span-2">
+													<div class=" space-y-6 text-sm text-gray-500">
+														<p>
+															{thankYou.message}
+														</p>
+													</div>
+												</div>
+											</div>
+
+											<div
+												class="mt-6 flex items-center text-sm lg:col-span-4 lg:col-start-1 lg:row-start-1 lg:mt-0 lg:flex-col lg:items-start xl:col-span-3"
+											>
+												{#each thankYou.contacts as contact}
+													<p class="font-medium text-gray-900">{contact.firstName}</p>
+												{/each}
+											</div>
+										</div>
+									</div>
+								</li>
+							{/each}
+						</ul>
+					</div>
 				{/if}
 			</div>
 		</div>
