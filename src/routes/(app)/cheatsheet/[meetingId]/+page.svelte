@@ -5,6 +5,7 @@
 	import { useAddThankYouMutation } from '$lib/API/thankYouNotes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
@@ -28,10 +29,11 @@
 	console.log({ data, meetingDetails });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
-	let showThankYouNote = $state(true);
+	let showThankYouNote = $state(false);
 
 	let thankYouMessage = $state('');
 	let contacts = $state<{ firstName: string; email: string }[]>([]);
+	let thankYouErrors = $state<{ [key: string]: string }>({});
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Cheatsheet', { type: data?.interviewData?.type || ' ' });
@@ -62,14 +64,25 @@
 	}
 
 	function sendThankYouNote() {
+		thankYouErrors = {};
 		try {
+			if (contacts.length <= 0) {
+				thankYouErrors['contacts'] = 'No Contacts';
+				return;
+			}
+			if (thankYouMessage === '') {
+				thankYouErrors['message'] = 'Missing Thank You Message';
+				return;
+			}
 			$thankYouNotesMutation.mutateAsync({
 				message: thankYouMessage,
 				contacts,
 				meetingID: data.meetingID || ''
 			});
+			showThankYouNote = false;
+			toastStore.show({ message: 'Sent Thank Notes', type: 'success' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not send thank you note' });
+			toastStore.show({ message: 'Could not send thank you note', type: 'error' });
 		}
 	}
 
@@ -304,7 +317,7 @@
 			meetingID={data.meetingID}
 			meeting={$meetingDetails.data}
 			onSuccess={() => {
-				goto('/dashboard');
+				showThankYouNote = true;
 				showMeetingDetails = false;
 			}}
 		/>
@@ -321,9 +334,13 @@
 			rows={5}
 			bind:value={thankYouMessage}
 			placeholder="Thank you for the interview today. I appreciated the chance to hear more about the position and how the team works. Please let me know if you need anything else from me as you move forward."
+			errorText={thankYouErrors.message}
 		/>
 		<div>
 			<Label id="idx" label="Add Contacts" />
+			{#if thankYouErrors.contacts}
+				<ErrorText errorText={thankYouErrors.contacts} />
+			{/if}
 			<div class=" max-h-32 space-y-2 overflow-y-auto">
 				{#each contacts as contact, idx}
 					<div class="flex gap-x-1">

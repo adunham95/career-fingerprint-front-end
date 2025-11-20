@@ -12,7 +12,7 @@ async function sendThankYouNote(data: {
 		return thankYou;
 	} catch (error) {
 		console.log(error);
-		throw new Error(`Failed to get resume`);
+		throw new Error(`Failed to send thank you note`);
 	}
 }
 
