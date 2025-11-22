@@ -3,6 +3,7 @@
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import RadioButtons from '$lib/Components/FormElements/RadioButtons.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import GuidedGoalForm from '$lib/Components/Forms/GuidedGoalForm.svelte';
 
 	let templates = [
 		{
@@ -68,9 +69,11 @@
 	let hasTyped = $state(false);
 </script>
 
-<RadioButtons />
+<!-- <RadioButtons /> -->
 
 <PageContainer className="py-2">
+	<GuidedGoalForm />
+
 	<div class="flex justify-center">
 		<Card className="w-full max-w-2xl">
 			<textarea
