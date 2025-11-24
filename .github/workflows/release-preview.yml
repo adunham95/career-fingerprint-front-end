@@ -1,0 +1,26 @@
+name: Release Preview
+
+on:
+  pull_request:
+
+jobs:
+  release-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Enable Yarn 4
+      - name: Setup Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.6.0 --activate
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run semantic-release dry run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn dlx semantic-release --dry-run
