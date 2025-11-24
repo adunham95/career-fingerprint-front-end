@@ -14,6 +14,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       # Enable Yarn 4.6 via Corepack
       - name: Setup Corepack + Yarn 4.6
         run: |
