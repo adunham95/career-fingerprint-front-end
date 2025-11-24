@@ -83,7 +83,9 @@ export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
 	educationID: string | null = null,
-	tagID: string | null = null
+	tagID: string | null = null,
+	startDate: string | null = null,
+	endDate: string | null = null
 ): Promise<Achievement[]> {
 	const api = createApiClient();
 
@@ -105,6 +107,14 @@ export async function getAchievements(
 		queries['tagID'] = tagID;
 	}
 
+	if (startDate) {
+		queries['startDate'] = startDate;
+	}
+
+	if (endDate) {
+		queries['endDate'] = endDate;
+	}
+
 	return api.get('/achievement/my', queries);
 }
 
@@ -116,8 +126,19 @@ export const achievementKeys = {
 		includedDetails: boolean | null = false,
 		jobPositionID: string | null = null,
 		educationID: string | null = null,
-		tagID: string | null = null
-	) => [...achievementKeys.all, includedDetails, jobPositionID, educationID, tagID] as const
+		tagID: string | null = null,
+		startDate: string | null = null,
+		endDate: string | null = null
+	) =>
+		[
+			...achievementKeys.all,
+			includedDetails,
+			jobPositionID,
+			educationID,
+			tagID,
+			startDate,
+			endDate
+		] as const
 };
 
 export const useCreateAchievementMutation = () => {
@@ -187,16 +208,28 @@ export const useMyAchievements = (
 	includeLinked: null | boolean = null,
 	jobPositionID: () => string | null,
 	educationID: () => string | null,
-	tagID: () => string | null
+	tagID: () => string | null,
+	startDate: () => string | null,
+	endDate: () => string | null
 ) => {
 	return createQuery({
 		queryKey: achievementKeys.allWithOptions(
 			includeLinked,
 			jobPositionID(),
 			educationID(),
-			tagID()
+			tagID(),
+			startDate(),
+			endDate()
 		),
-		queryFn: () => getAchievements(includeLinked, jobPositionID(), educationID(), tagID()),
+		queryFn: () =>
+			getAchievements(
+				includeLinked,
+				jobPositionID(),
+				educationID(),
+				tagID(),
+				startDate(),
+				endDate()
+			),
 		initialData
 	});
 };

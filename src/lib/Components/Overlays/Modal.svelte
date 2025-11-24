@@ -7,9 +7,17 @@
 		actions?: Snippet;
 		title: string;
 		onClose?: () => void;
+		size?: 'sm' | 'md' | 'lg';
 	}
 
-	let { isOpen = $bindable(false), children, title, actions, onClose }: Props = $props();
+	let {
+		isOpen = $bindable(false),
+		children,
+		title,
+		actions,
+		onClose,
+		size = 'sm'
+	}: Props = $props();
 
 	let element: HTMLDialogElement;
 	$effect(() => {
@@ -24,14 +32,24 @@
 			onClose?.();
 		}
 	});
+
+	let sizeClass = $derived(() => {
+		switch (size) {
+			case 'lg':
+				return 'max-w-md  md:min-w-2xl';
+
+			default:
+				return 'max-w-md  md:min-w-lg';
+		}
+	});
 </script>
 
 <dialog
 	bind:this={element}
-	class="bg-surface-50 mx-2 my-5 w-full max-w-md rounded backdrop:bg-gray-700/30 sm:mx-auto md:min-w-lg"
+	class={`bg-surface-50 mx-auto my-5 w-full rounded backdrop:bg-gray-700/30  ${sizeClass()} `}
 >
 	<div
-		class="relative transform overflow-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:w-full sm:max-w-lg sm:p-6"
+		class="relative transform overflow-hidden rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:w-full sm:p-6"
 	>
 		<div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
 			<button
@@ -60,7 +78,7 @@
 			</div>
 		</div>
 		{#if actions}
-			<div class="mt-5 flex justify-end sm:mt-6">
+			<div class="mt-5 flex justify-end gap-x-2 sm:mt-6">
 				{@render actions?.()}
 			</div>
 		{/if}
