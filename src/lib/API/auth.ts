@@ -11,6 +11,20 @@ export async function loginOrgAdmin({ id }: { id: string }) {
 	}
 }
 
+export const loginWithToken = (token: string) => {
+	try {
+		const api = createApiClient();
+		return api.get<{
+			tokenValid: boolean;
+			accessToken?: string;
+			type?: string;
+		}>(`/login-token/verify/${token}`);
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to login to org`);
+	}
+};
+
 export const useLoginOrgAdminMutation = () => {
 	return createMutation({
 		mutationFn: loginOrgAdmin,
