@@ -79,6 +79,16 @@ export async function getAchievementTags(): Promise<AchievementTag[]> {
 	}
 }
 
+export async function getPreviewAchievements(): Promise<Achievement[]> {
+	try {
+		const api = createApiClient();
+		return api.get<Achievement[]>('/achievement/my', { page: 1, limit: 5 });
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+}
+
 export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
@@ -121,6 +131,7 @@ export async function getAchievements(
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
+	preview: ['achievements', 'preview'] as const,
 	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
 	allWithOptions: (
 		includedDetails: boolean | null = false,
@@ -200,6 +211,13 @@ export const useAchievementTags = () => {
 	return createQuery({
 		queryKey: achievementKeys.tags,
 		queryFn: getAchievementTags
+	});
+};
+
+export const usePreviewAchievements = () => {
+	return createQuery({
+		queryKey: achievementKeys.preview,
+		queryFn: getPreviewAchievements
 	});
 };
 

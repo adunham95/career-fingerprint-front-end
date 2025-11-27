@@ -10,6 +10,22 @@ interface GoalSkill {
 	actions: string[];
 }
 
+interface Goal {
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	name: string;
+	userID: number;
+	keywords: string[];
+	actions: string[];
+	targetCount: number;
+	completedAt: string | null;
+	lastProgressCalculatedAt: string;
+	status: 'active' | 'complete' | 'archived';
+	progress: number;
+	currentPoints: number;
+}
+
 async function getGoalSkills() {
 	try {
 		const api = createApiClient();
@@ -29,7 +45,7 @@ async function getMyGoals(query: {
 }) {
 	try {
 		const api = createApiClient();
-		const skills = await api.get<GoalSkill[]>('/goal/my', query);
+		const skills = await api.get<Goal[]>('/goal/my', query);
 		return skills;
 	} catch (error) {
 		console.log(error);

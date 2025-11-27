@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
@@ -16,7 +15,8 @@
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
 	import NewGoalForm from '$lib/Components/Forms/NewGoalForm.svelte';
-	import { useGetMyGoals } from '$lib/API/goals.js';
+	import AchievementList from '../achievementList.svelte';
+	import GoalList from '../goalList.svelte';
 
 	let { data } = $props();
 
@@ -36,7 +36,6 @@
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const upcomingMeetings = useUpcomingMeetings(data.meetings);
 	const loadIntoOrgMutation = useLoginOrgAdminMutation();
-	const myGoals = useGetMyGoals({ active: true, showProgress: true });
 
 	async function createNewMeeting() {
 		isLoadingNewMeeting = true;
@@ -155,30 +154,11 @@
 	</div>
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
-			<h2 class="font-title pb-4 text-2xl">My Goals</h2>
-			{#if $myGoals.isLoading}
-				<div class="flex justify-center">
-					<Loader />
-				</div>
-			{/if}
-			{#each $myGoals.data as goal}
-				<div>
-					<h3>
-						{goal.name}
-					</h3>
-					<p>Progress: {goal.progress * 100}%</p>
-					<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
-						<div
-							style={`width: ${goal.progress * 100}%`}
-							class="bg-primary-500 h-2 rounded-full"
-						></div>
-					</div>
-					<div class="mt-2 flex gap-2"></div>
-				</div>
-			{/each}
-		</div>
-
+		{#if useFeatureGate(1, data.user)}
+			<GoalList />
+		{:else}
+			<AchievementList />
+		{/if}
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
@@ -387,6 +367,7 @@
 		/>
 	</svg>
 {/snippet}
+
 {#snippet trophyIcon()}
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
