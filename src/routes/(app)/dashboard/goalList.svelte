@@ -13,21 +13,23 @@
 			<Loader />
 		</div>
 	{:else if ($myGoals.data || [])?.length > 0}
-		{#each $myGoals.data as goal}
-			<div>
-				<h3>
-					{goal.name}
-				</h3>
-				<p>Progress: {goal.progress * 100}%</p>
-				<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
-					<div
-						style={`width: ${goal.progress * 100}%`}
-						class="bg-primary-500 h-2 rounded-full"
-					></div>
+		<div class="divide-y divide-gray-200">
+			{#each $myGoals.data as goal}
+				<div class="px-4 py-4 sm:px-0">
+					<h3>
+						{goal.name}
+					</h3>
+					<p>Progress: {goal.progress * 100}%</p>
+					<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
+						<div
+							style={`width: ${goal.progress * 100}%`}
+							class="bg-primary-500 h-2 rounded-full"
+						></div>
+					</div>
+					<div class="mt-2 flex gap-2"></div>
 				</div>
-				<div class="mt-2 flex gap-2"></div>
-			</div>
-		{/each}
+			{/each}
+		</div>
 	{:else}
 		<InfoBlock title="Goals" description="Your goals are empty. To add a goal click add goal" />
 	{/if}

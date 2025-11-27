@@ -2,6 +2,7 @@
 	import { useCreateGoal, useGetGoalSkills } from '$lib/API/goals';
 	import Label from '../FormElements/Label.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
+	import { toastStore } from '../Toasts/toast';
 
 	interface Props {
 		formID: string;
@@ -68,6 +69,7 @@
 				targetCount: difficulty?.skillPoints
 			});
 			onSuccess?.();
+			toastStore.show({ message: 'Goal Added' });
 		} catch (error) {}
 	}
 

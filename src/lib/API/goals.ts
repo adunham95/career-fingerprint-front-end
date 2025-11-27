@@ -1,4 +1,4 @@
-import { createMutation, createQuery } from '@tanstack/svelte-query';
+import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import { createApiClient } from './apiClient';
 
 interface GoalSkill {
@@ -98,9 +98,14 @@ export const useGetMyGoals = (query: {
 // MUTATIONS
 
 export const useCreateGoal = () => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: createGoal,
-		onSuccess: () => {},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: goalsKeys.allGoals
+			});
+		},
 		onError: (error) => {
 			console.error('Failed to create goal:', error);
 		}

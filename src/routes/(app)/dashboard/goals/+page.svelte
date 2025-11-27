@@ -258,7 +258,7 @@
 </Drawer>
 
 <Drawer bind:isOpen={showNewGoal} title="Add New Goal" saveFormID="new-achievement">
-	<NewGoalForm formID="new-achievement" />
+	<NewGoalForm formID="new-achievement" onSuccess={() => (showNewGoal = false)} />
 </Drawer>
 
 {#snippet startIcon()}
