@@ -16,6 +16,7 @@
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
 	import NewGoalForm from '$lib/Components/Forms/NewGoalForm.svelte';
+	import { useGetMyGoals } from '$lib/API/goals.js';
 
 	let { data } = $props();
 
@@ -35,6 +36,7 @@
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const upcomingMeetings = useUpcomingMeetings(data.meetings);
 	const loadIntoOrgMutation = useLoginOrgAdminMutation();
+	const myGoals = useGetMyGoals({ active: true, showProgress: true });
 
 	async function createNewMeeting() {
 		isLoadingNewMeeting = true;
@@ -85,6 +87,8 @@
 			icon={trophyIcon}
 			color="orange"
 			actionName="Add Goal Click"
+			premiumAction={true}
+			premiumLocked={!useFeatureGate(1, data.user)}
 			onClick={() => {
 				showNewGoal = true;
 			}}
@@ -153,14 +157,26 @@
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<h2 class="font-title pb-4 text-2xl">My Goals</h2>
-			<div>
-				<h3>Get Promoted to Senior PM</h3>
-				<p>Progress: 50%</p>
-				<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
-					<div style="width: 50%" class="bg-primary-500 h-2 rounded-full"></div>
+			{#if $myGoals.isLoading}
+				<div class="flex justify-center">
+					<Loader />
 				</div>
-				<div class="mt-2 flex gap-2"></div>
-			</div>
+			{/if}
+			{#each $myGoals.data as goal}
+				<div>
+					<h3>
+						{goal.name}
+					</h3>
+					<p>Progress: {goal.progress * 100}%</p>
+					<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
+						<div
+							style={`width: ${goal.progress * 100}%`}
+							class="bg-primary-500 h-2 rounded-full"
+						></div>
+					</div>
+					<div class="mt-2 flex gap-2"></div>
+				</div>
+			{/each}
 		</div>
 
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">

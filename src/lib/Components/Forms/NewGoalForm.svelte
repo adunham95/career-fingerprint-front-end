@@ -1,117 +1,84 @@
 <script lang="ts">
+	import { useCreateGoal, useGetGoalSkills } from '$lib/API/goals';
 	import Label from '../FormElements/Label.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
 
 	interface Props {
 		formID: string;
+		onSuccess?: () => void;
 	}
 
-	const { formID }: Props = $props();
+	const { formID, onSuccess }: Props = $props();
 
 	let difficultyLevels = [
-		{ id: 'easy', name: 'Easy', skillPoints: 3 },
-		{ id: 'medium', name: 'Medium', skillPoints: 5 },
-		{ id: 'hard', name: 'Hard', skillPoints: 10 }
-	];
-
-	let difficultyLevel = $state('');
-
-	let categoryOptions = [
 		{
-			id: 'public_speaking',
-			title: 'Public Speaking',
-			category: 'communication',
-			description:
-				'Build confidence speaking in front of others, presenting ideas, or leading discussions.',
-			keywords: ['presentation', 'public speaking', 'speech', 'communication'],
-			actions: ['presented', 'explained', 'reported', 'spoke']
+			id: 'path',
+			name: 'Path',
+			skillPoints: 5,
+			description: 'Straightforward tasks requiring minimal effort or preparation.'
 		},
 		{
-			id: 'leadership',
-			title: 'Leadership & Ownership',
-			category: 'leadership',
-			description: 'Grow your ability to lead projects, guide others, and take initiative.',
-			keywords: ['leadership', 'team', 'ownership', 'initiative'],
-			actions: ['led', 'organized', 'coordinated', 'initiated']
+			id: 'hill',
+			name: 'Hill',
+			skillPoints: 9,
+			description: 'Tasks that require steady effort and consistent focus.'
 		},
 		{
-			id: 'problem_solving',
-			title: 'Problem Solving',
-			category: 'problem_solving',
-			description:
-				'Strengthen your ability to break down problems, troubleshoot issues, and find solutions.',
-			keywords: ['problem solving', 'troubleshoot', 'analysis', 'root cause'],
-			actions: ['debugged', 'resolved', 'investigated', 'fixed']
+			id: 'climb',
+			name: 'Climb',
+			skillPoints: 15,
+			description: 'Challenging tasks that demand strong concentration and time.'
 		},
 		{
-			id: 'organization',
-			title: 'Organization & Planning',
-			category: 'productivity',
-			description: 'Improve how you plan, prioritize, and keep work organized day-to-day.',
-			keywords: ['planning', 'organization', 'prioritization', 'documentation'],
-			actions: ['planned', 'organized', 'documented', 'prioritized']
-		},
-		{
-			id: 'collaboration',
-			title: 'Collaboration & Teamwork',
-			category: 'collaboration',
-			description: 'Build stronger habits around working with others and supporting your team.',
-			keywords: ['collaboration', 'teamwork', 'partnership', 'support'],
-			actions: ['collaborated', 'supported', 'reviewed', 'paired']
-		},
-		{
-			id: 'creativity',
-			title: 'Creativity & Innovation',
-			category: 'creativity',
-			description:
-				'Develop your ability to generate ideas, think creatively, and explore new approaches.',
-			keywords: ['creativity', 'innovation', 'ideas', 'brainstorming'],
-			actions: ['designed', 'conceptualized', 'created', 'brainstormed']
-		},
-		{
-			id: 'project_management',
-			title: 'Project Management',
-			category: 'project_management',
-			description:
-				'Strengthen how you plan projects, track progress, and keep work moving forward.',
-			keywords: ['project', 'timeline', 'milestone', 'requirements'],
-			actions: ['planned', 'tracked', 'coordinated', 'delivered']
-		},
-		{
-			id: 'customer_focus',
-			title: 'Customer Focus',
-			category: 'customer',
-			description: 'Improve how you listen to, support, and communicate with customers or clients.',
-			keywords: ['customer', 'client', 'feedback', 'support'],
-			actions: ['supported', 'guided', 'assisted', 'advised']
-		},
-		{
-			id: 'learning',
-			title: 'Learning & Skill Development',
-			category: 'growth',
-			description:
-				'Stay intentional about building new skills and investing in your personal growth.',
-			keywords: ['learning', 'skills', 'training', 'improvement'],
-			actions: ['studied', 'practiced', 'researched', 'learned']
-		},
-		{
-			id: 'writing',
-			title: 'Writing & Documentation',
-			category: 'documentation',
-			description:
-				'Improve clarity in writing, documentation, and sharing information with others.',
-			keywords: ['writing', 'documentation', 'clarity', 'instructions'],
-			actions: ['wrote', 'documented', 'outlined', 'summarized']
+			id: 'summit',
+			name: 'Summit',
+			skillPoints: 35,
+			description: 'Major, complex tasks requiring significant effort and commitment.'
 		}
 	];
 
+	let difficultyLevel = $state('');
 	let selectedCategory = $state<string[]>([]);
+	let name = $state('');
+	let errors = $state({});
 
-	function saveNewGoal() {
-		let categories = categoryOptions.filter((c) => selectedCategory.includes(c.category));
+	let categoryOptions = useGetGoalSkills();
+
+	let createNewGoalMutation = useCreateGoal();
+
+	async function saveNewGoal() {
+		let errors = {};
+		let categories = ($categoryOptions.data || []).filter((c) => selectedCategory.includes(c.id));
 		let difficulty = difficultyLevels.find((d) => d.id === difficultyLevel);
 
-		console.log({ categories, difficulty });
+		if (!difficulty) {
+			return;
+		}
+
+		let actions = categories.map((c) => c.actions).flat();
+		let keywords = categories.map((c) => c.keywords).flat();
+
+		console.log({ categories, difficulty, actions, keywords });
+
+		try {
+			$createNewGoalMutation.mutateAsync({
+				name,
+				actions,
+				keywords,
+				targetCount: difficulty?.skillPoints
+			});
+			onSuccess?.();
+		} catch (error) {}
+	}
+
+	function handleCategoryClick(event: MouseEvent, category: string) {
+		const isSelected = selectedCategory.includes(category);
+
+		// enforce max 3 selected
+		if (!isSelected && selectedCategory.length >= 3) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
 	}
 </script>
 
@@ -122,10 +89,10 @@
 		saveNewGoal();
 	}}
 >
-	<TextInput id="name" label="Goal Name" />
+	<TextInput id="name" label="Goal Name" bind:value={name} />
 
 	<div class="pt-2">
-		<Label id="" label="Select a difficulty level" />
+		<Label id="" label="Select a effort level" />
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-3 pt-2">
 			{#each difficultyLevels as level}
 				<label
@@ -152,7 +119,7 @@
 							{level.name}
 						</p>
 						<p class="line-clamp-2 text-xs leading-tight text-gray-500">
-							Skill Points {level.skillPoints}
+							{level.description}
 						</p>
 					</div>
 				</label>
@@ -161,32 +128,33 @@
 	</div>
 
 	<div class="pt-2">
-		<Label label="Select a skill" subLabel="Choose up to 3 skill areas that best match your goal" />
+		<Label label="Select skills" subLabel="Choose up to 3 skill areas that best match your goal" />
 
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-3 pt-2">
-			{#each categoryOptions as cat}
+			{#each $categoryOptions.data as cat}
 				<label
-					for={cat.category}
+					for={cat.id}
 					class={`cursor-pointer rounded border-2 bg-white p-2 transition-all
 					${
-						selectedCategory.includes(cat.category)
+						selectedCategory.includes(cat.id)
 							? 'border-accent bg-accent/10 shadow-md'
 							: 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
 					}
 				`}
 				>
 					<input
-						id={cat.category}
+						id={cat.id}
 						type="checkbox"
-						value={cat.category}
+						value={cat.id}
 						name="categories"
 						class="hidden"
 						bind:group={selectedCategory}
+						onclick={(e) => handleCategoryClick(e, cat.id)}
 					/>
 
 					<div class="flex flex-col gap-1">
-						<p class="truncate font-medium text-gray-900">
-							{cat.title}
+						<p class="truncate text-sm font-medium text-gray-900">
+							{cat.name}
 						</p>
 						<p class="line-clamp-2 text-xs leading-tight text-gray-500">
 							{cat.description}
