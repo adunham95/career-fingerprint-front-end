@@ -1,6 +1,7 @@
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Achievement, AchievementTag } from '../../app';
 import { createApiClient } from './apiClient';
+import { goalsKeys } from './goals';
 
 interface NewAchievement {
 	description: string;
@@ -159,6 +160,9 @@ export const useCreateAchievementMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: achievementKeys.all
+			});
+			queryClient.invalidateQueries({
+				queryKey: goalsKeys.allGoals
 			});
 		},
 		onError: (error) => {
