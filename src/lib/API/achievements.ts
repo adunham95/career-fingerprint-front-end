@@ -1,6 +1,7 @@
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Achievement, AchievementTag } from '../../app';
 import { createApiClient } from './apiClient';
+import { goalsKeys } from './goals';
 
 interface NewAchievement {
 	description: string;
@@ -79,6 +80,16 @@ export async function getAchievementTags(): Promise<AchievementTag[]> {
 	}
 }
 
+export async function getPreviewAchievements(): Promise<Achievement[]> {
+	try {
+		const api = createApiClient();
+		return api.get<Achievement[]>('/achievement/my', { page: 1, limit: 5 });
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+}
+
 export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
@@ -121,6 +132,7 @@ export async function getAchievements(
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
+	preview: ['achievements', 'preview'] as const,
 	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
 	allWithOptions: (
 		includedDetails: boolean | null = false,
@@ -148,6 +160,9 @@ export const useCreateAchievementMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: achievementKeys.all
+			});
+			queryClient.invalidateQueries({
+				queryKey: goalsKeys.allGoals
 			});
 		},
 		onError: (error) => {
@@ -200,6 +215,13 @@ export const useAchievementTags = () => {
 	return createQuery({
 		queryKey: achievementKeys.tags,
 		queryFn: getAchievementTags
+	});
+};
+
+export const usePreviewAchievements = () => {
+	return createQuery({
+		queryKey: achievementKeys.preview,
+		queryFn: getPreviewAchievements
 	});
 };
 
