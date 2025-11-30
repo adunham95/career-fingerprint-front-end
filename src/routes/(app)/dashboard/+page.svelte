@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
@@ -15,6 +14,9 @@
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
+	import NewGoalForm from '$lib/Components/Forms/NewGoalForm.svelte';
+	import GoalList from './goalList.svelte';
+	import AchievementList from './achievementList.svelte';
 
 	let { data } = $props();
 
@@ -25,6 +27,7 @@
 	let isLoadingNewMeeting = $state(false);
 	let showSelectOrg = $state(false);
 	let isLoadingInOrg = $state<string | null>(null);
+	let showNewGoal = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -78,6 +81,19 @@
 		/>
 
 		<DashboardActionButton
+			title="Add Goal"
+			subTitle="Take note of your achievements"
+			icon={trophyIcon}
+			color="orange"
+			actionName="Add Goal Click"
+			premiumAction={true}
+			premiumLocked={!useFeatureGate(1, data.user)}
+			onClick={() => {
+				showNewGoal = true;
+			}}
+		/>
+
+		<DashboardActionButton
 			title="Start Meeting"
 			subTitle="Quickly access your cheat sheet for an interview or 1:1"
 			color="blue"
@@ -106,15 +122,6 @@
 			href="/prep"
 			premiumAction={true}
 			premiumLocked={!useFeatureGate(1, data.user)}
-		/>
-
-		<DashboardActionButton
-			icon={meetingIcon}
-			title="Previous Meetings"
-			subTitle="View your previous meetings details and notes"
-			href="/meetings?tab=previous"
-			actionName="Previous Meetings Click"
-			color="orange"
 		/>
 
 		{#if data.user.orgAdminLinks.length === 1}
@@ -148,26 +155,12 @@
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
-			<h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>
-			{#if (data.achievements || []).length > 0}
-				<Timeline
-					dates={data.achievements?.map((ach) => {
-						return {
-							title: 'Achievement',
-							date: ach.startDate ? new Date(ach.startDate) : new Date(),
-							description: ach.myContribution,
-							type: 'achievement'
-						};
-					}) || []}
-				/>
+			{#if useFeatureGate(1, data.user)}
+				<GoalList />
 			{:else}
-				<InfoBlock
-					title="Achievements"
-					description="Your achievement timeline is empty. To add a new achievement click Add Achievement"
-				/>
+				<AchievementList />
 			{/if}
 		</div>
-
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
@@ -264,6 +257,10 @@
 			</li>
 		{/each}
 	</ul>
+</Drawer>
+
+<Drawer bind:isOpen={showNewGoal} title="Add New Goal" saveFormID="new-achievement">
+	<NewGoalForm formID="new-achievement" onSuccess={() => (showNewGoal = false)} />
 </Drawer>
 
 {#snippet startIcon()}
@@ -369,6 +366,23 @@
 			stroke-linecap="round"
 			stroke-linejoin="round"
 			d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
+		/>
+	</svg>
+{/snippet}
+
+{#snippet trophyIcon()}
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill="none"
+		viewBox="0 0 24 24"
+		stroke-width="1.5"
+		stroke="currentColor"
+		class="size-8"
+	>
+		<path
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"
 		/>
 	</svg>
 {/snippet}

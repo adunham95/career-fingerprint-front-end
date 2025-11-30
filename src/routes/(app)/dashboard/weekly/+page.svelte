@@ -33,7 +33,9 @@
 			</div>
 		</Card>
 		<div>
-			<GoalList />
+			<Card>
+				<GoalList />
+			</Card>
 		</div>
 	</div>
 </PageContainer>
