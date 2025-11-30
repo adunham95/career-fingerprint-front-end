@@ -19,7 +19,7 @@
 					<h3>
 						{goal.name}
 					</h3>
-					<p>Progress: {goal.progress * 100}%</p>
+					<p>Progress: {Math.trunc(goal.progress * 100)}%</p>
 					<div class="my-2 flex overflow-hidden rounded-full bg-gray-200">
 						<div
 							style={`width: ${goal.progress * 100}%`}

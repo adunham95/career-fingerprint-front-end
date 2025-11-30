@@ -1,19 +1,10 @@
 <script>
-	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
-	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
-	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
-	import { useUpcomingMeetings } from '$lib/API/meeting.js';
 	import { onMount } from 'svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
-
-	const { data } = $props();
-
-	let isNewMeetingOpen = $state(false);
-
-	let meetings = useUpcomingMeetings(data.meetings || []);
+	import GoalList from '../goalList.svelte';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Weekly Check-in Dashboard');
@@ -29,7 +20,7 @@
 </div>
 
 <PageContainer>
-	<div class="grid grid-cols-2 gap-4 py-2">
+	<div class="grid grid-cols-1 gap-4 py-2 md:grid-cols-2">
 		<Card headline="Add New Achievement">
 			<NewAchievementForm id="check-in" />
 			<div class="flex justify-end pt-2">
@@ -42,34 +33,7 @@
 			</div>
 		</Card>
 		<div>
-			<div class="flex justify-between">
-				<h3 class="font-title pb-4 text-xl">Upcoming Meetings</h3>
-				<button
-					class="btn btn-text--primary"
-					onclick={() => {
-						isNewMeetingOpen = true;
-						trackingStore.trackAction('Add Meeting Click');
-					}}>Add Meeting</button
-				>
-			</div>
-			<ul class="space-y-2">
-				{#each $meetings.data || [] as meeting}
-					<li>
-						<Card size="sm">
-							<UpcomingEventRow {...meeting} />
-						</Card>
-					</li>
-				{/each}
-			</ul>
+			<GoalList />
 		</div>
 	</div>
 </PageContainer>
-
-<Drawer
-	bind:isOpen={isNewMeetingOpen}
-	title="Add New Meeting"
-	subTitle="Create a new interview, or internal meeting"
-	saveFormID="newMeeting"
->
-	<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
-</Drawer>
