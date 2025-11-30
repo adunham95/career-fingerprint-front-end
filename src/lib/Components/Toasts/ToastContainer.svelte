@@ -1,9 +1,15 @@
 <!-- src/lib/components/Toast.svelte -->
 <script lang="ts">
+	import { initSSE } from '$lib/API/serverSentEvents';
 	import { toastStore, type Toast } from './toast';
 	import { onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 
 	let toasts: Toast[] = $state([]);
+
+	onMount(() => {
+		initSSE();
+	});
 
 	const unsubscribe = toastStore.subscribe((t) => {
 		console.log(t);
