@@ -91,7 +91,7 @@
 				<h1 class="text-base font-semibold text-gray-900">Users</h1>
 				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
 			</div>
-			{#if permissionGate(['clients:add'], data.myPermissions)}
+			{#if permissionGate(['client:add'], data.myPermissions)}
 				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
 					<button class="btn btn--primary" onclick={() => (showUploadModal = true)}>
 						Upload Users
@@ -108,7 +108,9 @@
 				<Loader />
 			</div>
 		{/if}
-		{#if ($users?.data?.users || []).length > 0}
+		{#if !permissionGate(['client:list'], data.myPermissions)}
+			<InfoBlock title="Permission Locked" description="You do not have access to view user" />
+		{:else if ($users?.data?.users || []).length > 0}
 			<div class="mt-8 flow-root overflow-hidden">
 				<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<table class="w-full text-left">

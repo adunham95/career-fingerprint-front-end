@@ -4,6 +4,7 @@ export function permissionGate(requiredPermissions: string[], myPermissions: str
 		console.log('needed', needed);
 
 		console.log('Has needed:', permissionList.has(needed));
+		console.log('Has: ', permissionList);
 		// Exact match
 		if (permissionList.has(needed)) return true;
 

@@ -77,7 +77,7 @@
 	$inspect({ selectedMonth, selectedYear, selectedDay });
 </script>
 
-<div>
+<div class="[fieldset:disabled_&]:pointer-events-none [fieldset:disabled_&]:opacity-50">
 	<Label {id} {label} />
 	<div class="container grid grid-cols-5 gap-2">
 		<div class={`${showDate ? 'col-span-2' : 'col-span-3'} flex flex-col gap-1`}>

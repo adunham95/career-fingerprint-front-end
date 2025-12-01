@@ -1,69 +1,131 @@
 <script>
+	import Card from '$lib/Components/Containers/Card.svelte';
+	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
+	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
+	import EducationDetails from '$lib/Components/Forms/EducationDetails.svelte';
+	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { formatDate } from '$lib/Utils/formatDate';
 
 	const { data } = $props();
+
+	console.log({ myFingerprint: data.myFingerprint });
+
+	let jobs = $state(data.myFingerprint?.jobs || []);
+	let education = $state(data.myFingerprint?.education || []);
+	// let chipList = $state($skillList.data?.skillList || []);
 </script>
 
 {#if data.myFingerprint}
-	{#each data.myFingerprint.jobs as job}
-		<dl class="grid grid-cols-1 sm:grid-cols-2">
-			<div class="px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Title</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{job.name}</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Company</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{job.company || 'N/A'}</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Location</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{job.location || 'N/A' || 'N/A'}</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Date</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">
-					{formatDate(job.startDate)} - {job.currentPosition ? 'Current' : formatDate(job.endDate)}
-				</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Summary</dt>
-				<dd class="mt-1 text-sm/6 whitespace-pre-wrap text-gray-700 sm:mt-2">
-					{job.description || 'N/A'}
-				</dd>
-			</div>
-		</dl>
-		<div class="flex items-center">
-			<div aria-hidden="true" class="w-full border-t border-gray-300"></div>
+	<TwoColumn title={'My Jobs'}>
+		{#snippet subSection()}
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					// addObject('job-positions');
+					trackingStore.trackAction('Updated Resume', {
+						section: 'Job Position',
+						button: 'Add'
+					});
+				}}
+			>
+				Add New Job
+			</button>
+		{/snippet}
+		<fieldset disabled class="space-y-4">
+			{#if jobs.length === 0}
+				<InfoBlock
+					title="No Jobs"
+					description="No Jobs to show. Click Add New Job to add a new job"
+				/>
+			{/if}
+			{#each jobs || [] as job, idx}
+				<Card contentClassName="space-y-2 px-4 py-4 ">
+					<JobDetails bind:job={jobs[idx]} {idx} />
+					{#snippet actions()}
+						<button
+							class="btn btn-text--error btn-small"
+							onclick={() => {
+								// deleteObject('job-positions', job.id);
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Job Position',
+									button: 'Delete'
+								});
+							}}>Delete</button
+						>
+						<button
+							class="btn btn-text--success btn-small"
+							onclick={() => {
+								// saveObject('job-positions', job.id);
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Job Position',
+									button: 'Save'
+								});
+							}}>Save</button
+						>
+					{/snippet}
+				</Card>
+			{/each}
+		</fieldset>
+	</TwoColumn>
+	<TwoColumn title={'My Education'}>
+		{#snippet subSection()}
+			<button
+				class="btn btn--primary"
+				onclick={() => {
+					// addObject('education');
+					trackingStore.trackAction('Updated Resume', {
+						section: 'Education',
+						button: 'Add'
+					});
+				}}
+			>
+				Add New Education
+			</button>
+		{/snippet}
+		<div class="space-y-4">
+			{#if education.length === 0}
+				<InfoBlock
+					title="No Education"
+					description="No Education to show. Click Add New Education to add a new education"
+				/>
+			{/if}
+			{#each education || [] as edu, idx}
+				<Card contentClassName="space-y-2 px-4 py-4">
+					<EducationDetails bind:education={education[idx]} {idx} />
+					{#snippet actions()}
+						<button
+							class="btn btn-text--error btn-small"
+							onclick={() => {
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Education',
+									button: 'Delete'
+								});
+								// deleteObject('education', edu.id);
+							}}>Delete</button
+						>
+						<button
+							class="btn btn-text--success btn-small"
+							onclick={() => {
+								trackingStore.trackAction('Updated Resume', {
+									section: 'Education',
+									button: 'Save'
+								});
+								// saveObject('education', edu.id);
+							}}>Save</button
+						>
+					{/snippet}
+				</Card>
+			{/each}
 		</div>
-	{/each}
-	{#each data.myFingerprint.education as edu}
-		<dl class="grid grid-cols-1 sm:grid-cols-2">
-			<div class="px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Degree</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{edu.degree || 'N/A'}</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Institution</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">{edu.institution || 'N/A'}</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Date</dt>
-				<dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2">
-					{formatDate(edu.startDate)} - {edu.currentPosition ? 'Current' : formatDate(edu.endDate)}
-				</dd>
-			</div>
-			<div class="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-				<dt class="text-sm/6 font-medium text-gray-900">Summary</dt>
-				<dd class="mt-1 text-sm/6 whitespace-pre-wrap text-gray-700 sm:mt-2">
-					{edu.description || 'N/A'}
-				</dd>
-			</div>
-		</dl>
-		<div class="flex items-center">
-			<div aria-hidden="true" class="w-full border-t border-gray-300"></div>
-		</div>
-	{/each}
+	</TwoColumn>
+	<!-- <TwoColumn title={'My Skills'}> -->
+	<!-- <Card> -->
+	<!-- <ChipList bind:chips={chipList} onChange={saveSkills} /> -->
+	<!-- </Card> -->
+	<!-- </TwoColumn> -->
 {:else}
 	<InfoBlock
 		title="No Fingerprint"

@@ -3,6 +3,8 @@
 	import TabNav from '$lib/Components/Header/TabNav.svelte';
 
 	const { data, children } = $props();
+
+	console.log({ data });
 </script>
 
 <PageContainer className="py-6">
