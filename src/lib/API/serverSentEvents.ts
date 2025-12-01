@@ -25,11 +25,11 @@ export function initSSE() {
 		}
 	};
 
-	source.onerror = () => {
-		toastStore.show({
-			type: 'error',
-			message: 'Lost connection to live updates',
-			duration: 5000
-		});
-	};
+	// source.onerror = () => {
+	// 	toastStore.show({
+	// 		type: 'error',
+	// 		message: 'Lost connection to live updates',
+	// 		duration: 5000
+	// 	});
+	// };
 }
