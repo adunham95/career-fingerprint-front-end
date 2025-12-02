@@ -81,19 +81,6 @@
 		/>
 
 		<DashboardActionButton
-			title="Add Goal"
-			subTitle="Take note of your achievements"
-			icon={trophyIcon}
-			color="orange"
-			actionName="Add Goal Click"
-			premiumAction={true}
-			premiumLocked={!useFeatureGate(1, data.user)}
-			onClick={() => {
-				showNewGoal = true;
-			}}
-		/>
-
-		<DashboardActionButton
 			title="Start Meeting"
 			subTitle="Quickly access your cheat sheet for an interview or 1:1"
 			color="blue"
@@ -122,6 +109,15 @@
 			href="/prep"
 			premiumAction={true}
 			premiumLocked={!useFeatureGate(1, data.user)}
+		/>
+
+		<DashboardActionButton
+			icon={meetingIcon}
+			title="Previous Meetings"
+			subTitle="View your previous meetings details and notes"
+			href="/meetings?tab=previous"
+			actionName="Previous Meetings Click"
+			color="orange"
 		/>
 
 		{#if data.user.orgAdminLinks.length === 1}
@@ -155,11 +151,7 @@
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
-			{#if useFeatureGate(1, data.user)}
-				<GoalList />
-			{:else}
-				<AchievementList />
-			{/if}
+			<AchievementList />
 		</div>
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
