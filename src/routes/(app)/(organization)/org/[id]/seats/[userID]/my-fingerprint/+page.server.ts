@@ -6,7 +6,7 @@ export const load = async (event) => {
 		const api = createApiClient(event);
 
 		const [myFingerprint] = await Promise.all([
-			await api.get<MyFingerprint>(`/my-fingerprint/user/${event.params.userID}`)
+			await api.get<MyFingerprint>(`/my-fingerprint/client/${event.params.userID}`)
 		]);
 
 		return { myFingerprint };

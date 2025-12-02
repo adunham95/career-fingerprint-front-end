@@ -16,8 +16,9 @@
 	<TabNav
 		options={[
 			{ path: 'my-fingerprint', label: 'My Fingerprint' },
-			{ path: 'achievements', label: 'Achievements' },
-			{ path: 'meetings', label: 'Meetings' }
+			{ path: 'resumes', label: 'Resumes' }
+			// { path: 'achievements', label: 'Achievements' },
+			// { path: 'meetings', label: 'Meetings' }
 		]}
 	/>
 	<div>

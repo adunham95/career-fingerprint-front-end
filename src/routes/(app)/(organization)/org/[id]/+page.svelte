@@ -24,7 +24,7 @@
 
 	async function copySignUpLink() {
 		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/get-started?org=${data?.org?.id}`);
+			await copyTextToClipboard(`https://careerfingerprint.app/register?org=${data?.org?.id}`);
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
@@ -38,8 +38,8 @@
 		<DashboardActionButton
 			icon={usersIcon}
 			actionName="Seat Management Click"
-			title="Seat Management"
-			subTitle="Manage Current Users"
+			title="Seats"
+			subTitle="View all the users in your group"
 			color="green"
 			href={`/org/${data.org?.id}/seats`}
 			locked={!permissionGate(['client:list'], data.myPermissions)}
