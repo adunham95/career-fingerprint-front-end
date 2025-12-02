@@ -42,25 +42,9 @@
 			</div>
 		</Card>
 		<div>
-			<div class="flex justify-between">
-				<h3 class="font-title pb-4 text-xl">Upcoming Meetings</h3>
-				<button
-					class="btn btn-text--primary"
-					onclick={() => {
-						isNewMeetingOpen = true;
-						trackingStore.trackAction('Add Meeting Click');
-					}}>Add Meeting</button
-				>
-			</div>
-			<ul class="space-y-2">
-				{#each $meetings.data || [] as meeting}
-					<li>
-						<Card size="sm">
-							<UpcomingEventRow {...meeting} />
-						</Card>
-					</li>
-				{/each}
-			</ul>
+			<Card>
+				<GoalList />
+			</Card>
 		</div>
 	</div>
 </PageContainer>
