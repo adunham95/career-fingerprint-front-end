@@ -155,11 +155,7 @@
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
-			{#if useFeatureGate(1, data.user)}
-				<GoalList />
-			{:else}
-				<AchievementList />
-			{/if}
+			<AchievementList />
 		</div>
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
