@@ -4,7 +4,16 @@
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import { onMount } from 'svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
-	import GoalList from '../goalList.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
+	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
+	import { useUpcomingMeetings } from '$lib/API/meeting';
+
+	const { data } = $props();
+
+	let isNewMeetingOpen = $state(false);
+
+	let meetings = useUpcomingMeetings(data.meetings || []);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Weekly Check-in Dashboard');
@@ -33,9 +42,33 @@
 			</div>
 		</Card>
 		<div>
-			<Card>
-				<GoalList />
-			</Card>
+			<div class="flex justify-between">
+				<h3 class="font-title pb-4 text-xl">Upcoming Meetings</h3>
+				<button
+					class="btn btn-text--primary"
+					onclick={() => {
+						isNewMeetingOpen = true;
+						trackingStore.trackAction('Add Meeting Click');
+					}}>Add Meeting</button
+				>
+			</div>
+			<ul class="space-y-2">
+				{#each $meetings.data || [] as meeting}
+					<li>
+						<Card size="sm">
+							<UpcomingEventRow {...meeting} />
+						</Card>
+					</li>
+				{/each}
+			</ul>
 		</div>
 	</div>
 </PageContainer>
+<Drawer
+	bind:isOpen={isNewMeetingOpen}
+	title="Add New Meeting"
+	subTitle="Create a new interview, or internal meeting"
+	saveFormID="newMeeting"
+>
+	<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
+</Drawer>
