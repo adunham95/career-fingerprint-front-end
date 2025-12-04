@@ -1,6 +1,7 @@
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { Achievement, AchievementTag } from '../../app';
 import { createApiClient } from './apiClient';
+import { goalsKeys } from './goals';
 
 interface NewAchievement {
 	description: string;
@@ -79,11 +80,23 @@ export async function getAchievementTags(): Promise<AchievementTag[]> {
 	}
 }
 
+export async function getPreviewAchievements(): Promise<Achievement[]> {
+	try {
+		const api = createApiClient();
+		return api.get<Achievement[]>('/achievement/my', { page: 1, limit: 5 });
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+}
+
 export async function getAchievements(
 	includeLinked: boolean | null = null,
 	jobPositionID: string | null = null,
 	educationID: string | null = null,
-	tagID: string | null = null
+	tagID: string | null = null,
+	startDate: string | null = null,
+	endDate: string | null = null
 ): Promise<Achievement[]> {
 	const api = createApiClient();
 
@@ -105,19 +118,39 @@ export async function getAchievements(
 		queries['tagID'] = tagID;
 	}
 
+	if (startDate) {
+		queries['startDate'] = startDate;
+	}
+
+	if (endDate) {
+		queries['endDate'] = endDate;
+	}
+
 	return api.get('/achievement/my', queries);
 }
 
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
+	preview: ['achievements', 'preview'] as const,
 	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
 	allWithOptions: (
 		includedDetails: boolean | null = false,
 		jobPositionID: string | null = null,
 		educationID: string | null = null,
-		tagID: string | null = null
-	) => [...achievementKeys.all, includedDetails, jobPositionID, educationID, tagID] as const
+		tagID: string | null = null,
+		startDate: string | null = null,
+		endDate: string | null = null
+	) =>
+		[
+			...achievementKeys.all,
+			includedDetails,
+			jobPositionID,
+			educationID,
+			tagID,
+			startDate,
+			endDate
+		] as const
 };
 
 export const useCreateAchievementMutation = () => {
@@ -127,6 +160,9 @@ export const useCreateAchievementMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: achievementKeys.all
+			});
+			queryClient.invalidateQueries({
+				queryKey: goalsKeys.allGoals
 			});
 		},
 		onError: (error) => {
@@ -182,21 +218,40 @@ export const useAchievementTags = () => {
 	});
 };
 
+export const usePreviewAchievements = () => {
+	return createQuery({
+		queryKey: achievementKeys.preview,
+		queryFn: getPreviewAchievements
+	});
+};
+
 export const useMyAchievements = (
 	initialData: Achievement[] = [],
 	includeLinked: null | boolean = null,
 	jobPositionID: () => string | null,
 	educationID: () => string | null,
-	tagID: () => string | null
+	tagID: () => string | null,
+	startDate: () => string | null,
+	endDate: () => string | null
 ) => {
 	return createQuery({
 		queryKey: achievementKeys.allWithOptions(
 			includeLinked,
 			jobPositionID(),
 			educationID(),
-			tagID()
+			tagID(),
+			startDate(),
+			endDate()
 		),
-		queryFn: () => getAchievements(includeLinked, jobPositionID(), educationID(), tagID()),
+		queryFn: () =>
+			getAchievements(
+				includeLinked,
+				jobPositionID(),
+				educationID(),
+				tagID(),
+				startDate(),
+				endDate()
+			),
 		initialData
 	});
 };

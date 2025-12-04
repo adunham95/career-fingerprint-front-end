@@ -460,9 +460,17 @@ export const useAddAdmin = (orgID: string) => {
 	});
 };
 
-export const useAddOrgClient = () => {
+export const useAddOrgClient = (orgID: string) => {
 	return createMutation({
 		mutationFn: createOrgClient,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				predicate: (query) =>
+					Array.isArray(query.queryKey) &&
+					query.queryKey[0] === 'orgUsers' &&
+					query.queryKey[1] === orgID
+			});
+		},
 		onError: (error) => {
 			console.error('Failed to create org client:', error);
 		}

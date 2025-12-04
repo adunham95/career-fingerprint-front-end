@@ -7,10 +7,12 @@
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
+	import NewThankYouNote from '$lib/Components/Forms/NewThankYouNote.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { formatDate } from '$lib/Utils/formatDate';
@@ -24,6 +26,7 @@
 	console.log({ data, meetingDetails });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
+	let showThankYouNote = $state(false);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Cheatsheet', { type: data?.interviewData?.type || ' ' });
@@ -279,7 +282,7 @@
 			meetingID={data.meetingID}
 			meeting={$meetingDetails.data}
 			onSuccess={() => {
-				goto('/dashboard');
+				showThankYouNote = true;
 				showMeetingDetails = false;
 			}}
 		/>
@@ -287,3 +290,18 @@
 		<Loader />
 	{/if}
 </Drawer>
+
+<Modal title="Add Thank You Note" size="lg" bind:isOpen={showThankYouNote}>
+	<NewThankYouNote
+		formID="newThankYouNote"
+		meetingID={data.meetingID || ''}
+		onSuccess={() => {
+			showThankYouNote = false;
+			goto('/dashboard');
+		}}
+	/>
+	{#snippet actions()}
+		<a href="/dashboard" class="btn btn-text--secondary"> Do Not Send Thank You Note</a>
+		<button class="btn btn--primary" form="newThankYouNote">Send Note</button>
+	{/snippet}
+</Modal>

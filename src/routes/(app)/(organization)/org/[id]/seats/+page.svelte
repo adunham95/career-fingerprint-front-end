@@ -28,7 +28,7 @@
 
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
 	let uploadOrgUsersMutation = useUploadOrgUsers();
-	let createOrgClientMutation = useAddOrgClient();
+	let createOrgClientMutation = useAddOrgClient(data.org?.id || '');
 
 	let removeUser = useRemoveUserFromOrg();
 
@@ -76,7 +76,9 @@
 			newUserFirstName = '';
 			newUserLastName = '';
 			$users.refetch();
-		} catch (error) {}
+		} catch (error) {
+			toastStore.show({ message: 'Could not add new user' });
+		}
 	}
 
 	onMount(() => {

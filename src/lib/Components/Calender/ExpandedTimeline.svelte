@@ -73,7 +73,7 @@
 								</div>
 							</div>
 							{#if day.result}
-								<div class="flex items-center">
+								<div class="flex">
 									<svg
 										viewBox="0 0 20 20"
 										fill="currentColor"
@@ -93,7 +93,7 @@
 								</div>
 							{/if}
 							{#if day.description}
-								<div class="mt-2 flex items-center text-sm">
+								<div class="mt-2 flex text-sm">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 24 24"

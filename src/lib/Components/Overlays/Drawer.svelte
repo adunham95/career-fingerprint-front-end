@@ -19,7 +19,9 @@
 		subTitle?: string;
 		onSave?: () => void;
 		onClose?: () => void;
+		onCancel?: () => void;
 		saveFormID?: string;
+		actions?: Snippet;
 	}
 
 	let {
@@ -34,7 +36,9 @@
 		subTitle,
 		onSave,
 		onClose,
-		saveFormID
+		onCancel,
+		saveFormID,
+		actions
 	}: Props = $props();
 
 	// Handle escape key
@@ -152,11 +156,13 @@
 					type="button"
 					class="btn btn-text--error"
 					onclick={() => {
+						onCancel?.();
 						onClose?.();
 						isOpen = false;
 						trackingStore.trackAction('Close Drawer', { title });
 					}}>Cancel</button
 				>
+				{@render actions?.()}
 				{#if onSave}
 					<button
 						type="submit"
