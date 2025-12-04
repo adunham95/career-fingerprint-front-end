@@ -193,7 +193,7 @@
 									});
 								}}
 							>
-								Delete
+								Archive
 							</button>
 							<button
 								class="btn btn-text--success btn-small"
@@ -252,7 +252,7 @@
 									});
 								}}
 							>
-								Delete
+								Archive
 							</button>
 							<button
 								class="btn btn-text--success btn-small"
