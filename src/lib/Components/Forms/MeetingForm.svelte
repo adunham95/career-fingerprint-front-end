@@ -27,6 +27,8 @@
 		updateOnChange = false
 	}: Props = $props();
 
+	$inspect(meeting);
+
 	let title = $state(meeting?.title);
 	let time = $state<string | Date>(
 		meeting?.time ? getLocalDateTimeValue(new Date(meeting?.time)) : getLocalDateTimeValue()
