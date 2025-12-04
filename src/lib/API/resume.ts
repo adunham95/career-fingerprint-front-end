@@ -1,6 +1,13 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
-import type { BulletPoint, Education, JobPosition, Resume, ResumeObject } from '../../app';
+import type {
+	BulletPoint,
+	Education,
+	JobPosition,
+	MyFingerprint,
+	Resume,
+	ResumeObject
+} from '../../app';
 import { jobPositionKeys } from './job-positions';
 import { educationKeys } from './education';
 import { createApiClient } from './apiClient';
@@ -102,6 +109,20 @@ export async function duplicateResume(id: string): Promise<Resume | null> {
 	}
 }
 
+// MY Fingerprint
+export async function getClientFingerprint(userID: number): Promise<MyFingerprint | null> {
+	try {
+		if (!userID) {
+			throw Error('Missing UserID ');
+		}
+		const api = createApiClient();
+		return api.get<MyFingerprint>(`/my-fingerprint/client/${userID}`);
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get my fingerprint`);
+	}
+}
+
 /**
  * Resume Object Functions
  * These are where you can edit the resume objects, this are objects that link jobs + education and the resume
@@ -188,6 +209,19 @@ interface NewResumeItem {
 	item?: Partial<JobPosition | Education>;
 }
 
+interface ClientResumeItem {
+	type: keyof typeof resumeObjectTypeMap;
+	itemID: string;
+	item: JobPositionUpdate | EducationUpdate;
+	userID: number;
+}
+
+interface NewClientResumeItem {
+	type: keyof typeof resumeObjectTypeMap;
+	item?: Partial<JobPosition | Education>;
+	userID: number;
+}
+
 export async function updateResumeItem({ type, item, itemID }: ResumeItem): Promise<Resume | null> {
 	const url = `${PUBLIC_API_URL}/${type}/${itemID}`;
 
@@ -207,6 +241,21 @@ export async function updateResumeItem({ type, item, itemID }: ResumeItem): Prom
 			const message = await res.text();
 			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
 		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to patch resume`);
+	}
+}
+
+export async function updateClientResumeItem({
+	type,
+	item,
+	itemID,
+	userID
+}: ClientResumeItem): Promise<Resume | null> {
+	try {
+		const api = createApiClient();
+		return api.patch(`/${type}/${itemID}/client/${userID}`, item);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to patch resume`);
@@ -235,6 +284,20 @@ export async function addResumeItem({
 			const message = await res.text();
 			throw new Error(`Failed to patch resume: ${res.status} ${message}`);
 		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to patch resume`);
+	}
+}
+
+export async function addClientResumeItem({
+	type,
+	item,
+	userID
+}: NewClientResumeItem): Promise<JobPosition | Education | null> {
+	try {
+		const api = createApiClient();
+		return api.post(`/${type}/client/${userID}`, item);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to patch resume`);
@@ -271,10 +334,30 @@ export async function deleteResumeItem({
 	}
 }
 
+export async function deleteClientResumeItem({
+	type,
+	itemID,
+	userID
+}: {
+	type: keyof typeof resumeObjectTypeMap;
+	itemID: string;
+	userID: number;
+}): Promise<Resume | null> {
+	try {
+		const api = createApiClient();
+		return api.del(`/${type}/${itemID}/client/${userID}`);
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to delete resume object`);
+	}
+}
+
 export const resumeKeys = {
 	all: ['resumes'] as const,
 	resume: (id: string) => [...resumeKeys.all, id] as const,
-	duplicate: ['duplicate']
+	duplicate: ['duplicate'],
+	fingerprint: ['fingerprint'] as const,
+	clientFingerprint: (id: number) => [...resumeKeys.fingerprint, id] as const
 };
 
 // Queries
@@ -295,6 +378,14 @@ export const useGetResumeByIDQuery = (id: string, initialData?: Resume) => {
 	});
 };
 
+export const useGetClientFingerprint = (id: number, initialData?: MyFingerprint) => {
+	return createQuery({
+		queryKey: resumeKeys.clientFingerprint(id),
+		queryFn: () => getClientFingerprint(id),
+		initialData
+	});
+};
+
 // Mutations
 
 export const useUpdateResumeMutation = (resumeID: string) => {
@@ -307,6 +398,21 @@ export const useUpdateResumeMutation = (resumeID: string) => {
 			});
 			queryClient.invalidateQueries({
 				queryKey: resumeKeys.resume(resumeID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to update resume:', error);
+		}
+	});
+};
+
+export const useUpdateClientResumeMutation = (resumeID: string, userID: number) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: updateResume,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: resumeKeys.clientFingerprint(userID)
 			});
 		},
 		onError: (error) => {
@@ -351,6 +457,21 @@ export const useUpdateResumeItemMutation = () => {
 	});
 };
 
+export const useUpdateClientResumeItemMutation = (userID: number) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: updateClientResumeItem,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: resumeKeys.clientFingerprint(userID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to update resume object:', error);
+		}
+	});
+};
+
 export const useDeleteResumeObjectMutation = () => {
 	const queryClient = useQueryClient();
 	return createMutation({
@@ -387,6 +508,21 @@ export const useDeleteResumeItemMutation = () => {
 	});
 };
 
+export const useDeleteClientResumeItemMutation = (userID: number) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: deleteClientResumeItem,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: resumeKeys.clientFingerprint(userID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete resume object:', error);
+		}
+	});
+};
+
 export const useAddResumeObjectMutation = () => {
 	const queryClient = useQueryClient();
 	return createMutation({
@@ -415,6 +551,21 @@ export const useAddResumeItemMutation = () => {
 			});
 			queryClient.invalidateQueries({
 				queryKey: educationKeys.my
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete resume object:', error);
+		}
+	});
+};
+
+export const useAddClientResumeItemMutation = (userID: number) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: addClientResumeItem,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: resumeKeys.clientFingerprint(userID)
 			});
 		},
 		onError: (error) => {
