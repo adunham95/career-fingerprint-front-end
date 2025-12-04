@@ -27,7 +27,18 @@
 		updateOnChange = false
 	}: Props = $props();
 
-	$inspect(meeting);
+	$effect(() => {
+		if (!meeting) return;
+
+		title = meeting.title ?? '';
+		time = meeting.time ? getLocalDateTimeValue(new Date(meeting.time)) : getLocalDateTimeValue();
+		type = meeting.type ?? 'Interview';
+		location = meeting.location ?? '';
+		link = meeting.link ?? '';
+		jobPositionID = meeting.jobPositionID ?? null;
+		educationID = meeting.educationID ?? null;
+		jobAppID = meeting.jobAppID ?? null;
+	});
 
 	let title = $state(meeting?.title);
 	let time = $state<string | Date>(
