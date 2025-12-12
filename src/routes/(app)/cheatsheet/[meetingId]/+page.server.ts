@@ -12,7 +12,7 @@ import { createApiClient } from '$lib/API/apiClient';
 export const load = async (event) => {
 	const id = event.params.meetingId;
 	const { user } = await event.parent();
-	const featureEnabled = useFeatureGate(1, user);
+	const featureEnabled = useFeatureGate(2, user);
 
 	if (!featureEnabled) {
 		redirect(307, '/settings/membership');

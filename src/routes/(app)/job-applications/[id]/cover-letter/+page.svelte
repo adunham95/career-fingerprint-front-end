@@ -42,7 +42,7 @@
 
 <div class="flex items-center justify-between">
 	<h2>Cover Letter</h2>
-	{#if useFeatureGate(1, data.user)}
+	{#if useFeatureGate(2, data.user)}
 		<a
 			href="{PUBLIC_API_URL}/cover-letters/jobApp/{data.application?.id}/pdf"
 			target="_blank"
@@ -56,7 +56,7 @@
 	{/if}
 </div>
 
-{#if !useFeatureGate(1, data.user)}
+{#if !useFeatureGate(2, data.user)}
 	<div class="my-2">
 		<FeatureBlock
 			title="Download Cover Letter"

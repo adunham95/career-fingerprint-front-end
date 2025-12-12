@@ -101,7 +101,7 @@
 		id="create-account"
 		onsubmit={(e) => {
 			e.preventDefault();
-			trackingStore.trackAction('Submit New Account');
+			trackingStore.trackAction('Submit New Account Click');
 			login();
 		}}
 		class="gap-2 space-y-2 md:grid md:grid-cols-2"

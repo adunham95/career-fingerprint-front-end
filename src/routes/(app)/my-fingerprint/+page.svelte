@@ -17,6 +17,7 @@
 	import ChipList from '$lib/Components/FormElements/ChipList.svelte';
 	import { useMySkills, useUpdateSkillList } from '$lib/API/skill-list.js';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	const { data } = $props();
 
 	let updateResumeObject = useUpdateResumeItemMutation();
@@ -65,7 +66,7 @@
 		} catch (error) {
 			toastStore.show({
 				type: 'error',
-				message: `${resumeObjectTypeMap[type]} Added`
+				message: `Count not add ${resumeObjectTypeMap[type]}`
 			});
 		}
 	}
@@ -174,18 +175,20 @@
 <PageContainer className="divide-y divide-gray-300">
 	<TwoColumn title={'My Jobs'}>
 		{#snippet subSection()}
-			<button
-				class="btn btn--primary"
-				onclick={() => {
-					addObject('job-positions');
-					trackingStore.trackAction('Updated Resume', {
-						section: 'Job Position',
-						button: 'Add'
-					});
-				}}
-			>
-				Add New Job
-			</button>
+			{#if useFeatureGate(1, data.user)}
+				<button
+					class="btn btn--primary"
+					onclick={() => {
+						addObject('job-positions');
+						trackingStore.trackAction('Updated Resume', {
+							section: 'Job Position',
+							button: 'Add'
+						});
+					}}
+				>
+					Add New Job
+				</button>
+			{/if}
 		{/snippet}
 		<div class="space-y-4">
 			{#if jobs.length === 0}
@@ -225,18 +228,20 @@
 	</TwoColumn>
 	<TwoColumn title={'My Education'}>
 		{#snippet subSection()}
-			<button
-				class="btn btn--primary"
-				onclick={() => {
-					addObject('education');
-					trackingStore.trackAction('Updated Resume', {
-						section: 'Education',
-						button: 'Add'
-					});
-				}}
-			>
-				Add New Education
-			</button>
+			{#if useFeatureGate(1, data.user)}
+				<button
+					class="btn btn--primary"
+					onclick={() => {
+						addObject('education');
+						trackingStore.trackAction('Updated Resume', {
+							section: 'Education',
+							button: 'Add'
+						});
+					}}
+				>
+					Add New Education
+				</button>
+			{/if}
 		{/snippet}
 		<div class="space-y-4">
 			{#if education.length === 0}
@@ -275,8 +280,10 @@
 		</div>
 	</TwoColumn>
 	<TwoColumn title={'My Skills'}>
-		<Card>
-			<ChipList bind:chips={chipList} onChange={saveSkills} />
-		</Card>
+		{#if useFeatureGate(1, data.user)}
+			<Card>
+				<ChipList bind:chips={chipList} onChange={saveSkills} />
+			</Card>
+		{/if}
 	</TwoColumn>
 </PageContainer>
