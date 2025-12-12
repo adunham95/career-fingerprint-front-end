@@ -43,7 +43,9 @@
 		</Card>
 		<div>
 			<Card>
-				<GoalList />
+				{#each $meetings.data as meeting}
+					<UpcomingEventRow {...meeting} hideActions />
+				{/each}
 			</Card>
 		</div>
 	</div>
