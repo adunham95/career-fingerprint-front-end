@@ -86,7 +86,7 @@
 			});
 			trackingStore.trackAction('Register User');
 			gtag_report_conversion();
-			goto('/dashboard');
+			goto('/onboard/billing');
 			isLoading = false;
 		} catch (error) {
 			toastStore.show({ message: 'Creating Account', type: 'error' });
