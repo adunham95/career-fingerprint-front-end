@@ -8,6 +8,8 @@
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
 	import { useUpcomingMeetings } from '$lib/API/meeting';
+	import GoalList from '../goalList.svelte';
+	import { useFeatureGate } from '$lib/Utils/featureGate';
 
 	const { data } = $props();
 
@@ -43,7 +45,9 @@
 		</Card>
 		<div>
 			<Card>
-				<GoalList />
+				{#each $meetings.data as meeting}
+					<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(2, data.user)} />
+				{/each}
 			</Card>
 		</div>
 	</div>
