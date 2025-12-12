@@ -1,6 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import type { CurrentUser } from '../../app';
+import { createApiClient } from './apiClient';
 
 export interface RegisteredUserData {
 	accessToken: string;
@@ -188,10 +189,7 @@ export interface VerifyTokenResponse {
 	};
 }
 
-export async function verifyEmail(data: {
-	token: string;
-	showFreeTrial: boolean;
-}): Promise<VerifyTokenResponse | null> {
+export async function verifyEmail(data: { token: string }): Promise<VerifyTokenResponse | null> {
 	const url = `${PUBLIC_API_URL}/register/verify`;
 
 	console.log('verifyEmail', { data });
@@ -301,6 +299,16 @@ export async function currentUser(): Promise<CurrentUser | null> {
 	}
 }
 
+export async function currentUserBillingStatus(): Promise<{ stripeUserID: string }> {
+	try {
+		const api = createApiClient();
+		return api.get('/users/me/billing-status');
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get billing status`);
+	}
+}
+
 export const userKeys = {
 	inviteCode: ['invite-code'] as const
 };
@@ -366,5 +374,12 @@ export const useGetCurrentUser = () => {
 	return createQuery({
 		queryKey: ['current-user'],
 		queryFn: currentUser
+	});
+};
+
+export const useGetCurrentUserBillingStatus = () => {
+	return createQuery({
+		queryKey: ['current-user-billing-status'],
+		queryFn: currentUserBillingStatus
 	});
 };

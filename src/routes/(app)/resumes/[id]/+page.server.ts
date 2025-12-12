@@ -7,7 +7,7 @@ export const load = async (event) => {
 	console.log(event.params.id);
 
 	const { user } = await event.parent();
-	const featureEnabled = useFeatureGate(1, user);
+	const featureEnabled = useFeatureGate(2, user);
 
 	if (!featureEnabled) {
 		redirect(307, '/settings/membership');

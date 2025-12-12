@@ -86,7 +86,7 @@
 			});
 			trackingStore.trackAction('Register User');
 			gtag_report_conversion();
-			goto('/dashboard');
+			goto('/onboard/billing');
 			isLoading = false;
 		} catch (error) {
 			toastStore.show({ message: 'Creating Account', type: 'error' });
@@ -101,7 +101,7 @@
 		id="create-account"
 		onsubmit={(e) => {
 			e.preventDefault();
-			trackingStore.trackAction('Submit New Account');
+			trackingStore.trackAction('Submit New Account Click');
 			login();
 		}}
 		class="gap-2 space-y-2 md:grid md:grid-cols-2"
