@@ -157,7 +157,7 @@
 					</div>
 				</div>
 				<div class="w-full pt-4">
-					<DiscountCodeInput bind:promoID />
+					<DiscountCodeInput bind:promoID promoValidated={() => priceID && updateStripe(priceID)} />
 				</div>
 			</div>
 			<BillingEstimate

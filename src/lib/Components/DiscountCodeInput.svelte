@@ -5,9 +5,10 @@
 
 	interface Props {
 		promoID: string | null;
+		promoValidated: () => void;
 	}
 
-	let { promoID = $bindable() }: Props = $props();
+	let { promoID = $bindable(), promoValidated }: Props = $props();
 
 	let couponCode = $state('');
 	let error = $state('');
@@ -21,6 +22,7 @@
 			if (res.valid) {
 				discountDetails = res.code || null;
 				promoID = res.id || null;
+				promoValidated();
 			} else {
 				error = 'Invalid or expired promo code';
 			}
