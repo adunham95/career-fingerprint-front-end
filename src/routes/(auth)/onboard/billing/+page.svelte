@@ -38,7 +38,7 @@
 
 	onMount(async () => {
 		stripe = await loadStripe(PUBLIC_STRIPE_API_KEY);
-		trackingStore.pageViewEvent('Membership Settings');
+		trackingStore.pageViewEvent('Onboard Billing');
 	});
 
 	async function updateStripe(newPriceID: string) {
@@ -72,6 +72,7 @@
 						}
 						checkout.confirm().then(async (result) => {
 							console.log(result);
+							trackingStore.trackAction('Register User Subscription Success');
 
 							if (result.type === 'error' && errors) {
 								errors.textContent = result.error.message;
@@ -125,7 +126,7 @@
 								onclick={() => {
 									priceID = data.availablePlans?.annualStripePriceID || null;
 									updateStripe(data.availablePlans?.annualStripePriceID || '');
-									trackingStore.trackAction('Upgrade Plan', {
+									trackingStore.trackAction('Yearly Plan Click', {
 										type: 'Yearly',
 										planKey: data.availablePlans?.key || ''
 									});
@@ -146,7 +147,7 @@
 								onclick={() => {
 									priceID = data.availablePlans?.monthlyStripePriceID || '';
 									updateStripe(data.availablePlans?.monthlyStripePriceID || '');
-									trackingStore.trackAction('Upgrade Plan', {
+									trackingStore.trackAction('Monthly Plan Click', {
 										type: 'Monthly',
 										planKey: data.availablePlans?.key || ''
 									});
@@ -194,7 +195,7 @@
 				disabled={checkingOut}
 				class={`btn btn-text--primary ${priceID === null ? 'hidden' : ''}`}
 				onclick={() => {
-					trackingStore.trackAction('Subscribe Click');
+					trackingStore.trackAction('Register User Subscription Click');
 				}}
 			>
 				Create Account

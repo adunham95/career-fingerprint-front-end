@@ -16,7 +16,7 @@ function createTrackingStore() {
 		console.log('Tracking', { pageName, options });
 
 		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
-			safeMixpanelTrack('Page View', {
+			safeMixpanelTrack(`${pageName} Page View`, {
 				pageName,
 				...options
 			});
