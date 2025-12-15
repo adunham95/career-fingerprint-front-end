@@ -7,6 +7,7 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 
 	const { data } = $props();
 
@@ -75,16 +76,18 @@
 						class={`${meetingType === 'upcoming' ? 'text-primary' : ''}`}>Upcoming</button
 					>
 				</div>
-				<button
-					type="button"
-					onclick={() => {
-						isNewMeetingOpen = true;
-						trackingStore.trackAction('Create New Meeting Click');
-					}}
-					class="btn btn--primary ml-auto"
-				>
-					Create New Meeting
-				</button>
+				{#if useFeatureGate(1, data.user)}
+					<button
+						type="button"
+						onclick={() => {
+							isNewMeetingOpen = true;
+							trackingStore.trackAction('Create New Meeting Click');
+						}}
+						class="btn btn--primary ml-auto"
+					>
+						Create New Meeting
+					</button>
+				{/if}
 			</div>
 		</div>
 		<div class="-mx-4 mt-8 sm:-mx-0">

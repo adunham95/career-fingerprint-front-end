@@ -10,6 +10,7 @@ interface SubscriptionPlan {
 	name: string;
 	priceCents: number;
 	priceCentsYear: number;
+	priceCentsSeats: number;
 	interval: string;
 	features: string[];
 	metadata: {
@@ -23,6 +24,9 @@ interface SubscriptionPlan {
 		level: number;
 	};
 	org?: Organization;
+	maxSeats?: number;
+	maxAdminSeats?: number;
+	type?: string;
 }
 
 interface SubscriptionDetails {
@@ -58,6 +62,16 @@ export async function getPlanDetailsByKey(id: string): Promise<SubscriptionPlan 
 			return res.json();
 		}
 		return null;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getPlanDetailsByType(type: string): Promise<SubscriptionPlan[] | null> {
+	try {
+		const api = createApiClient();
+		return api.get(`/subscriptions/plans/type/${type}`);
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -149,6 +163,20 @@ export async function createOrgCheckoutSession(newCheckout: {
 			const message = await res.text();
 			throw new Error(`Failed to start checkout: ${res.status} ${message}`);
 		}
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to start checkout`);
+	}
+}
+
+export async function createClientCheckoutSession(newCheckout: {
+	planID: string;
+	couponID?: string;
+	orgID: string;
+}): Promise<{ checkoutSessionClientSecret: string }> {
+	try {
+		const api = createApiClient();
+		return api.post('/stripe/create-checkout-session/coach', newCheckout);
 	} catch (error) {
 		console.log(error);
 		throw new Error(`Failed to start checkout`);
@@ -345,7 +373,8 @@ export const subscriptionKeys = {
 	availablePlans: ['available-plans'] as const,
 	estimate: (priceID: string | null, promoID?: string | null) =>
 		['estimate', priceID, promoID] as const,
-	planDetailsKey: (key: string) => ['plan-details', key] as const
+	planDetailsKey: (key: string) => ['plan-details', key] as const,
+	planDetailsType: (type: string) => ['plan-details-key', type] as const
 };
 
 export const useSubscriptionDetails = (initialData?: SubscriptionDetails) => {
@@ -370,6 +399,13 @@ export const useGetAvailablePlans = () => {
 	});
 };
 
+export const useGetPlansByType = (type: string) => {
+	return createQuery({
+		queryKey: subscriptionKeys.planDetailsType(type),
+		queryFn: () => getPlanDetailsByType(type)
+	});
+};
+
 // Mutations
 
 export const useGetEstimate = () => {
@@ -391,6 +427,16 @@ export const useCreateCheckoutSession = () => {
 export const useCreateCheckoutOrgSession = () => {
 	return createMutation({
 		mutationFn: createOrgCheckoutSession,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Failed to create checkout session:', error);
+		}
+	});
+};
+
+export const useCreateCheckoutClientSession = () => {
+	return createMutation({
+		mutationFn: createClientCheckoutSession,
 		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Failed to create checkout session:', error);

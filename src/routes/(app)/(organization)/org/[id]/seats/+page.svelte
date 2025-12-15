@@ -110,7 +110,9 @@
 				<Loader />
 			</div>
 		{/if}
-		{#if ($users?.data?.users || []).length > 0}
+		{#if !permissionGate(['client:list'], data.myPermissions)}
+			<InfoBlock title="Permission Locked" description="You do not have access to view user" />
+		{:else if ($users?.data?.users || []).length > 0}
 			<div class="mt-8 flow-root overflow-hidden">
 				<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<table class="w-full text-left">
@@ -121,12 +123,6 @@
 									class="relative isolate py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
 								>
 									Name
-									<div
-										class="absolute inset-y-0 right-full -z-10 w-screen border-b border-b-gray-200"
-									></div>
-									<div
-										class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-b-gray-200"
-									></div>
 								</th>
 								<th
 									scope="col"
@@ -142,7 +138,10 @@
 							{#each $users?.data?.users || [] as user}
 								<tr>
 									<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
-										<a href={`/org/${data.org?.id || ''}/seats/${user.id}`}>
+										<a
+											href={`/org/${data.org?.id || ''}/seats/${user.id}`}
+											class=" hover:text-primary"
+										>
 											{user.firstName}
 											{user.lastName}
 										</a>

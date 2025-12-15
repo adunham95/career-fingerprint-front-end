@@ -93,7 +93,7 @@
 	<div class="pt-2">
 		<InfoBlock
 			title="No Meetings"
-			description="You have no meetings. Clock 'Create New Meeting' to add a new meeting"
+			description="You have no meetings. Click 'Create New Meeting' to add a new meeting"
 		/>
 	</div>
 {/if}

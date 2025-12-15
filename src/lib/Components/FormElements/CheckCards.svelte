@@ -1,8 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
+	interface SnippetWithArgs {
+		snippet: Snippet;
+		args: any[];
+	}
+
 	interface Props {
-		options: { id: string; label: string; subLabel?: string; snippet?: Snippet; name?: string }[];
+		options: {
+			id: string;
+			label: string;
+			subLabel?: string;
+			snippet?: Snippet<[]>;
+			name?: string;
+		}[];
 		checked: string[];
 		unChecked?: string[];
 		wrapperClass?: string;
@@ -45,7 +56,7 @@
 					<p class="mt-1 text-sm text-gray-500">{option.subLabel}</p>
 				{/if}
 				{#if option.snippet}
-					{@render option?.snippet()}
+					{@render option.snippet()}
 				{/if}
 			</div>
 

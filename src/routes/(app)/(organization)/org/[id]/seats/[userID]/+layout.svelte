@@ -3,6 +3,8 @@
 	import TabNav from '$lib/Components/Header/TabNav.svelte';
 
 	const { data, children } = $props();
+
+	console.log({ data });
 </script>
 
 <PageContainer className="py-6">
@@ -14,6 +16,7 @@
 	<TabNav
 		options={[
 			{ path: 'my-fingerprint', label: 'My Fingerprint' },
+			// { path: 'resumes', label: 'Resumes' }
 			{ path: 'achievements', label: 'Achievements' },
 			{ path: 'meetings', label: 'Meetings' }
 		]}

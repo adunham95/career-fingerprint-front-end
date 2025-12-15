@@ -38,8 +38,8 @@
 		<DashboardActionButton
 			icon={usersIcon}
 			actionName="Seat Management Click"
-			title="Seat Management"
-			subTitle="Manage Current Users"
+			title="Seats"
+			subTitle="View all the users in your group"
 			color="green"
 			href={`/org/${data.org?.id}/seats`}
 			locked={!permissionGate(['client:list'], data.myPermissions)}

@@ -75,6 +75,7 @@
 			icon={startIcon}
 			color="green"
 			actionName="Add Achievement Click"
+			premiumLocked={!useFeatureGate(1, data.user)}
 			onClick={() => {
 				isAchievementOpen = true;
 			}}
@@ -88,7 +89,7 @@
 			disabled={isLoadingNewMeeting}
 			actionName="Start Meeting Click"
 			premiumAction={true}
-			premiumLocked={!useFeatureGate(1, data.user)}
+			premiumLocked={!useFeatureGate(2, data.user)}
 			onClick={() => {
 				createNewMeeting();
 			}}
@@ -108,7 +109,7 @@
 			color="purple"
 			href="/prep"
 			premiumAction={true}
-			premiumLocked={!useFeatureGate(1, data.user)}
+			premiumLocked={!useFeatureGate(2, data.user)}
 		/>
 
 		<DashboardActionButton
@@ -118,6 +119,7 @@
 			href="/meetings?tab=previous"
 			actionName="Previous Meetings Click"
 			color="orange"
+			premiumLocked={!useFeatureGate(1, data.user)}
 		/>
 
 		{#if data.user.orgAdminLinks.length === 1}
@@ -156,18 +158,20 @@
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
-				<button
-					class="btn btn-outline--secondary flex items-center py-1"
-					onclick={() => {
-						isNewMeetingOpen = true;
-						trackingStore.trackAction('Add Meeting Click');
-					}}>Add Meeting</button
-				>
+				{#if useFeatureGate(1, data.user)}
+					<button
+						class="btn btn-outline--secondary flex items-center py-1"
+						onclick={() => {
+							isNewMeetingOpen = true;
+							trackingStore.trackAction('Add Meeting Click');
+						}}>Add Meeting</button
+					>
+				{/if}
 			</div>
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#if ($upcomingMeetings.data || []).length > 0}
 					{#each $upcomingMeetings.data || [] as meeting}
-						<UpcomingEventRow {...meeting} disableActions={!useFeatureGate(1, data.user)} />
+						<UpcomingEventRow {...meeting} disableActions={!useFeatureGate(2, data.user)} />
 					{/each}
 				{:else}
 					<InfoBlock

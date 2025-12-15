@@ -25,14 +25,17 @@
 	}: Props = $props();
 </script>
 
-<div class={`${className}`}>
+<div
+	class={`${className} [fieldset:disabled_&]:pointer-events-none
+  [fieldset:disabled_&]:opacity-50`}
+>
 	<Label {id} {label} {hideLabel} {labelClassName} {subLabel} />
 	<textarea
 		{id}
 		{...props}
 		name={name || id}
 		bind:value
-		class={`bg-surface-100 focus:outline-primary focus:ring-primary block w-full rounded-md px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${inputClassName}`}
+		class={`bg-surface-100 focus:outline-primary focus:ring-primary block w-full rounded-md px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6  ${inputClassName}`}
 	></textarea>
 	{#if errorText}
 		<p class="mt-2 text-sm text-red-600">{errorText}</p>
