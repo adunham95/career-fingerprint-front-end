@@ -215,6 +215,7 @@ interface Organization {
 	logoURL: string;
 	domains: OrgDomain[];
 	orgSubscription: Subscription[];
+	type: 'org' | 'coach';
 	_count?: {
 		orgSubscription: number;
 		orgAdmins: number;

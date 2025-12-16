@@ -17,6 +17,7 @@
 	import NewGoalForm from '$lib/Components/Forms/NewGoalForm.svelte';
 	import GoalList from './goalList.svelte';
 	import AchievementList from './achievementList.svelte';
+	import OrgTypeChip from '$lib/Components/OrgTypeChip.svelte';
 
 	let { data } = $props();
 
@@ -52,11 +53,11 @@
 		}
 	}
 
-	async function logIntoOrg(orgID: string) {
+	async function logIntoOrg(orgID: string, type: 'coach' | 'org') {
 		isLoadingInOrg = orgID;
 		try {
 			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
-			goto(`/org/${orgID}`);
+			goto(`/org /${orgID}`);
 		} catch (error) {
 			isLoadingInOrg = null;
 			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
@@ -127,7 +128,11 @@
 				title="Manage Organization"
 				subTitle="View and manage your organization"
 				icon={buildingIcon}
-				onClick={() => logIntoOrg(data.user.orgAdminLinks[0].organization.id)}
+				onClick={() =>
+					logIntoOrg(
+						data.user.orgAdminLinks[0].organization.id,
+						data.user.orgAdminLinks[0].organization.type
+					)}
 				actionName="Manage Organization Click"
 				color="red"
 			>
@@ -209,7 +214,7 @@
 			<li class="flex justify-between gap-x-6 py-5">
 				<button
 					onclick={() => {
-						logIntoOrg(orgAdmin.organization.id);
+						logIntoOrg(orgAdmin.organization.id, orgAdmin.organization.type);
 					}}
 					class="flex min-w-0 gap-x-4 rounded px-2 py-2 hover:bg-gray-200"
 				>
@@ -246,8 +251,9 @@
 							</svg>
 						</div>
 					{/if}
-					<div class="min-w-0 flex-auto pt-2">
+					<div class="flex min-w-0 flex-auto flex-col items-start pt-2">
 						<p class="text-sm font-semibold text-gray-900">{orgAdmin.organization.name}</p>
+						<OrgTypeChip type={orgAdmin.organization.type} />
 					</div>
 				</button>
 			</li>

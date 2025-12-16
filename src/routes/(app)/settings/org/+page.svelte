@@ -8,6 +8,7 @@
 	import { goto } from '$app/navigation';
 	import Loader from '$lib/Components/Loader.svelte';
 	import { useMyOrgs } from '$lib/API/org';
+	import OrgTypeChip from '$lib/Components/OrgTypeChip.svelte';
 
 	const { data } = $props();
 
@@ -19,7 +20,7 @@
 		trackingStore.pageViewEvent('New Org Settings');
 	});
 
-	async function logIntoOrg(orgID: string) {
+	async function logIntoOrg(orgID: string, orgType: 'org' | 'coach') {
 		isLoadingInOrg = orgID;
 		try {
 			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
@@ -69,17 +70,20 @@
 								</svg>
 							</div>
 						{/if}
-						<div class="min-w-0 flex-auto">
+						<div class="flex min-w-0 flex-auto flex-col">
 							<p class="text-sm/6 font-semibold text-gray-900">
 								<button
 									onclick={() => {
-										logIntoOrg(org.id);
+										logIntoOrg(org.id, org.type);
 									}}
 								>
 									<span class="absolute inset-x-0 -top-px bottom-0"></span>
 									{org.name}
 								</button>
 							</p>
+							<span>
+								<OrgTypeChip type={org.type} />
+							</span>
 						</div>
 					</div>
 					<div class="flex shrink-0 items-center gap-x-4">
