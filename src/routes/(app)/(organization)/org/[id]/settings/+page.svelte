@@ -188,7 +188,7 @@
 			description="You have missing permissions. If you need to access this contact your admin to add those permissions"
 		/>
 	{/if}
-	{#if permissionGate(['org:create_promo_code'], data.myPermissions) && data.org?.orgSubscription?.[0].plan?.features.includes('org:createPromoCode')}
+	{#if permissionGate(['org:create_promo_code'], data.myPermissions) && data.org?.orgSubscription?.[0]?.plan?.features.includes('org:createPromoCode')}
 		<TwoColumn title={'Promo Code'}>
 			<Card className="md:col-span-2 relative overflow-hidden">
 				{#if $promoCodes.isFetching}
