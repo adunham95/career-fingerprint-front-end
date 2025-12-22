@@ -202,6 +202,49 @@ interface OrgAdminUser {
 	};
 }
 
+interface OrgSubscription {
+	createdAt: string;
+	currentPeriodEnd: string;
+	currentPeriodStart: string | null;
+	id: string;
+	isMetered: boolean;
+	managedByID: null | string;
+	meterCyclePeakSeats: number;
+	orgID: string;
+	plan: {
+		id: string;
+		key: string;
+		level: number;
+		type: string;
+		name: string;
+		description: string;
+		featureList: string[];
+		priceCents: number | null;
+		priceCentsYear: number | null;
+		priceCentsSeats: number | null;
+		interval: string;
+		features: string[];
+		maxSeats: number | null;
+		maxAdminSeats: number | null;
+		metadata: null | object;
+		createdAt: string;
+		updatedAt: string;
+		monthlyStripePriceID: string | null;
+		annualStripePriceID: string | null;
+		seatStripPriceID: string | null;
+		hasOrgManagement: boolean;
+		hasMeteredSeats: boolean;
+		userKey: string | null;
+	};
+	planID: string;
+	status: 'active';
+	stripeSessionID: string;
+	stripeSubId: string | null;
+	trialEndsAt: string | null;
+	updatedAt: string | null;
+	userID: string | null;
+}
+
 interface Organization {
 	createdAt: string;
 	domain: string;
@@ -214,7 +257,7 @@ interface Organization {
 	updatedAt: string;
 	logoURL: string;
 	domains: OrgDomain[];
-	orgSubscription: Subscription[];
+	orgSubscription: OrgSubscription[];
 	type: 'org' | 'coach';
 	_count?: {
 		orgSubscription: number;
@@ -260,6 +303,12 @@ interface MyFingerprint {
 	jobs: JobPosition[];
 	education: Education[];
 }
+
+export type ApiErrorResponse = {
+	statusCode: number;
+	message: string | string[];
+	code?: string;
+};
 
 export {
 	JobPosition,

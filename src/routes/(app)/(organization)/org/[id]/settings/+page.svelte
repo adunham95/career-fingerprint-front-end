@@ -1,8 +1,10 @@
 <script lang="ts">
 	import {
 		useCreateDomain,
+		useCreateOrgPromoCode,
 		useDeleteDomain,
 		useOrgDomains,
+		useOrgPromoCode,
 		useUpdateDomain,
 		useUpdateOrg
 	} from '$lib/API/org';
@@ -20,6 +22,7 @@
 
 	const { data } = $props();
 	let newDomain = $state('');
+	let promoCodeText = $state('');
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Details');
@@ -31,6 +34,9 @@
 	const updateDomainFunction = useUpdateDomain(data.org?.id || '');
 	const deleteDomainFunction = useDeleteDomain(data.org?.id || '');
 	const createDomainFunction = useCreateDomain(data.org?.id || '');
+
+	const promoCodes = useOrgPromoCode(data.org?.id);
+	const createPromoCode = useCreateOrgPromoCode(data.org?.id);
 
 	let profile = $state({
 		name: data.org?.name || '',
@@ -72,6 +78,20 @@
 			toastStore.show({ message: 'Domain Added' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not add domain', type: 'error' });
+		}
+	}
+
+	async function addPromoCode() {
+		try {
+			await $createPromoCode.mutateAsync({
+				orgID: data.org?.id || '',
+				promoCodeText: promoCodeText.toUpperCase()
+			});
+			toastStore.show({ message: 'Promo Code Added' });
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : 'Could not add promo code';
+
+			toastStore.show({ message, type: 'error' });
 		}
 	}
 </script>
@@ -167,5 +187,81 @@
 			title="Missing Permissions"
 			description="You have missing permissions. If you need to access this contact your admin to add those permissions"
 		/>
+	{/if}
+	{#if permissionGate(['org:create_promo_code'], data.myPermissions) && data.org?.orgSubscription?.[0].plan?.features.includes('org:createPromoCode')}
+		<TwoColumn title={'Promo Code'}>
+			<Card className="md:col-span-2 relative overflow-hidden">
+				{#if $promoCodes.isFetching}
+					<div class="absolute inset-0 overflow-hidden">
+						<div class="flex h-full w-full items-center justify-center bg-gray-500/25">
+							<Loader />
+						</div>
+					</div>
+				{/if}
+
+				<div class=" space-y-4">
+					{#if $promoCodes.data?.code}
+						<h2>Your Referral Code</h2>
+						<div class=" flex items-center justify-between rounded-lg bg-gray-200 px-4 py-2">
+							<div class="flex">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="mr-2 size-5"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+									/>
+								</svg>
+
+								<p>{$promoCodes.data?.code}</p>
+							</div>
+						</div>
+					{:else if data.org?.orgSubscription?.[0].plan?.features.includes('org:createCustomPromoCode')}
+						<form
+							class="flex items-end justify-start gap-2"
+							onsubmit={(e) => {
+								e.preventDefault();
+								addPromoCode();
+							}}
+						>
+							<TextInput
+								label="Promo Code"
+								id="promo-code"
+								bind:value={promoCodeText}
+								minlength={4}
+								maxlength={20}
+								className="w-full"
+								pattern={'[A-Z0-9][A-Z0-9-]{2, 18}[A-Z0-9]'}
+							/>
+							<div>
+								<button class="btn btn--primary whitespace-nowrap" type="submit">
+									Create My Custom Promo Code
+								</button>
+							</div>
+						</form>
+					{:else}
+						<form
+							class="flex items-end justify-start gap-2"
+							onsubmit={(e) => {
+								e.preventDefault();
+								addPromoCode();
+							}}
+						>
+							<div>
+								<button class="btn btn--primary whitespace-nowrap" type="submit">
+									Create My Custom Promo Code
+								</button>
+							</div>
+						</form>
+					{/if}
+				</div>
+			</Card>
+		</TwoColumn>
 	{/if}
 </PageContainer>
