@@ -302,13 +302,34 @@ export async function getMyOrgs() {
 	}
 }
 
+export async function getOrgPromoCode(orgID: string) {
+	try {
+		const api = createApiClient();
+		return api.get<{ id: string; code: string } | null>(`/org/${orgID}/coupon`);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function createPromoCode(data: { orgID: string; promoCodeText?: string }) {
+	try {
+		const api = createApiClient();
+		return api.post<{ id: string; code: string } | null>(`/stripe/create-promo-code`, data);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
 	orgs: ['orgs'] as const,
 	org: (id: string) => ['org', id] as const,
 	orgAdmins: (id: string) => ['orgAdmins', id] as const,
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
 	orgDomains: (id: string) => ['orgDomains', id] as const,
-	orgRoles: (id: string) => ['orgRoles', id] as const
+	orgRoles: (id: string) => ['orgRoles', id] as const,
+	orgPromoCodes: (id: string) => ['promoCodes', id] as const
 };
 
 // QUERIES
@@ -358,6 +379,14 @@ export const useOrgRoles = (orgID?: string) => {
 	return createQuery({
 		queryKey: orgKeys.orgRoles(orgID || ''),
 		queryFn: () => getOrgRoles(orgID || ''),
+		enabled: !!orgID
+	});
+};
+
+export const useOrgPromoCode = (orgID?: string) => {
+	return createQuery({
+		queryKey: orgKeys.orgPromoCodes(orgID || ''),
+		queryFn: () => getOrgPromoCode(orgID || ''),
 		enabled: !!orgID
 	});
 };
@@ -511,6 +540,20 @@ export const useAddOrgSubscription = () => {
 		},
 		onError: (error) => {
 			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useCreateOrgPromoCode = (orgID?: string) => {
+	return createMutation({
+		mutationFn: createPromoCode,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgPromoCodes(orgID || '')
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create promo:', error);
 		}
 	});
 };

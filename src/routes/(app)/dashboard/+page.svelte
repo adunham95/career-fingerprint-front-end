@@ -57,7 +57,7 @@
 		isLoadingInOrg = orgID;
 		try {
 			await $loadIntoOrgMutation.mutateAsync({ id: orgID });
-			goto(`/org /${orgID}`);
+			goto(`/org/${orgID}`);
 		} catch (error) {
 			isLoadingInOrg = null;
 			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
