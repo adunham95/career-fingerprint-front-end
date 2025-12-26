@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { useAddOrgClient, useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
-	import { useUploadOrgUsers } from '$lib/API/user.js';
+	import { useCreateClientInvite } from '$lib/API/clients.js';
+	import { useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import FileUpload from '$lib/Components/FormElements/FileUpload.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
-	import Modal from '$lib/Components/Overlays/Modal.svelte';
 	import TablePagination from '$lib/Components/TablePagination.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
@@ -17,18 +15,13 @@
 	const { data } = $props();
 
 	let page = $state(1);
-	let showUploadModal = $state(false);
-	let showAddUser = $state(false);
-	let uploadFile: File | null = $state(null);
-	let uploadError = $state<string | null>(null);
 
 	let newUserEmail = $state('');
 	let newUserFirstName = $state('');
-	let newUserLastName = $state('');
+	let showAddUser = $state(false);
 
 	let users = useOrgUsersByPageQuery(data.org?.id || '', () => page);
-	let uploadOrgUsersMutation = useUploadOrgUsers();
-	let createOrgClientMutation = useAddOrgClient(data.org?.id || '');
+	let inviteUser = useCreateClientInvite();
 
 	let removeUser = useRemoveUserFromOrg();
 
@@ -39,50 +32,17 @@
 		} catch (error) {}
 	}
 
-	async function uploadOrgUsers() {
+	async function addClient() {
 		try {
-			if (!uploadFile) {
-				throw Error('Missing File');
-			}
-			await $uploadOrgUsersMutation.mutateAsync({ file: uploadFile, orgID: data.org?.id || '' });
-			showUploadModal = false;
-			uploadFile = null;
-			toastStore.show({
-				message: 'CSV Uploaded successfully',
-				details: 'Check back shortly to see the added users'
-			});
-			$users.refetch();
-		} catch (error) {
-			console.log({ error });
-			let message = 'Something went wrong.';
-			if (error instanceof Error) {
-				message = error.message;
-			}
-
-			uploadError = message;
-		}
-	}
-
-	async function addNewUser() {
-		try {
-			await $createOrgClientMutation.mutateAsync({
-				orgID: data.org?.id || '',
-				firstName: newUserFirstName,
-				lastName: newUserLastName,
-				email: newUserEmail
-			});
+			await $inviteUser.mutateAsync({ firstName: newUserFirstName, email: newUserEmail });
 			showAddUser = false;
 			newUserEmail = '';
 			newUserFirstName = '';
-			newUserLastName = '';
-			$users.refetch();
-		} catch (error) {
-			toastStore.show({ message: 'Could not add new user' });
-		}
+		} catch (error) {}
 	}
 
 	onMount(() => {
-		trackingStore.pageViewEvent('Org Seats');
+		trackingStore.pageViewEvent('Org Clients');
 	});
 </script>
 
@@ -90,15 +50,14 @@
 	<div class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
 		<div class="sm:flex sm:items-center">
 			<div class="sm:flex-auto">
-				<h1 class="text-base font-semibold text-gray-900">Users</h1>
-				<p class="mt-2 text-sm text-gray-700">A list of all the users in your account.</p>
+				<h1 class="text-base font-semibold text-gray-900">Clients</h1>
+				<p class="mt-2 text-sm text-gray-700">A list of all the clients in your account.</p>
 			</div>
-			{#if permissionGate(['users:add'], data.myPermissions)}
+			{#if permissionGate(['client:add'], data.myPermissions)}
 				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-					<button class="btn btn--primary" onclick={() => (showUploadModal = true)}>
-						Upload Users
+					<button class="btn btn--primary" onclick={() => (showAddUser = true)}>
+						Invite Client
 					</button>
-					<button class="btn btn--primary" onclick={() => (showAddUser = true)}> Add User </button>
 				</div>
 			{/if}
 		</div>
@@ -110,8 +69,8 @@
 				<Loader />
 			</div>
 		{/if}
-		{#if !permissionGate(['users:list'], data.myPermissions)}
-			<InfoBlock title="Permission Locked" description="You do not have access to view user" />
+		{#if !permissionGate(['client:list'], data.myPermissions)}
+			<InfoBlock title="Permission Locked" description="You do not have access to view clients" />
 		{:else if ($users?.data?.users || []).length > 0}
 			<div class="mt-8 flow-root overflow-hidden">
 				<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -157,7 +116,7 @@
 											class="btn btn-text--primary"
 											onclick={() => {
 												removeUserFromOrg(user.id);
-												trackingStore.trackAction('Remove user from seat click');
+												trackingStore.trackAction('Remove user from clients click');
 											}}
 										>
 											Remove
@@ -179,54 +138,22 @@
 			/>
 		{:else}
 			<InfoBlock
-				title="No Users"
-				description="You have no users. Add users to show them in the list"
+				title="No Clients"
+				description="You have no client. Invite clients to show them in the list"
 			/>
 		{/if}
 	{/if}
 </PageContainer>
 
-<Drawer title="Add User" bind:isOpen={showAddUser} saveFormID="newOrgClient">
+<Drawer title="Invite" bind:isOpen={showAddUser} saveFormID="newOrgClient">
 	<form
 		class="space-y-4"
 		id="newOrgClient"
 		onsubmit={(e) => {
-			e.preventDefault(), addNewUser();
+			e.preventDefault(), addClient();
 		}}
 	>
 		<TextInput id="new-email" type="email" required label="Email" bind:value={newUserEmail} />
 		<TextInput id="new-firstName" label="First Name" bind:value={newUserFirstName} />
-		<TextInput id="new-lastName" label="Last Name" bind:value={newUserLastName} />
 	</form>
 </Drawer>
-
-<Modal
-	title="Upload Users"
-	bind:isOpen={showUploadModal}
-	onClose={() => ((uploadFile = null), (uploadError = null))}
->
-	<InfoBlock
-		title="CSV Template"
-		description="Download the template fill in the user data. Then upload to add users to your organization"
-	>
-		{#snippet actions()}
-			<div class="flex justify-end">
-				<a href="/template-org-user.csv" download="" class="btn btn-tiny btn-text--info"
-					>Download Template</a
-				>
-			</div>
-		{/snippet}
-	</InfoBlock>
-	{#if uploadError}
-		<p class=" text-error-500 pt-3 font-bold">{uploadError}</p>
-	{/if}
-
-	<FileUpload setFile={(file) => (uploadFile = file)} />
-	{#snippet actions()}
-		<button
-			disabled={$uploadOrgUsersMutation.isPending}
-			class="btn btn--success"
-			onclick={uploadOrgUsers}>Upload Users</button
-		>
-	{/snippet}
-</Modal>

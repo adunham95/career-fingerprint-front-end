@@ -8,8 +8,6 @@
 	import { useGetCurrentUserBillingStatus } from '$lib/API/user';
 	import BillingEstimate from '$lib/Components/BillingEstimate.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
-	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
 	import DiscountCodeInput from '$lib/Components/DiscountCodeInput.svelte';
 	import StripeCheckout from '$lib/Components/Forms/StripeCheckout.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
