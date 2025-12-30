@@ -202,6 +202,26 @@ interface OrgAdminUser {
 	};
 }
 
+interface OrgUser {
+	id: string;
+	roles: string[];
+	status: 'active' | string;
+	subscriptionType: 'user-managed' | 'org-managed';
+	dataAccess: 'consented' | 'null' | 'ful';
+	joinedAt: string;
+	user?: {
+		id: number;
+		firstName: string;
+		lastName: string;
+		email: string;
+	};
+	org?: {
+		id: string;
+		name: string;
+		logoURL: string;
+	};
+}
+
 interface OrgSubscription {
 	createdAt: string;
 	currentPeriodEnd: string;
@@ -330,5 +350,6 @@ export {
 	JobObject,
 	ResumeObject,
 	MyFingerprint,
-	OrgAdminUser
+	OrgAdminUser,
+	OrgUser
 };

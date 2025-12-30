@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Loader from '../Loader.svelte';
 	import Label, { type LabelProps } from './Label.svelte';
 	interface Props extends LabelProps {
 		className?: string;
@@ -48,13 +49,16 @@
 </script>
 
 <div class={className}>
-	<Label {id} {label} {hideLabel} {labelClassName} />
-
 	<label
 		for={id}
 		class="relative mt-2 flex cursor-pointer justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
 	>
 		<input class="sr-only" {id} type="file" accept=".csv" onchange={handleFileSelect} />
+		{#if isLoading}
+			<div class="absolute inset-0 flex items-center justify-center">
+				<Loader size="sm" />
+			</div>
+		{/if}
 
 		<div>
 			{#if fileName}
