@@ -14,6 +14,9 @@
 	import Loader from '$lib/Components/Loader.svelte';
 	import OrgConnectionStatusChip from '$lib/Components/OrgConnectionStatusChip.svelte';
 	import Modal from '$lib/Components/Overlays/Modal.svelte';
+	import { toastStore } from '$lib/Components/Toasts/toast';
+	import { trackingStore } from '$lib/Stores/tracking';
+	import { onMount } from 'svelte';
 
 	const verifyJoinCodeMutation = useVerifyJoinCode();
 	const joinOrgMutation = useJoinOrgWithJoinCode();
@@ -23,6 +26,10 @@
 	let joinState = $state('add-code');
 
 	let joinCode = $state(page.url.searchParams.get('joinCode'));
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Org Connections');
+	});
 
 	async function verifyJoinCode() {
 		joinState = 'join';
@@ -43,14 +50,19 @@
 			console.log(response);
 			joinState = 'success';
 			joinCode = '';
-		} catch (error) {}
+		} catch (error) {
+			toastStore.show({ message: 'There was an error joining the org', type: 'error' });
+		}
 	}
 
 	async function removeFromOrg(orgUserID: string) {
 		try {
 			let response = await $removeFromOrgMutation.mutateAsync({ orgUserID });
 			$orgConnectionsQuery.refetch();
-		} catch (error) {}
+			toastStore.show({ message: 'Removed you from org', type: 'success' });
+		} catch (error) {
+			toastStore.show({ message: 'There was an error removing the error', type: 'error' });
+		}
 	}
 
 	console.log({ connections: $orgConnectionsQuery.data });
@@ -75,11 +87,18 @@
 						<button
 							class="btn btn-text--primary"
 							onclick={() => {
+								trackingStore.trackAction('Org Found Cancel Click');
 								joinState = 'add-code';
 								joinCode = '';
 							}}>Cancel</button
 						>
-						<button class="btn btn--primary" onclick={joinOrg}>Accept and Join</button>
+						<button
+							class="btn btn--primary"
+							onclick={() => {
+								joinOrg();
+								trackingStore.trackAction('Org Found Accept Click');
+							}}>Accept and Join</button
+						>
 					{/snippet}
 				</Card>
 			{:else}
@@ -90,6 +109,7 @@
 						<button
 							class="btn btn--primary"
 							onclick={() => {
+								trackingStore.trackAction('Join Org Error Dismiss Click');
 								joinState = 'add-code';
 								joinCode = '';
 							}}>Cancel</button
@@ -127,6 +147,7 @@
 							<button
 								type="button"
 								onclick={() => {
+									trackingStore.trackAction('Join Org Success Dismiss Click');
 									joinState = 'add-code';
 									joinCode = '';
 								}}
@@ -160,7 +181,13 @@
 					className="w-full"
 					placeholder="Invite code (for example: ABC12-XYZ)"
 				/>
-				<button class="btn btn-text--primary whitespace-nowrap" onclick={verifyJoinCode}>
+				<button
+					class="btn btn-text--primary whitespace-nowrap"
+					onclick={() => {
+						verifyJoinCode();
+						trackingStore.trackAction('Verify Join Code Click');
+					}}
+				>
 					Verify Code
 				</button>
 			</div>
@@ -219,7 +246,13 @@
 						<!-- {#if connection.dataAccess === 'consented'}
 							<button class="btn btn-text--warning">Update Permissions</button>
 						{/if} -->
-						<button class="btn btn-text--error" onclick={() => removeFromOrg(connection.id)}>
+						<button
+							class="btn btn-text--error"
+							onclick={() => {
+								removeFromOrg(connection.id);
+								trackingStore.trackAction('Remove Org Access Click');
+							}}
+						>
 							Revoke Access
 						</button>
 					{/if}

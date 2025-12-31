@@ -25,9 +25,9 @@
 
 	let removeUser = useRemoveUserFromOrg();
 
-	async function removeUserFromOrg(userID: number) {
+	async function removeUserFromOrg(orgUserID: string) {
 		try {
-			await $removeUser.mutateAsync({ userID, orgID: data.org?.id || '' });
+			await $removeUser.mutateAsync({ orgUserID });
 			$users.refetch();
 		} catch (error) {}
 	}
@@ -55,7 +55,13 @@
 			</div>
 			{#if permissionGate(['client:add'], data.myPermissions)}
 				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-					<button class="btn btn--primary" onclick={() => (showAddUser = true)}>
+					<button
+						class="btn btn--primary"
+						onclick={() => {
+							showAddUser = true;
+							trackingStore.trackAction('Invite Client Click');
+						}}
+					>
 						Invite Client
 					</button>
 				</div>
@@ -94,33 +100,35 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each $users?.data?.users || [] as user}
+							{#each $users?.data?.users || [] as orgUser}
 								<tr>
 									<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
 										<a
-											href={`/org/${data.org?.id || ''}/seats/${user.id}`}
+											href={`/org/${data.org?.id || ''}/seats/${orgUser.id}`}
 											class=" hover:text-primary"
 										>
-											{user.firstName}
-											{user.lastName}
+											{orgUser?.user?.firstName}
+											{orgUser?.user?.lastName}
 										</a>
-										<p class="table-cell text-sm text-gray-500 sm:hidden">{user.email}</p>
+										<p class="table-cell text-sm text-gray-500 sm:hidden">{orgUser?.user?.email}</p>
 										<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
 										<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
 									</td>
 									<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-										{user.email}
+										{orgUser?.user?.email}
 									</td>
 									<td class="py-4 pl-3 text-right text-sm font-medium">
 										<button
 											class="btn btn-text--primary"
 											onclick={() => {
-												removeUserFromOrg(user.id);
+												removeUserFromOrg(orgUser.id);
 												trackingStore.trackAction('Remove user from clients click');
 											}}
 										>
 											Remove
-											<span class="sr-only">, {user.firstName} {user.lastName}</span>
+											<span class="sr-only"
+												>, {orgUser?.user?.firstName} {orgUser?.user?.lastName}</span
+											>
 										</button>
 									</td>
 								</tr>
@@ -151,6 +159,7 @@
 		id="newOrgClient"
 		onsubmit={(e) => {
 			e.preventDefault(), addClient();
+			trackingStore.trackAction('Invite Add Client Click');
 		}}
 	>
 		<TextInput id="new-email" type="email" required label="Email" bind:value={newUserEmail} />

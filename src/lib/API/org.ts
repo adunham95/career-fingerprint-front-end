@@ -483,10 +483,11 @@ export const useRemoveUserFromOrg = () => {
 		mutationFn: removeUserFromOrg,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: ['orgUsers']
+				queryKey: ['orgUsers'],
+				refetchType: 'all'
 			});
 			queryClient.invalidateQueries({
-				queryKey: [orgKeys.orgConnections]
+				queryKey: orgKeys.orgConnections
 			});
 		},
 		onError: (error) => {

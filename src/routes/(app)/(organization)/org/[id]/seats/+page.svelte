@@ -46,11 +46,11 @@
 			await $removeUser.mutateAsync({ orgUserID: userID });
 			$users.refetch();
 			toastStore.show({
-				message: `Removed ${member?.user.firstName} ${member?.user.lastName}`,
+				message: `Removed ${member?.user?.firstName} ${member?.user?.lastName}`,
 				type: 'success'
 			});
 		} catch (error) {
-			toastStore.show({ message: `Could not remove ${member?.user.firstName}`, type: 'success' });
+			toastStore.show({ message: `Could not remove ${member?.user?.firstName}`, type: 'success' });
 		}
 	}
 
@@ -153,18 +153,18 @@
 								<tr>
 									<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
 										<a
-											href={`/org/${data.org?.id || ''}/seats/${member.user.id}`}
+											href={`/org/${data.org?.id || ''}/seats/${member?.user?.id}`}
 											class=" hover:text-primary"
 										>
-											{member.user.firstName}
-											{member.user.lastName}
+											{member?.user?.firstName}
+											{member?.user?.lastName}
 										</a>
-										<p class="table-cell text-sm text-gray-500 sm:hidden">{member.user.email}</p>
+										<p class="table-cell text-sm text-gray-500 sm:hidden">{member?.user?.email}</p>
 										<div class="absolute right-full bottom-0 h-px w-screen bg-gray-100"></div>
 										<div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100"></div>
 									</td>
 									<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-										{member.user.email}
+										{member?.user?.email}
 									</td>
 									<td class="py-4 pl-3 text-right text-sm font-medium">
 										<button
@@ -175,7 +175,9 @@
 											}}
 										>
 											Remove
-											<span class="sr-only">, {member.user.firstName} {member.user.lastName}</span>
+											<span class="sr-only"
+												>, {member?.user?.firstName} {member?.user?.lastName}</span
+											>
 										</button>
 									</td>
 								</tr>
