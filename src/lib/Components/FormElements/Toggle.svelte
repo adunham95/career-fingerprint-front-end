@@ -11,6 +11,7 @@
 	}
 
 	let {
+		subLabel,
 		postLabel,
 		label,
 		id,
@@ -20,6 +21,8 @@
 		className,
 		checkItemClassName = ''
 	}: Props = $props();
+
+	console.log(subLabel);
 </script>
 
 <div
@@ -27,7 +30,7 @@
   [fieldset:disabled_&]:opacity-50 ${className}`}
 >
 	{#if label}
-		<Label {label} {id} labelClassName="pr-4" />
+		<Label {label} {subLabel} {id} labelClassName="pr-4" />
 	{/if}
 
 	<label

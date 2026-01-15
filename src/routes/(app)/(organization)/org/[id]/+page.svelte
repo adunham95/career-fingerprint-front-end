@@ -9,8 +9,9 @@
 	import Chart from '$lib/Components/Chart.svelte';
 	import { copyTextToClipboard } from '$lib/Utils/copyTextToClipboard.js';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
-	import { PUBLIC_CONTACT_SALES } from '$env/static/public';
 	import { permissionGate } from '$lib/Utils/permissionGate.js';
+	import NoSubscriptionDashboard from './DashboardComponents/NoSubscriptionDashboard.svelte';
+	import { useOrgInviteLink } from '$lib/API/org';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
@@ -20,11 +21,13 @@
 	const orgReport = useOrgDashboard(data.org?.id || '');
 	const seatUtilization = useOrgSeatUtilization(data.org?.id || '');
 
+	let inviteLink = useOrgInviteLink(data.org?.id || '');
+
 	console.log({ data, orgReport: $orgReport.data });
 
 	async function copySignUpLink() {
 		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/register?org=${data?.org?.id}`);
+			await copyTextToClipboard($inviteLink.data?.link || '');
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
@@ -34,104 +37,124 @@
 
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.org?.name}</p>
-	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<DashboardActionButton
-			icon={usersIcon}
-			actionName="Seat Management Click"
-			title="Seats"
-			subTitle="View all the users in your group"
-			color="green"
-			href={`/org/${data.org?.id}/seats`}
-			locked={!permissionGate(['client:list'], data.myPermissions)}
-		/>
-		<DashboardActionButton
-			icon={linkIcon}
-			actionName="Share Link Click"
-			title="Copy Sign Up Link"
-			subTitle="Share the copy link to allow people to sign up"
-			color="blue"
-			locked={!permissionGate(['client:add'], data.myPermissions)}
-			onClick={() => {
-				trackingStore.trackAction('Org Share Sign Up Link');
-				copySignUpLink();
-			}}
-		/>
-		<DashboardActionButton
-			icon={usersIcon}
-			actionName="Manage Admin Click"
-			title="Manage Administrators"
-			subTitle="Add and remove the admins on this account"
-			color="purple"
-			locked={!permissionGate(['admins:manage'], data.myPermissions)}
-			href={`/org/${data.org?.id}/admins`}
-		/>
-		<DashboardActionButton
-			icon={gearIcon}
-			actionName="Org Click"
-			title="Org Settings"
-			subTitle="Manage this Organizations"
-			color="red"
-			locked={!permissionGate(['org:update_details'], data.myPermissions)}
-			href={`/org/${data.org?.id}/settings`}
-		/>
-	</div>
 	{#if (data.org?.orgSubscription || []).length === 0}
-		<div
-			class="border-primary bg-primary-500/25 focus:ring-pastel-red-5 mt-5 rounded-lg border-3 p-2 text-lg transition focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
-		>
-			<p>
-				Partner with our sales team for a personalized onboarding experience. We’ll walk you through
-				subscription setup, account management, and best practices for your organization.
-			</p>
-			<div class="flex justify-end">
-				<a href={PUBLIC_CONTACT_SALES} target="_blank" class="btn btn--secondary">
-					Contact Sales for Guided Setup
-				</a>
+		<NoSubscriptionDashboard orgID={data.org?.id || ''} />
+	{:else}
+		<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+			{#if data.org?.type === 'coach'}
+				<DashboardActionButton
+					icon={usersIcon}
+					actionName="Clients Management Click"
+					title="Clients"
+					subTitle="View all the clients in your group"
+					color="green"
+					href={`/org/${data.org?.id}/clients`}
+					locked={!permissionGate(['client:list'], data.myPermissions)}
+				/>
+				<DashboardActionButton
+					icon={linkIcon}
+					actionName="Share Link Click"
+					title="Copy Client Sign Up Link"
+					subTitle="Share the copy link to allow clients to sign up"
+					color="blue"
+					disabled={$inviteLink.isLoading}
+					locked={!permissionGate(['client:add'], data.myPermissions)}
+					onClick={() => {
+						trackingStore.trackAction('Org Share Sign Up Link');
+						copySignUpLink();
+					}}
+				>
+					{#if $inviteLink.isLoading}
+						<div class="absolute inset-0 flex items-center justify-center">
+							<Loader />
+						</div>
+					{/if}
+				</DashboardActionButton>
+			{:else}
+				<DashboardActionButton
+					icon={usersIcon}
+					actionName="Seat Management Click"
+					title="Seats"
+					subTitle="View all the users in your group"
+					color="green"
+					href={`/org/${data.org?.id}/seats`}
+					locked={!permissionGate(['users:list'], data.myPermissions)}
+				/>
+				<DashboardActionButton
+					icon={linkIcon}
+					actionName="Share Link Click"
+					title="Copy Sign Up Link"
+					subTitle="Share the copy link to allow people to sign up"
+					color="blue"
+					locked={!permissionGate(['users:add'], data.myPermissions)}
+					onClick={() => {
+						trackingStore.trackAction('Org Share Sign Up Link');
+						copySignUpLink();
+					}}
+				/>
+			{/if}
+			<DashboardActionButton
+				icon={usersIcon}
+				actionName="Manage Admin Click"
+				title="Manage Administrators"
+				subTitle="Add and remove the admins on this account"
+				color="purple"
+				locked={!permissionGate(['admins:manage'], data.myPermissions)}
+				href={`/org/${data.org?.id}/admins`}
+			/>
+			<DashboardActionButton
+				icon={gearIcon}
+				actionName="Org Click"
+				title="Org Settings"
+				subTitle="Manage this Organizations"
+				color="red"
+				locked={!permissionGate(['org:update_details'], data.myPermissions)}
+				href={`/org/${data.org?.id}/settings`}
+			/>
+		</div>
+		<p class="font-title mt-3 text-2xl">At a Glance</p>
+		<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+			<DashboardStat
+				isLoading={$seatUtilization.isLoading}
+				number={$seatUtilization?.data?.seatsUsed || 0}
+				ofNumber={$seatUtilization?.data?.seatLimit || 0}
+				name="Active Subscriptions"
+			/>
+			<DashboardStat
+				isLoading={$orgReport.isLoading}
+				number={$orgReport.data?.totalAchievements}
+				name="Total Achievements"
+				subLabel="This Week"
+			/>
+			<DashboardStat
+				isLoading={$orgReport.isLoading}
+				number={$orgReport.data?.avgAchievementsPerUser}
+				name="Avg Achievements"
+				subLabel="Per User"
+			/>
+			<DashboardStat
+				isLoading={$orgReport.isLoading}
+				text={$orgReport.data?.topTags?.[0]?.tagName || 'N/A'}
+				name="Most Popular Tag"
+				subLabel="Per User"
+			/>
+			<div class="border-t border-gray-200 pt-4">
+				<dt class="font-medium text-gray-900">Top Companies</dt>
+
+				{#if $orgReport.isLoading}
+					<Loader />
+				{:else}
+					<dd class="mt-2 text-sm text-gray-500">
+						<ul>
+							{#each $orgReport.data?.topEmployers || [] as company}
+								<li>{company.company}</li>
+							{/each}
+						</ul>
+					</dd>
+				{/if}
 			</div>
 		</div>
 	{/if}
-	<p class="font-title mt-3 text-2xl">At a Glance</p>
-	<div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<DashboardStat
-			isLoading={$seatUtilization.isLoading}
-			number={$seatUtilization?.data?.seatsUsed || 0}
-			ofNumber={$seatUtilization?.data?.seatLimit || 0}
-			name="Active Subscriptions"
-		/>
-		<DashboardStat
-			isLoading={$orgReport.isLoading}
-			number={$orgReport.data?.totalAchievements}
-			name="Total Achievements"
-			subLabel="This Week"
-		/>
-		<DashboardStat
-			isLoading={$orgReport.isLoading}
-			number={$orgReport.data?.avgAchievementsPerUser}
-			name="Avg Achievements"
-			subLabel="Per User"
-		/>
-		<DashboardStat
-			isLoading={$orgReport.isLoading}
-			text={$orgReport.data?.topTags?.[0]?.tagName || 'N/A'}
-			name="Most Popular Tag"
-			subLabel="Per User"
-		/>
-		<div class="border-t border-gray-200 pt-4">
-			<dt class="font-medium text-gray-900">Top Companies</dt>
-
-			{#if $orgReport.isLoading}
-				<Loader />
-			{:else}
-				<dd class="mt-2 text-sm text-gray-500">
-					<ul>
-						{#each $orgReport.data?.topEmployers || [] as company}
-							<li>{company.company}</li>
-						{/each}
-					</ul>
-				</dd>
-			{/if}
-		</div>
-	</div>
 </PageContainer>
 
 {#snippet usersIcon()}

@@ -1,8 +1,8 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { createMutation, createQuery } from '@tanstack/svelte-query';
+import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import { queryClient } from './queryClient';
-import { createApiClient } from './apiClient';
-import type { OrgAdminUser, Organization } from '../../app';
+import { createApiClient, type ApiEventInput } from './apiClient';
+import type { Organization, OrgUser } from '../../app';
 
 export async function registerOrg(newProfile: {
 	firstName: string;
@@ -86,19 +86,29 @@ export async function updateOrg(data: {
 	}
 }
 
-export async function getOrgUsers(orgID: string, page = 1, size = 20) {
+interface OrgUsersPage {
+	users: OrgUser[];
+	totalCount: number;
+	totalPages: number;
+	page: number;
+	pageSize: number;
+}
+
+export async function getOrgUsers(
+	orgID: string,
+	page = 1,
+	pageSize = 20
+): Promise<OrgUsersPage | null> {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/users?page=${page}&pageSize=${size}`, {
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.get(`/org/${orgID}/users`, { page, pageSize });
 	} catch (error) {
 		console.error(error);
 		return null;
 	}
 }
 
-export async function getOrgAdmins(orgID: string): Promise<OrgAdminUser[]> {
+export async function getOrgAdmins(orgID: string): Promise<OrgUser[]> {
 	try {
 		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/admins`, {
 			credentials: 'include'
@@ -110,7 +120,9 @@ export async function getOrgAdmins(orgID: string): Promise<OrgAdminUser[]> {
 	}
 }
 
-export async function getOrgRoles(orgID: string) {
+export async function getOrgRoles(
+	orgID: string
+): Promise<{ id: string; label: string; description: string }[]> {
 	try {
 		const api = createApiClient();
 		return api.get(`/org/${orgID}/roles`);
@@ -135,13 +147,10 @@ export async function getOrg(orgID?: string) {
 	}
 }
 
-export async function removeUserFromOrg({ userID, orgID }: { userID: number; orgID: string }) {
+export async function removeUserFromOrg({ orgUserID }: { orgUserID: string }) {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/org/${orgID}/user/${userID}`, {
-			method: 'DELETE',
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.del(`/org-users/${orgUserID}`);
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -171,17 +180,16 @@ export async function deleteDomain({ id }: { id: string }) {
 	}
 }
 
-export async function createAdmin(data: {
+export async function createAdmin(newUser: {
 	firstName: string;
 	lastName: string;
 	email: string;
 	orgID: string;
-	role: string;
+	roles: string[];
 }) {
 	try {
-		const { orgID, role, ...newUsers } = data;
 		const api = createApiClient();
-		return api.post(`/org/${orgID}/admins`, { ...newUsers, roles: [role] });
+		return api.post(`/org-users/admin`, newUser);
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -203,11 +211,36 @@ export async function createOrgClient(data: {
 	}
 }
 
+export async function createOrgMember(data: {
+	firstName: string;
+	lastName: string;
+	email: string;
+}) {
+	try {
+		const api = createApiClient();
+		return api.post(`/org-users/member`, data);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export async function updateAdmin(data: { orgID: string; userID: number; role: string }) {
 	try {
 		const { orgID, userID, role } = data;
 		const api = createApiClient();
 		return api.patch(`/org/${orgID}/admin/${userID}`, { roles: [role] });
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function updateOrgUser(data: { orgUserID: string; roles: string[] }) {
+	try {
+		const { orgUserID, ...userData } = data;
+		const api = createApiClient();
+		return api.patch(`/org-users/${orgUserID}`, userData);
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -322,6 +355,50 @@ export async function createPromoCode(data: { orgID: string; promoCodeText?: str
 	}
 }
 
+export async function verifyJoinCode(data: { joinCode: string }, event?: ApiEventInput) {
+	try {
+		const api = createApiClient(event);
+		return api.get<{ valid: boolean; org?: Organization; message: string } | null>(
+			`/org-users/join/${data.joinCode}`
+		);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function joinOrgViaJoinCode(data: { joinCode: string }) {
+	try {
+		const api = createApiClient();
+		return api.post<{ success: boolean; message: string; subscriptionType: string } | null>(
+			`/org-users/join/${data.joinCode}`
+		);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getOrgConnections() {
+	try {
+		const api = createApiClient();
+		return api.get<OrgUser[]>(`/org-users/connections`);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getOrgInviteLink() {
+	try {
+		const api = createApiClient();
+		return api.get<{ link: string }>(`/org/invite-link`);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
 	orgs: ['orgs'] as const,
 	org: (id: string) => ['org', id] as const,
@@ -329,7 +406,9 @@ export const orgKeys = {
 	orgUsers: (id: string, page = 1, pageSize = 20) => ['orgUsers', id, page, pageSize] as const,
 	orgDomains: (id: string) => ['orgDomains', id] as const,
 	orgRoles: (id: string) => ['orgRoles', id] as const,
-	orgPromoCodes: (id: string) => ['promoCodes', id] as const
+	orgPromoCodes: (id: string) => ['promoCodes', id] as const,
+	orgInviteLink: (id: string) => ['inviteLinks', id] as const,
+	orgConnections: ['orgConnections'] as const
 };
 
 // QUERIES
@@ -348,11 +427,10 @@ export const useMyOrgs = () => {
 	});
 };
 
-export const useOrgAdmins = (orgID: string, initialData?: OrgAdminUser[]) => {
+export const useOrgAdmins = (orgID: string) => {
 	return createQuery({
 		queryKey: orgKeys.orgAdmins(orgID),
-		queryFn: () => getOrgAdmins(orgID),
-		initialData
+		queryFn: () => getOrgAdmins(orgID)
 	});
 };
 
@@ -391,6 +469,20 @@ export const useOrgPromoCode = (orgID?: string) => {
 	});
 };
 
+export const useOrgConnections = () => {
+	return createQuery({
+		queryKey: orgKeys.orgConnections,
+		queryFn: () => getOrgConnections()
+	});
+};
+
+export const useOrgInviteLink = (id: string) => {
+	return createQuery({
+		queryKey: orgKeys.orgInviteLink(id),
+		queryFn: () => getOrgInviteLink()
+	});
+};
+
 // MUTATIONS
 
 export const useRegisterOrg = () => {
@@ -404,9 +496,18 @@ export const useRegisterOrg = () => {
 };
 
 export const useRemoveUserFromOrg = () => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: removeUserFromOrg,
-		onSuccess: () => {},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['orgUsers'],
+				refetchType: 'all'
+			});
+			queryClient.invalidateQueries({
+				queryKey: orgKeys.orgConnections
+			});
+		},
 		onError: (error) => {
 			console.error('Failed to create subscription:', error);
 		}
@@ -434,6 +535,7 @@ export const useUpdateOrg = () => {
 };
 
 export const useCreateDomain = (orgID: string) => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: createDomain,
 		onSuccess: () => {
@@ -448,6 +550,7 @@ export const useCreateDomain = (orgID: string) => {
 };
 
 export const useUpdateDomain = (orgID: string) => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: updateDomain,
 		onSuccess: () => {
@@ -462,6 +565,7 @@ export const useUpdateDomain = (orgID: string) => {
 };
 
 export const useDeleteDomain = (orgID: string) => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: deleteDomain,
 		onSuccess: () => {
@@ -475,12 +579,13 @@ export const useDeleteDomain = (orgID: string) => {
 	});
 };
 
-export const useAddAdmin = (orgID: string) => {
+export const useAddAdmin = () => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: createAdmin,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: orgKeys.orgAdmins(orgID)
+				queryKey: ['orgAdmins']
 			});
 		},
 		onError: (error) => {
@@ -506,12 +611,47 @@ export const useAddOrgClient = (orgID: string) => {
 	});
 };
 
+export const useAddOrgMember = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: createOrgMember,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['orgUsers']
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create org member:', error);
+		}
+	});
+};
+
+/** @deprecated Use Update org user mutation instead */
 export const useUpdateOrgAdmin = (orgID: string) => {
+	const queryClient = useQueryClient();
 	return createMutation({
 		mutationFn: updateAdmin,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: orgKeys.orgAdmins(orgID)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to delete domain:', error);
+		}
+	});
+};
+
+export const useUpdateOrgUser = () => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: updateOrgUser,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['orgAdmins']
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['orgUsers']
 			});
 		},
 		onError: (error) => {
@@ -554,6 +694,26 @@ export const useCreateOrgPromoCode = (orgID?: string) => {
 		},
 		onError: (error) => {
 			console.error('Failed to create promo:', error);
+		}
+	});
+};
+
+export const useVerifyJoinCode = () => {
+	return createMutation({
+		mutationFn: verifyJoinCode,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Could not verify join code:', error);
+		}
+	});
+};
+
+export const useJoinOrgWithJoinCode = () => {
+	return createMutation({
+		mutationFn: joinOrgViaJoinCode,
+		onSuccess: () => {},
+		onError: (error) => {
+			console.error('Could not join organization:', error);
 		}
 	});
 };

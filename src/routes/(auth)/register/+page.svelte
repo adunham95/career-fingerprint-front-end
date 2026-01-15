@@ -21,6 +21,9 @@
 	let errorText = $state<{ [key: string]: string }>({});
 	const orgID = page.url.searchParams.get('org') || undefined;
 
+	const urlParams = new URLSearchParams(window.location.search);
+	const redirectPath = urlParams.get('redirect') || '/onboard/billing';
+
 	let registerUser = useRegisterUserMutation();
 
 	// Define the conversion function
@@ -86,7 +89,8 @@
 			});
 			trackingStore.trackAction('Registered User');
 			gtag_report_conversion();
-			goto('/onboard/billing');
+			goto(redirectPath);
+
 			isLoading = false;
 		} catch (error) {
 			toastStore.show({ message: 'Creating Account', type: 'error' });

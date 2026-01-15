@@ -19,31 +19,29 @@
 		}
 		return [
 			{ title: 'Account', path: '/settings/profile' },
+			{ title: 'Connections', path: '/settings/connections' },
 			{ title: 'Membership', path: '/settings/membership' },
 			{ title: 'Referrals', path: '/settings/referral' }
 		];
 	});
 </script>
 
-<QueryClientProvider client={queryClient}>
-	<SvelteQueryDevtools buttonPosition="bottom-left" />
-	<AccountHeader
-		userID={data.user.id || 0}
-		appTitle="Career Fingerprint"
-		routes={[
-			{ title: 'Dashboard', path: '/dashboard' },
-			{ title: 'My Fingerprint', path: '/my-fingerprint' },
-			{ title: 'Resumes', path: '/resumes' },
-			{ title: 'Job Applications', path: '/job-applications' },
-			{ title: 'Achievement Timeline', path: '/timeline' },
-			{ title: 'Meetings', path: '/meetings' }
-		]}
-		lastName={data.user.lastName}
-		firstName={data.user.firstName}
-		profileImageURL={data.user.profileImage}
-		profileRoutes={profileRoutes()}
-	/>
-	<main class="pb-4">
-		{@render children()}
-	</main>
-</QueryClientProvider>
+<AccountHeader
+	userID={data.user.id || 0}
+	appTitle="Career Fingerprint"
+	routes={[
+		{ title: 'Dashboard', path: '/dashboard' },
+		{ title: 'My Fingerprint', path: '/my-fingerprint' },
+		{ title: 'Resumes', path: '/resumes' },
+		{ title: 'Job Applications', path: '/job-applications' },
+		{ title: 'Achievement Timeline', path: '/timeline' },
+		{ title: 'Meetings', path: '/meetings' }
+	]}
+	lastName={data.user.lastName}
+	firstName={data.user.firstName}
+	profileImageURL={data.user.profileImage}
+	profileRoutes={profileRoutes()}
+/>
+<main class="pb-4">
+	{@render children()}
+</main>

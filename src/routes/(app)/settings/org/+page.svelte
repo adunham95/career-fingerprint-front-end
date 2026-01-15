@@ -107,6 +107,7 @@
 				</li>
 			{/each}
 		</ul>
+		<NewOrg userID={data.user.id} onSuccess={() => $myOrganizations.refetch()} />
 	{:else}
 		<NewOrg userID={data.user.id} onSuccess={() => $myOrganizations.refetch()} />
 	{/if}

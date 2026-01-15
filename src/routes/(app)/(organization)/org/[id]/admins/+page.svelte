@@ -4,10 +4,10 @@
 		useOrgAdmins,
 		useOrgRoles,
 		useRemoveAdminFromOrg,
-		useUpdateOrgAdmin
+		useUpdateOrgUser
 	} from '$lib/API/org.js';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import Select from '$lib/Components/FormElements/Select.svelte';
+	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
@@ -23,30 +23,53 @@
 	let firstName = $state('');
 	let lastName = $state('');
 	let email = $state('');
-	let orgRole = $state('viewer');
+
+	let editOrgRoles = $state(false);
+	let editOrgRolesOrgUserID = $state<string | null>();
+	let orgRoles = $state<string[]>(['viewer']);
 
 	const removeAdminFunction = useRemoveAdminFromOrg();
-	const orgAdmins = useOrgAdmins(data.org?.id || '', data.admins);
-	const addAdminMutation = useAddAdmin(data.org?.id || '');
+	const orgAdmins = useOrgAdmins(data.org?.id || '');
+	const addAdminMutation = useAddAdmin();
 	const orgRolesQuery = useOrgRoles(data.org?.id || '');
-	const updateAdminMutation = useUpdateOrgAdmin(data.org?.id || '');
+	const updateAdminMutation = useUpdateOrgUser();
 
 	const transformedRoles = $derived.by(() => {
-		let data = $orgRolesQuery.data as { id: string; label: string }[];
-		if (!data) return [] as { id: string; label: string }[];
+		let data = $orgRolesQuery.data as { id: string; label: string; description: string }[];
+		if (!data) return [] as { id: string; label: string; description: string }[];
 		return data;
 	});
 
-	async function updateAdminRole(userID: number, role?: string) {
-		if (role) {
-			try {
-				await $updateAdminMutation.mutateAsync({ orgID: data.org?.id || '', role, userID });
-				toastStore.show({
-					message: 'Admin Role Update. The user will need to logout and login again'
-				});
-			} catch (error) {
-				toastStore.show({ message: 'Could not update admin', type: 'error' });
+	function visualRoleList(roles: string[]) {
+		return roles.reduce((accumulator, currentValue) => {
+			console.log({ accumulator, currentValue });
+
+			const role = ($orgRolesQuery.data || []).find((r) => r.id === currentValue);
+			console.log(role);
+			if (role !== undefined) {
+				console.log('role defined');
+				accumulator = [...accumulator, role.label];
 			}
+			return accumulator;
+		}, []);
+	}
+
+	async function updateAdminRole() {
+		try {
+			if (!editOrgRolesOrgUserID) {
+				toastStore.show({ message: 'Could not update admin', type: 'error' });
+				return;
+			}
+			await $updateAdminMutation.mutateAsync({ roles: orgRoles, orgUserID: editOrgRolesOrgUserID });
+			toastStore.show({
+				message: 'Admin Role Update. The user will need to logout and login again'
+			});
+			$orgAdmins.refetch();
+			orgRoles = ['viewer'];
+			editOrgRoles = false;
+			editOrgRolesOrgUserID = null;
+		} catch (error) {
+			toastStore.show({ message: 'Could not update admin', type: 'error' });
 		}
 	}
 
@@ -69,7 +92,7 @@
 				lastName,
 				email,
 				orgID: data.org?.id || '',
-				role: orgRole
+				roles: orgRoles
 			});
 			toastStore.show({ message: 'Added New Admin' });
 			await $orgAdmins.refetch();
@@ -77,7 +100,7 @@
 			firstName = '';
 			lastName = '';
 			email = '';
-			orgRole = 'viewer';
+			orgRoles = ['viewer'];
 		} catch (error) {
 			toastStore.show({ message: 'Error new admin', type: 'error' });
 		}
@@ -143,49 +166,49 @@
 				</thead>
 				{#if permissionGate(['admins:view'], data.myPermissions)}
 					<tbody>
-						{#each $orgAdmins.data || [] as user}
+						{#each $orgAdmins.data || [] as admin}
 							<tr>
 								<td class="relative py-4 pr-3 text-sm font-medium text-gray-900">
 									<span>
-										{user.firstName}
-										{user.lastName}
+										{admin.user.firstName}
+										{admin.user.lastName}
 									</span>
-									<p class="text-sm text-gray-500 sm:hidden">{user.email}</p>
+									<p class="text-sm text-gray-500 sm:hidden">{admin.user.email}</p>
 									<p class="text-sm text-gray-500 sm:hidden">
-										{user?.orgAdminLink?.roles.join(',')}
+										{admin.roles.join(',')}
 									</p>
 								</td>
 								<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-									{user.email}
+									{admin.user.email}
 								</td>
 								<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-									{#if permissionGate(['admins:view'], data.myPermissions) && transformedRoles}
-										<Select
-											id={`update-role-${user.id}`}
-											label="Update Org Role"
-											value={user?.orgAdminLink?.roles[0]}
-											oninput={(e) => {
-												console.log('data');
-												updateAdminRole(user.id, e?.currentTarget?.value);
+									{#if permissionGate(['admins:manage'], data.myPermissions)}
+										<button
+											class="btn btn-text--primary"
+											onclick={() => {
+												editOrgRoles = true;
+												editOrgRolesOrgUserID = admin.id;
+												orgRoles = admin.roles;
 											}}
-											options={transformedRoles}
-										/>
+										>
+											{visualRoleList(admin.roles).join(', ')}
+										</button>
 									{:else}
-										<p>{user?.orgAdminLink?.roles[0]}</p>
+										<p>{visualRoleList(admin.roles).join(', ')}</p>
 									{/if}
 								</td>
 								<td class="py-4 pl-3 text-right text-sm font-medium">
 									{#if permissionGate(['admins:manage'], data.myPermissions)}
 										<button
 											class="btn btn-text--primary disabled:cursor-not-allowed disabled:text-gray-500 hover:disabled:bg-transparent"
-											disabled={data?.user?.id === user.id}
+											disabled={data?.user?.id === admin.user.id}
 											onclick={() => {
-												removeAdminFromOrg(user.id);
+												removeAdminFromOrg(admin.user.id);
 												trackingStore.trackAction('Remove Admin Click');
 											}}
 										>
 											Remove
-											<span class="sr-only">, {user.firstName} {user.lastName}</span>
+											<span class="sr-only">, {admin.user.firstName} {admin.user.lastName}</span>
 										</button>
 									{:else}
 										<span class="sr-only">You Do Not Have Permission To Remove Users</span>
@@ -215,6 +238,85 @@
 		<TextInput id="firstName" label="First Name" bind:value={firstName} />
 		<TextInput id="lastName" label="Last Name" bind:value={lastName} />
 		<TextInput id="email" label="Email" type="email" bind:value={email} />
-		<Select id="role" label="Org Role" bind:value={orgRole} options={transformedRoles} />
+		<Label id="selectRoles" label="Select User Roles" />
+		<div class="pt-2">
+			<div class="grid grid-cols-1 gap-3 pt-2">
+				{#each transformedRoles as role}
+					<label
+						for={role.id}
+						class={`cursor-pointer rounded border-2 bg-white p-2 transition-all
+					${
+						orgRoles.includes(role.id)
+							? 'border-accent bg-accent/10 shadow-md'
+							: 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+					}
+				`}
+					>
+						<input
+							id={role.id}
+							type="checkbox"
+							value={role.id}
+							name="categories"
+							class="hidden"
+							bind:group={orgRoles}
+						/>
+
+						<div class="flex flex-col gap-1">
+							<p class="truncate font-medium text-gray-900">
+								{role.label}
+							</p>
+							<p class="line-clamp-2 text-xs leading-tight text-gray-500">
+								{role.description}
+							</p>
+						</div>
+					</label>
+				{/each}
+			</div>
+		</div>
 	</form>
+</Drawer>
+
+<Drawer title="Select Role" bind:isOpen={editOrgRoles} onSave={updateAdminRole}>
+	<div class="pt-2">
+		<div class="grid grid-cols-1 gap-3 pt-2">
+			{#each transformedRoles as role}
+				<label
+					for={role.id}
+					class={`cursor-pointer rounded border-2 bg-white p-2 transition-all
+					${
+						orgRoles.includes(role.id)
+							? 'border-accent bg-accent/10 shadow-md'
+							: 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+					}
+				`}
+				>
+					<input
+						id={role.id}
+						type="checkbox"
+						value={role.id}
+						name="categories"
+						class="hidden"
+						bind:group={orgRoles}
+					/>
+
+					<div class="flex flex-col gap-1">
+						<p class="truncate font-medium text-gray-900">
+							{role.label}
+						</p>
+						<p class="line-clamp-2 text-xs leading-tight text-gray-500">
+							{role.description}
+						</p>
+					</div>
+				</label>
+			{/each}
+			<input
+				id={'member'}
+				type="checkbox"
+				value={'member'}
+				name="categories"
+				class="hidden"
+				bind:group={orgRoles}
+			/>
+		</div>
+	</div>
 </Drawer>
