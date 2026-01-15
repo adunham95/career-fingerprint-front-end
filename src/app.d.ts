@@ -115,7 +115,7 @@ interface Meeting {
 	jobAppID: string;
 	jobPositionID: string;
 	educationID: string;
-	jobApp: JobApplication;
+	jobApp?: JobApplication;
 	highlights?: MeetingHighlight[];
 	jobPosition?: JobPosition;
 	prepAnswers?: PrepAnswer[];

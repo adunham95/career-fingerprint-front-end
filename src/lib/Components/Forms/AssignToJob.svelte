@@ -6,6 +6,7 @@
 		useCreateJobApplicationMutation,
 		useMyJobApplicationsQuery
 	} from '$lib/API/job-applications';
+	import ErrorText from '../FormElements/ErrorText.svelte';
 
 	interface Props {
 		className?: string;
@@ -21,19 +22,23 @@
 
 	let newJobTitle = $state('');
 	let newJobCompany = $state(null);
+	let addingErrorMessage = $state('');
 
 	async function saveNewJobApplication() {
 		if ((newJobTitle === '' && newJobCompany === '') || newJobCompany == null) {
 			return;
 		}
 
-		const newJob = await $newApplication.mutateAsync({
-			title: newJobTitle,
-			company: newJobCompany
-		});
-		selectedCompany = newJob.id;
-		newJobTitle = '';
-		newJobCompany = null;
+		try {
+			const newJob = await $newApplication.mutateAsync({
+				title: newJobTitle,
+				company: newJobCompany
+			});
+			selectedCompany = newJob.id;
+			newJobTitle = '';
+			newJobCompany = null;
+			$applications.refetch();
+		} catch (error) {}
 	}
 </script>
 
@@ -44,10 +49,13 @@
 			bind:value={selectedCompany}
 			label="Current Job Applications"
 			id="jobApplicaiton"
-			options={($applications?.data || []).map((app) => ({
-				id: app.id,
-				label: `${app.company} - ${app.title}`
-			}))}
+			options={[
+				{ id: null, label: 'Select Or Create' },
+				...($applications?.data || []).map((app) => ({
+					id: app.id,
+					label: `${app.company} - ${app.title}`
+				}))
+			]}
 			{errorText}
 		/>
 	{/if}
@@ -66,6 +74,9 @@
 		hideLabel
 		bind:value={newJobCompany}
 	/>
+	{#if addingErrorMessage}
+		<ErrorText errorText={addingErrorMessage} />
+	{/if}
 	<div class="flex justify-end">
 		<button type="button" class="btn btn-text--primary" onclick={saveNewJobApplication}
 			>Add New Job Application</button

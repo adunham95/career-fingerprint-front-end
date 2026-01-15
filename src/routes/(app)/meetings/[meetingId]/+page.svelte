@@ -1,32 +1,34 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import { useDeleteMeetingMutation } from '$lib/API/meeting.js';
+	import { useDeleteMeetingMutation, useMeetingByID } from '$lib/API/meeting.js';
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import { useGetThankYouNotesForMeeting } from '$lib/API/thankYouNotes.js';
 	import MenuButton from '$lib/Components/Buttons/MenuButton.svelte';
-	import UnlockWithPremiumButton from '$lib/Components/Buttons/UnlockWithPremiumButton.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import MeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import NewThankYouNote from '$lib/Components/Forms/NewThankYouNote.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import StatusBadge from '$lib/Components/StatusBadge.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { useFeatureGate } from '$lib/Utils/featureGate.js';
-	import { redirect } from '@sveltejs/kit';
 	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
 	let current = $state('notes');
 	let newNote = $state('');
+	let showMeetingDetails = $state(false);
 
+	let myMeeting = useMeetingByID(data.meetingID || '', data.meeting);
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
 	let deleteMeetingMutation = useDeleteMeetingMutation(data.meetingID || '');
@@ -88,7 +90,7 @@
 			>
 				<div class="mt-6 min-w-0 flex-1 sm:hidden md:block">
 					<h1 class="truncate text-2xl font-bold text-gray-900">
-						{data.meeting?.title || 'Meeting'}
+						{$myMeeting.data?.title || 'Meeting'}
 					</h1>
 				</div>
 				<div
@@ -113,7 +115,7 @@
 							Download Meeting Notes
 						</div>
 					{/if}
-					{#if isUpcomingOrRecent(data.meeting?.time || new Date())}
+					{#if isUpcomingOrRecent($myMeeting.data?.time || new Date())}
 						{#if useFeatureGate(2, data.user)}
 							<a
 								href={`/prep/${data.meetingID}`}
@@ -148,7 +150,15 @@
 					{/if}
 					<MenuButton
 						size="size-8"
-						buttons={[{ title: 'Delete Meeting', onClick: () => deleteMeeting() }]}
+						buttons={[
+							{ title: 'Delete Meeting', onClick: () => deleteMeeting() },
+							{
+								title: 'EditMeeting',
+								onClick: () => {
+									showMeetingDetails = true;
+								}
+							}
+						]}
 					/>
 				</div>
 			</div>
@@ -297,6 +307,72 @@
 		<div class="space-y-4">
 			<Card>
 				<div class="space-y-6">
+					<!-- Company -->
+					<div class="flex w-full flex-none gap-x-4">
+						<dt class="flex-none">
+							<span class="sr-only">Company</span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="size-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+								/>
+							</svg>
+						</dt>
+						{#if $myMeeting.data?.jobApp?.company}
+							<dd class="text-sm/6 text-gray-500">
+								<p>{$myMeeting.data?.jobApp?.company}</p>
+							</dd>
+						{:else if $myMeeting.data?.jobPosition?.company}
+							<dd class="text-sm/6 text-gray-500">
+								<p>{$myMeeting.data?.jobPosition?.company}</p>
+							</dd>
+						{:else}
+							<dd class="text-sm/6 text-gray-500">
+								<p>N/A</p>
+							</dd>
+						{/if}
+					</div>
+					<!-- Position -->
+					<div class="flex w-full flex-none gap-x-4">
+						<dt class="flex-none">
+							<span class="sr-only">Position</span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="size-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"
+								/>
+							</svg>
+						</dt>
+						{#if $myMeeting.data?.jobApp?.title}
+							<dd class="text-sm/6 text-gray-500">
+								<p>{$myMeeting.data?.jobApp?.title}</p>
+							</dd>
+						{:else if $myMeeting.data?.jobPosition?.name}
+							<dd class="text-sm/6 text-gray-500">
+								<p>{$myMeeting.data?.jobPosition.name}</p>
+							</dd>
+						{:else}
+							<dd class="text-sm/6 text-gray-500">
+								<p>N/A</p>
+							</dd>
+						{/if}
+					</div>
 					<!-- Meeting Type -->
 					<div class="flex w-full flex-none gap-x-4">
 						<dt class="flex-none">
@@ -315,7 +391,7 @@
 							</svg>
 						</dt>
 						<dd class="text-sm/6 text-gray-500">
-							<p>{data.meeting?.type}</p>
+							<p>{$myMeeting.data?.type}</p>
 						</dd>
 					</div>
 
@@ -337,11 +413,11 @@
 							</svg>
 						</dt>
 						<dd class="text-sm/6 text-gray-500">
-							<time>{format(data.meeting?.time || new Date(), 'Pp')}</time>
+							<time>{format($myMeeting.data?.time || new Date(), 'Pp')}</time>
 						</dd>
 					</div>
 
-					{#if data.meeting?.location}
+					{#if $myMeeting.data?.location}
 						<!-- Meeting Time -->
 						<div class="flex w-full flex-none gap-x-4">
 							<dt class="flex-none">
@@ -360,12 +436,12 @@
 								</svg>
 							</dt>
 							<dd class="text-sm/6 text-gray-500">
-								<p>{data.meeting.location}</p>
+								<p>{$myMeeting.data?.location}</p>
 							</dd>
 						</div>
 					{/if}
 
-					{#if data.meeting?.link}
+					{#if $myMeeting.data?.link}
 						<!-- Meeting Time -->
 						<div class="flex w-full flex-none gap-x-4">
 							<dt class="flex-none">
@@ -385,7 +461,7 @@
 							</dt>
 							<dd class="text-sm/6">
 								<a
-									href={data.meeting.link}
+									href={$myMeeting.data?.link}
 									onclick={() => trackingStore.trackAction('Meeting Link Click')}
 									target="_blank"
 									class="text-primary hover:text-primary-700">Meeting Link</a
@@ -395,8 +471,8 @@
 					{/if}
 				</div>
 			</Card>
-			{#if data.meeting?.jobApp}
-				{@const jobApp = data.meeting.jobApp}
+			{#if $myMeeting.data?.jobApp}
+				{@const jobApp = $myMeeting.data?.jobApp}
 				<Card>
 					<dl class="flex flex-wrap">
 						<div class="mr-2 size-14 shrink-0 overflow-hidden rounded p-1">
@@ -420,3 +496,20 @@
 		</div>
 	</div>
 </PageContainer>
+
+<Drawer
+	bind:isOpen={showMeetingDetails}
+	title="Update Your Meeting"
+	subTitle="Update your meeting so you can find it later"
+	saveFormID="updateMeeting"
+>
+	<MeetingForm
+		id="updateMeeting"
+		meetingID={data.meetingID}
+		meeting={$myMeeting.data}
+		onSuccess={() => {
+			showMeetingDetails = false;
+			$myMeeting.refetch();
+		}}
+	/>
+</Drawer>
