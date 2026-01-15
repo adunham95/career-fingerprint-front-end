@@ -4,7 +4,7 @@
 	import TextInput from '../FormElements/TextInput.svelte';
 	import {
 		useCreateJobApplicationMutation,
-		useMyJobApplicationsQuery
+		useMyJobApplicationsListQuery
 	} from '$lib/API/job-applications';
 	import ErrorText from '../FormElements/ErrorText.svelte';
 
@@ -17,7 +17,7 @@
 
 	let { className = '', selectedCompany = $bindable(), oninput, errorText }: Props = $props();
 
-	let applications = useMyJobApplicationsQuery();
+	let applications = useMyJobApplicationsListQuery();
 	let newApplication = useCreateJobApplicationMutation();
 
 	let newJobTitle = $state('');
