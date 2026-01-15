@@ -10,7 +10,7 @@
 			case 'active':
 				return { text: 'Active', color: 'badge--success' };
 			case 'inactive':
-				return { text: 'In Active', color: 'badge--warning' };
+				return { text: 'Inactive', color: 'badge--warning' };
 
 			default:
 				return { text: '', color: 'badge--secondary' };

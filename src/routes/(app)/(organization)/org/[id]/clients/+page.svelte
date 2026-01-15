@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { useCreateClientInvite } from '$lib/API/clients.js';
-	import { useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
+	import { useOrgInviteLink, useOrgUsersByPageQuery, useRemoveUserFromOrg } from '$lib/API/org';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';

@@ -1,7 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import { queryClient } from './queryClient';
-import { createApiClient } from './apiClient';
+import { createApiClient, type ApiEventInput } from './apiClient';
 import type { Organization, OrgUser } from '../../app';
 
 export async function registerOrg(newProfile: {
@@ -355,9 +355,9 @@ export async function createPromoCode(data: { orgID: string; promoCodeText?: str
 	}
 }
 
-export async function verifyJoinCode(data: { joinCode: string }) {
+export async function verifyJoinCode(data: { joinCode: string }, event?: ApiEventInput) {
 	try {
-		const api = createApiClient();
+		const api = createApiClient(event);
 		return api.get<{ valid: boolean; org?: Organization; message: string } | null>(
 			`/org-users/join/${data.joinCode}`
 		);
@@ -370,7 +370,7 @@ export async function verifyJoinCode(data: { joinCode: string }) {
 export async function joinOrgViaJoinCode(data: { joinCode: string }) {
 	try {
 		const api = createApiClient();
-		return api.post<{ success: boolean; message: string } | null>(
+		return api.post<{ success: boolean; message: string; subscriptionType: string } | null>(
 			`/org-users/join/${data.joinCode}`
 		);
 	} catch (error) {
@@ -389,6 +389,16 @@ export async function getOrgConnections() {
 	}
 }
 
+export async function getOrgInviteLink() {
+	try {
+		const api = createApiClient();
+		return api.get<{ link: string }>(`/org/invite-link`);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
 export const orgKeys = {
 	orgs: ['orgs'] as const,
 	org: (id: string) => ['org', id] as const,
@@ -397,6 +407,7 @@ export const orgKeys = {
 	orgDomains: (id: string) => ['orgDomains', id] as const,
 	orgRoles: (id: string) => ['orgRoles', id] as const,
 	orgPromoCodes: (id: string) => ['promoCodes', id] as const,
+	orgInviteLink: (id: string) => ['inviteLinks', id] as const,
 	orgConnections: ['orgConnections'] as const
 };
 
@@ -462,6 +473,13 @@ export const useOrgConnections = () => {
 	return createQuery({
 		queryKey: orgKeys.orgConnections,
 		queryFn: () => getOrgConnections()
+	});
+};
+
+export const useOrgInviteLink = (id: string) => {
+	return createQuery({
+		queryKey: orgKeys.orgInviteLink(id),
+		queryFn: () => getOrgInviteLink()
 	});
 };
 

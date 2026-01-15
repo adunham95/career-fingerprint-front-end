@@ -24,6 +24,7 @@
 	const removeFromOrgMutation = useRemoveUserFromOrg();
 
 	let joinState = $state('add-code');
+	let showPermission = $state(false);
 
 	let joinCode = $state(page.url.searchParams.get('joinCode'));
 
@@ -207,11 +208,7 @@
 			<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
 				<div class="flex min-w-0 gap-x-4">
 					{#if connection?.org?.logoURL}
-						<img
-							src={connection.org.logoURL}
-							alt=""
-							class="size-12 flex-none rounded-full bg-gray-50"
-						/>
+						<img src={connection.org.logoURL} alt="" class="size-12 flex-none bg-gray-50" />
 					{:else}
 						<div
 							class="flex size-12 flex-none items-center justify-center overflow-hidden rounded-full bg-gray-50"
@@ -262,7 +259,7 @@
 	</ul>
 </PageContainer>
 
-<Modal isOpen title="Edit Permissions">
+<Modal isOpen={showPermission} title="Edit Permissions">
 	<div>
 		<div class="grid grid-cols-2 gap-4">
 			<Toggle label="View Fingerprint" subLabel="Allow the org to see your fingerprint." />

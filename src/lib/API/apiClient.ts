@@ -42,7 +42,11 @@ export interface ApiClient {
 	del<T>(path: string, options?: RequestInit): Promise<T>;
 }
 
-export function createApiClient(event?: { request: Request }) {
+export interface ApiEventInput {
+	request: Request;
+}
+
+export function createApiClient(event?: ApiEventInput) {
 	async function request<T>(
 		method: string,
 		path: string,

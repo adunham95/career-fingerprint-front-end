@@ -11,6 +11,7 @@
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { permissionGate } from '$lib/Utils/permissionGate.js';
 	import NoSubscriptionDashboard from './DashboardComponents/NoSubscriptionDashboard.svelte';
+	import { useOrgInviteLink } from '$lib/API/org';
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Org Dashboard');
@@ -20,20 +21,13 @@
 	const orgReport = useOrgDashboard(data.org?.id || '');
 	const seatUtilization = useOrgSeatUtilization(data.org?.id || '');
 
+	let inviteLink = useOrgInviteLink(data.org?.id || '');
+
 	console.log({ data, orgReport: $orgReport.data });
 
 	async function copySignUpLink() {
 		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/register?org=${data?.org?.id}`);
-			toastStore.show({ message: 'Link Copied' });
-		} catch (error) {
-			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
-		}
-	}
-
-	async function copyGetStartedClient() {
-		try {
-			await copyTextToClipboard(`https://careerfingerprint.app/register?org=${data?.org?.id}`);
+			await copyTextToClipboard($inviteLink.data?.link || '');
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
 			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
@@ -61,14 +55,21 @@
 					icon={linkIcon}
 					actionName="Share Link Click"
 					title="Copy Client Sign Up Link"
-					subTitle="Share the copy link to allow clients to sign up (Coming Soon)"
+					subTitle="Share the copy link to allow clients to sign up"
 					color="blue"
-					locked={true || !permissionGate(['client:add'], data.myPermissions)}
+					disabled={$inviteLink.isLoading}
+					locked={!permissionGate(['client:add'], data.myPermissions)}
 					onClick={() => {
 						trackingStore.trackAction('Org Share Sign Up Link');
 						copySignUpLink();
 					}}
-				/>
+				>
+					{#if $inviteLink.isLoading}
+						<div class="absolute inset-0 flex items-center justify-center">
+							<Loader />
+						</div>
+					{/if}
+				</DashboardActionButton>
 			{:else}
 				<DashboardActionButton
 					icon={usersIcon}
