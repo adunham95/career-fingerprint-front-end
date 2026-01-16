@@ -4,8 +4,10 @@
 	import { useCreateNote, useMeetingNotes } from '$lib/API/notes.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import ButtonList from '$lib/Components/FormElements/ButtonList.svelte';
 	import Label from '$lib/Components/FormElements/Label.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
+	import AssignToJob from '$lib/Components/Forms/AssignToJob.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import NewThankYouNote from '$lib/Components/Forms/NewThankYouNote.svelte';
 	import NavPillButtons from '$lib/Components/Header/NavPillButtons.svelte';
@@ -17,13 +19,15 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { formatDate } from '$lib/Utils/formatDate';
 	import { onMount } from 'svelte';
+	import LinkMeetingCard from './LinkMeetingCard.svelte';
+	import DetailsTab from './DetailsTab.svelte';
 
 	const { data } = $props();
 	let meetingNotes = useMeetingNotes(data.meetingID || '', data.relatedNotes);
 	let createMeetingNotes = useCreateNote(data.meetingID || '');
 	let meetingDetails = useMeetingByID(data.meetingID || '');
 
-	console.log({ data, meetingDetails });
+	console.log({ data, meetingDetails: $meetingDetails.data });
 	let currentNote = $state('');
 	let showMeetingDetails = $state(false);
 	let showThankYouNote = $state(false);
@@ -181,12 +185,7 @@
 						{/each}
 					</ul>
 				{:else if current === 'details'}
-					{#if !data.interviewData?.jobApp?.jobDescription}
-						<InfoBlock title="No Job Description" description="Missing Job Description" />
-					{/if}
-					<p class="whitespace-pre-wrap">
-						{data.interviewData?.jobApp?.jobDescription}
-					</p>
+					<DetailsTab meetingID={data.meetingID || ''} interviewData={$meetingDetails.data} />
 				{:else if current === 'notes'}
 					<ul class="space-y-2">
 						{#if $meetingNotes.data.length === 0}

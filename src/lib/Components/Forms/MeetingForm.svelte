@@ -3,7 +3,7 @@
 	import Select from '../FormElements/Select.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
 	import { toastStore } from '../Toasts/toast';
-	import AssignToJob from './AssignToJob.svelte';
+	import AssignToApplication from './AssignToApplication.svelte';
 	import { debounce } from '$lib/Utils/debounce';
 	import { useCreateMeetingMutation, useUpdateMeetingMutation } from '$lib/API/meeting';
 	import { useMyEducationQuery } from '$lib/API/education';
@@ -164,7 +164,7 @@
 			]}
 		/>
 		{#if type === 'Interview'}
-			<AssignToJob
+			<AssignToApplication
 				bind:selectedCompany={jobAppID}
 				className="space-y-2"
 				oninput={() => updateOnChange && saveToAPI()}
