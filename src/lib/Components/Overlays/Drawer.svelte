@@ -20,6 +20,7 @@
 		onSave?: () => void;
 		onClose?: () => void;
 		onCancel?: () => void;
+		onOpen?: () => void;
 		saveFormID?: string;
 		actions?: Snippet;
 	}
@@ -27,7 +28,7 @@
 	let {
 		isOpen = $bindable(false),
 		position = 'right',
-		width = 'w-80',
+		width = 'max-w-md w-full',
 		backdrop = true,
 		closeOnEscape = true,
 		closeOnBackdrop = true,
@@ -37,9 +38,17 @@
 		onSave,
 		onClose,
 		onCancel,
+		onOpen,
 		saveFormID,
 		actions
 	}: Props = $props();
+
+	let wasOpen = $state(false);
+
+	$effect(() => {
+		if (isOpen && !wasOpen) onOpen?.();
+		wasOpen = isOpen;
+	});
 
 	// Handle escape key
 	function handleKeydown(event: KeyboardEvent) {
@@ -111,7 +120,7 @@
 		aria-modal="true"
 		aria-labelledby="drawer-title"
 	>
-		<form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
+		<div class="bg-background flex h-full flex-col divide-y divide-gray-200 shadow-xl">
 			<div class="h-0 flex-1 overflow-y-auto">
 				<div class="bg-secondary px-4 py-6 sm:px-6">
 					<div class="flex items-center justify-between">
@@ -184,7 +193,7 @@
 					>
 				{/if}
 			</div>
-		</form>
+		</div>
 	</div>
 {/if}
 
