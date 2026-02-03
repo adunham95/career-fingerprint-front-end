@@ -4,6 +4,7 @@
 	import Card from '../Containers/Card.svelte';
 	import Drawer from '../Overlays/Drawer.svelte';
 	import Progress from '../Progress.svelte';
+	import StackedProgress from '../StackedProgress.svelte';
 	import MilestoneChecklistEditor from './MilestoneChecklistEditor.svelte';
 	import MilestoneKeywordsTagsEditor from './MilestoneKeywordsTagsEditor.svelte';
 	import MilestoneManualEditor from './MilestoneManualEditor.svelte';
@@ -37,12 +38,20 @@
 				<h5 class="text-sm font-medium text-gray-900">Overall Progress</h5>
 				<p>{goalItem.progress}%</p>
 			</div>
-			<Progress value={goalItem.progress} />
+			<StackedProgress
+				segments={goalItem.milestones.map((g) => {
+					return {
+						currentValue: g.progress,
+						totalValue: g.targetCount,
+						color: milestoneColors?.[g.kind].primary || '#ffa3ba'
+					};
+				})}
+			/>
 		</div>
 		<div class="my-4 border-b border-gray-300/50"></div>
 		<h3 class="pb-2">Milestones ({goalItem.milestones.length})</h3>
 		<dl class="flex grow flex-col justify-between gap-y-4">
-			{#each goalItem.milestones as milestone}
+			{#each goalItem.milestones.sort((a, b) => a.order - b.order) as milestone}
 				<button
 					type="button"
 					onclick={() => (openMilestoneId = milestone.id)}
@@ -77,9 +86,6 @@
 				</button>
 			{/each}
 		</dl>
-		<div class="p-1">
-			<button class="btn btn-small btn-text--primary"> View Details </button>
-		</div>
 	</div>
 </Card>
 

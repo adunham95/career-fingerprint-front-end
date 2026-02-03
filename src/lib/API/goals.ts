@@ -1,6 +1,6 @@
 import { createMutation, createQuery, QueryClient, useQueryClient } from '@tanstack/svelte-query';
 import { createApiClient } from './apiClient';
-import type { Goal, GoalMilestoneChecklistItem } from '../../app';
+import type { Achievement, GoalMilestoneChecklistItem } from '../../app';
 
 async function getGoalSkills() {}
 
@@ -9,6 +9,13 @@ interface MilestoneDetails {
 	checklistItems?: GoalMilestoneChecklistItem[];
 	checked: boolean;
 	setUp?: boolean;
+	streak: {
+		id: string;
+		lastCheckIn?: string | null;
+		currentStreak: number;
+		hasCheckInThisWeek: boolean;
+	};
+	linkedAchievements?: { linkType: string; matchReason: string; achievement: Achievement }[];
 }
 
 async function getMilestoneDetails(milestoneID: string, type: string) {
@@ -26,7 +33,8 @@ async function getMilestoneDetails(milestoneID: string, type: string) {
 
 interface CheckoffMilestoneResponse {
 	success: true;
-	currentProgress: {
+	goalProgress: number;
+	milestoneProgress: {
 		progress: number;
 		targetCount: number;
 	};
@@ -159,7 +167,8 @@ export const useCheckoffMilestone = (milestoneID: string, type: string) => {
 				queryClient,
 				res.details.goalID,
 				res.details.id,
-				res.currentProgress
+				res.goalProgress,
+				res.milestoneProgress
 			);
 			queryClient.invalidateQueries({
 				queryKey: goalsKeys.milestoneItems(milestoneID, type)
@@ -188,6 +197,7 @@ function patchMilestoneProgressInCachedGoalLists(
 	qc: QueryClient,
 	goalID: string,
 	milestoneID: string,
+	goalProgress: number,
 	next: { progress: number; targetCount: number }
 ) {
 	const entries = qc.getQueriesData<Goal[]>({ queryKey: goalsKeys.allGoals });
@@ -203,6 +213,7 @@ function patchMilestoneProgressInCachedGoalLists(
 
 				return {
 					...g,
+					progress: goalProgress,
 					milestones: g.milestones.map((m) => (m.id === milestoneID ? { ...m, ...next } : m))
 				};
 			})
