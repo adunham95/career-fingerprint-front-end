@@ -4,13 +4,33 @@
 	import GoalForm from '$lib/Components/Forms/GoalForm.svelte';
 	import GoalCard from '$lib/Components/GoalCard/GoalCard.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
+	import { onMount } from 'svelte';
 	import templates from './templates.json';
+	import { trackingStore } from '$lib/Stores/tracking';
+
+	interface Template {
+		templateKey: string;
+		title: string;
+		description: string;
+		milestones: {
+			type: string;
+			title: string;
+			keywords: string[];
+			targetCount: number;
+			streak: number;
+			checklist: string[];
+		}[];
+	}
 
 	let showGoalDrawer = $state(false);
 
-	let selectedTemplate = $state(null);
+	let selectedTemplate = $state<Template | null>(null);
 
 	const myGoals = useGetMyGoals({ active: true });
+
+	onMount(() => {
+		trackingStore.pageViewEvent('Goals');
+	});
 </script>
 
 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-16 lg:px-8">
@@ -41,8 +61,12 @@
 					<button
 						class="btn btn-text--secondary btn-small"
 						onclick={() => {
-							selectedTemplate = temp;
+							selectedTemplate = temp as Template;
 							showGoalDrawer = true;
+							trackingStore.trackAction('Template Click', {
+								template: temp.title,
+								templateKey: temp.templateKey
+							});
 						}}
 					>
 						Use Template <span class="absolute inset-x-0 -top-px bottom-0"></span>
@@ -60,6 +84,7 @@
 				onclick={() => {
 					selectedTemplate = null;
 					showGoalDrawer = true;
+					trackingStore.trackAction('Custom Template Click');
 				}}
 				class="rounded-md border border-slate-300 px-3 py-1.5 font-medium text-slate-600
             transition hover:border-slate-400

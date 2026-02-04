@@ -1,46 +1,5 @@
 [
 	{
-		"templateKey": "all_item_test",
-		"title": "All Item Test",
-		"description": "Testing all the milestone types",
-		"milestones": [
-			{
-				"type": "keywords_tags",
-				"title": "Keyword Test",
-				"keywords": ["launched", "led", "shipped", "improved", "owned"],
-				"targetCount": 5,
-				"streak": 0,
-				"checklist": []
-			},
-			{
-				"type": "streak",
-				"title": "Share weekly updates",
-				"keywords": [],
-				"streak": 6,
-				"checklist": []
-			},
-			{
-				"type": "checklist",
-				"title": "Checklist Test",
-				"keywords": [],
-				"streak": 0,
-				"checklist": [
-					"Quantified business impact",
-					"Leadership or ownership examples",
-					"Cross-team collaboration examples",
-					"Feedback from manager or peers"
-				]
-			},
-			{
-				"type": "manual",
-				"title": "Align expectations with manager",
-				"keywords": [],
-				"streak": 0,
-				"checklist": []
-			}
-		]
-	},
-	{
 		"templateKey": "promotion_readiness_v1",
 		"title": "Prepare for promotion",
 		"description": "Build clear evidence, visibility, and readiness for your next level.",

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trackingStore } from '$lib/Stores/tracking';
 	import { milestoneColors, milestoneTypeKeyMap } from '$lib/Utils/MilestonesData';
 	import type { Goal } from '../../../app';
 	import Card from '../Containers/Card.svelte';
@@ -54,7 +55,10 @@
 			{#each goalItem.milestones.sort((a, b) => a.order - b.order) as milestone}
 				<button
 					type="button"
-					onclick={() => (openMilestoneId = milestone.id)}
+					onclick={() => {
+						openMilestoneId = milestone.id;
+						trackingStore.trackAction('Check Milestone Click', { type: milestone.kind });
+					}}
 					class="flex justify-between rounded-xl border border-gray-300 p-3 text-left transition-shadow hover:shadow-lg"
 				>
 					<dt class="w-2/3 text-base text-gray-900">
