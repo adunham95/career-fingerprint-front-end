@@ -1,8 +1,5 @@
 <script lang="ts">
 	import AccountHeader from '$lib/Components/Header/AccountHeader.svelte';
-	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
-	import { QueryClientProvider } from '@tanstack/svelte-query';
-	import { queryClient } from '$lib/API/queryClient.js';
 
 	let { children, data } = $props();
 
@@ -31,6 +28,7 @@
 	appTitle="Career Fingerprint"
 	routes={[
 		{ title: 'Dashboard', path: '/dashboard' },
+		{ title: 'Goals', path: '/goals' },
 		{ title: 'My Fingerprint', path: '/my-fingerprint' },
 		{ title: 'Resumes', path: '/resumes' },
 		{ title: 'Job Applications', path: '/job-applications' },

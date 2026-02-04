@@ -14,6 +14,10 @@ declare global {
 	}
 }
 
+export type GoalStatus = 'active' | 'completed' | 'archived';
+export type MilestoneKind = 'manual' | 'checklist' | 'keywords_tags' | 'streak';
+export type EvidenceLinkType = 'auto' | 'manual';
+
 interface JobPosition {
 	id: string;
 	name: string | null;
@@ -330,6 +334,55 @@ export type ApiErrorResponse = {
 	code?: string;
 };
 
+export type Goal = {
+	id: string;
+	userID: number;
+	title: string;
+	description: string | null;
+	status: GoalStatus;
+	targetDate: string | null; // ISO
+	startedAt: string | null; // ISO
+	completedAt: string | null; // ISO
+	templateKey: string | null;
+	createdAt: string; // ISO
+	updatedAt: string; // ISO
+	progress: number;
+	milestones: GoalMilestone[];
+};
+
+export type GoalMilestone = {
+	id: string;
+	goalID: string;
+	title: string;
+	description: string | null;
+	order: number;
+	kind: MilestoneKind;
+	metricConfig: object;
+	completedAt: string | null; // ISO
+	createdAt: string; // ISO
+	updatedAt: string; // ISO
+	checklistItems: GoalMilestoneChecklistItem[];
+	evidenceLinks: GoalMilestoneEvidenceLink[];
+	progress: number;
+	targetCount: number;
+};
+
+export type GoalMilestoneChecklistItem = {
+	key: string;
+	label: string;
+	order: number;
+	checked: boolean;
+};
+
+export type GoalMilestoneEvidenceLink = {
+	id: string;
+	milestoneID: string;
+	evidenceID: string;
+	linkType: EvidenceLinkType;
+	matchReason: string | null;
+	createdAt: string; // ISO
+};
+
 export {
 	JobPosition,
 	Education,
@@ -351,5 +404,6 @@ export {
 	ResumeObject,
 	MyFingerprint,
 	OrgAdminUser,
-	OrgUser
+	OrgUser,
+	Goal
 };

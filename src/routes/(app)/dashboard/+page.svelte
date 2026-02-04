@@ -83,6 +83,16 @@
 		/>
 
 		<DashboardActionButton
+			icon={trophyIcon}
+			title="Goals"
+			subTitle="View and create your goals"
+			href="/goals"
+			actionName="Goals Click"
+			color="orange"
+			premiumLocked={!useFeatureGate(2, data.user)}
+		/>
+
+		<DashboardActionButton
 			title="Start Meeting"
 			subTitle="Quickly access your cheat sheet for an interview or 1:1"
 			color="blue"
@@ -111,16 +121,6 @@
 			href="/prep"
 			premiumAction={true}
 			premiumLocked={!useFeatureGate(2, data.user)}
-		/>
-
-		<DashboardActionButton
-			icon={meetingIcon}
-			title="Previous Meetings"
-			subTitle="View your previous meetings details and notes"
-			href="/meetings?tab=previous"
-			actionName="Previous Meetings Click"
-			color="orange"
-			premiumLocked={!useFeatureGate(1, data.user)}
 		/>
 
 		{#if data.user.orgAdminLinks.length === 1}

@@ -1,39 +1,68 @@
-import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
+import { createMutation, createQuery, QueryClient, useQueryClient } from '@tanstack/svelte-query';
 import { createApiClient } from './apiClient';
+import type { Achievement, Goal, GoalMilestoneChecklistItem } from '../../app';
 
-interface GoalSkill {
-	id: string;
-	name: string;
-	category: string;
-	description: string;
-	keywords: string[];
-	actions: string[];
+async function getGoalSkills() {}
+
+interface MilestoneDetails {
+	id?: string;
+	checklistItems?: GoalMilestoneChecklistItem[];
+	checked: boolean;
+	setUp?: boolean;
+	streak: {
+		id: string;
+		lastCheckIn?: string | null;
+		currentStreak: number;
+		hasCheckInThisWeek: boolean;
+	};
+	linkedAchievements?: { linkType: string; matchReason: string; achievement: Achievement }[];
 }
 
-interface Goal {
-	id: string;
-	createdAt: string;
-	updatedAt: string;
-	name: string;
-	userID: number;
-	keywords: string[];
-	actions: string[];
-	targetCount: number;
-	completedAt: string | null;
-	lastProgressCalculatedAt: string;
-	status: 'active' | 'complete' | 'archived';
-	progress: number;
-	currentPoints: number;
-}
-
-async function getGoalSkills() {
+async function getMilestoneDetails(milestoneID: string, type: string) {
 	try {
 		const api = createApiClient();
-		const skills = await api.get<GoalSkill[]>('/goal/skills');
-		return skills;
+		const checklistItems = await api.get<MilestoneDetails>(
+			`/goal/milestone/${milestoneID}/${type}`
+		);
+		return checklistItems;
 	} catch (error) {
 		console.log(error);
-		throw new Error(`Failed get goal skill`);
+		throw new Error(`Failed to get milestone item`);
+	}
+}
+
+interface CheckoffMilestoneResponse {
+	success: true;
+	goalProgress: number;
+	milestoneProgress: {
+		progress: number;
+		targetCount: number;
+	};
+	details: {
+		goalID: string;
+		id: string;
+	};
+}
+
+async function checkoffMilestoneItem({
+	milestoneID,
+	type,
+	body
+}: {
+	milestoneID: string;
+	type: string;
+	body: { checked: boolean; key?: string };
+}) {
+	try {
+		const api = createApiClient();
+		const checklistItem = await api.patch<CheckoffMilestoneResponse>(
+			`/goal/milestone/${milestoneID}/${type}`,
+			body
+		);
+		return checklistItem;
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed get goals`);
 	}
 }
 
@@ -54,10 +83,17 @@ async function getMyGoals(query: {
 }
 
 async function createGoal(data: {
-	name: string;
-	actions: string[];
-	keywords: string[];
-	targetCount: number;
+	templateKey?: string;
+	title: string;
+	description: string;
+	milestones: {
+		type: string;
+		title: string;
+		keywords: string[];
+		streak: number;
+		checklist: string[];
+		targetCount: number;
+	}[];
 }) {
 	try {
 		const api = createApiClient();
@@ -70,8 +106,11 @@ async function createGoal(data: {
 
 export const goalsKeys = {
 	goalSkills: ['goalSkills'] as const,
-	allGoals: ['alLGoals'] as const,
-	allGoalsPage: (page: number) => [...goalsKeys.allGoals, page] as const
+	allGoals: ['allGoals'] as const,
+	list: (query: { page?: number; limit?: number; active?: boolean; showProgress?: boolean }) =>
+		[...goalsKeys.allGoals, query] as const,
+	milestoneItems: (milestoneID: string, type: string) =>
+		['milestoneItem', milestoneID, type] as const
 };
 
 // QUERIES
@@ -90,8 +129,15 @@ export const useGetMyGoals = (query: {
 	showProgress?: boolean;
 }) => {
 	return createQuery({
-		queryKey: goalsKeys.allGoals,
+		queryKey: goalsKeys.list(query),
 		queryFn: () => getMyGoals(query)
+	});
+};
+
+export const useGetMilestoneDetails = (milestoneID: string, type: string) => {
+	return createQuery({
+		queryKey: goalsKeys.milestoneItems(milestoneID, type),
+		queryFn: () => getMilestoneDetails(milestoneID, type)
 	});
 };
 
@@ -111,3 +157,55 @@ export const useCreateGoal = () => {
 		}
 	});
 };
+
+export const useCheckoffMilestone = (milestoneID: string, type: string) => {
+	const queryClient = useQueryClient();
+	return createMutation({
+		mutationFn: checkoffMilestoneItem,
+		onSuccess: (res) => {
+			patchMilestoneProgressInCachedGoalLists(
+				queryClient,
+				res.details.goalID,
+				res.details.id,
+				res.goalProgress,
+				res.milestoneProgress
+			);
+			queryClient.invalidateQueries({
+				queryKey: goalsKeys.milestoneItems(milestoneID, type)
+			});
+		},
+		onError: (error) => {
+			console.error('Failed to create goal:', error);
+		}
+	});
+};
+
+// Helpers
+
+function patchMilestoneProgressInCachedGoalLists(
+	qc: QueryClient,
+	goalID: string,
+	milestoneID: string,
+	goalProgress: number,
+	next: { progress: number; targetCount: number }
+) {
+	const entries = qc.getQueriesData<Goal[]>({ queryKey: goalsKeys.allGoals });
+
+	for (const [key, data] of entries) {
+		if (!data) continue;
+		if (!data.some((g) => g.id === goalID)) continue;
+
+		qc.setQueryData<Goal[]>(
+			key,
+			data.map((g) => {
+				if (g.id !== goalID) return g;
+
+				return {
+					...g,
+					progress: goalProgress,
+					milestones: g.milestones.map((m) => (m.id === milestoneID ? { ...m, ...next } : m))
+				};
+			})
+		);
+	}
+}
