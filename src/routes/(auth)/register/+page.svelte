@@ -21,7 +21,7 @@
 	let errorText = $state<{ [key: string]: string }>({});
 	const orgID = page.url.searchParams.get('org') || undefined;
 
-	const urlParams = new URLSearchParams(window.location.search);
+	const urlParams = new URLSearchParams(page.url.search || '');
 	const redirectPath = urlParams.get('redirect') || '/onboard/billing';
 
 	let registerUser = useRegisterUserMutation();
@@ -29,10 +29,10 @@
 	// Define the conversion function
 	function gtag_report_conversion(url?: string) {
 		const callback = () => {
-			if (url) window.location.href = url;
+			if (url && window) window.location.href = url;
 		};
 
-		if (typeof window?.gtag === 'function') {
+		if (window && typeof window?.gtag === 'function') {
 			window?.gtag('event', 'conversion', {
 				send_to: `${PUBLIC_GTAG}/94kXCPz816YbEJej6c5B`,
 				value: 1.0,
@@ -83,11 +83,13 @@
 				type: 'success',
 				message: `User saved`
 			});
-			window.dataLayer = window.dataLayer || [];
-			window.dataLayer.push({
-				event: 'sign_up_success'
-			});
-			trackingStore.trackAction('Registered User');
+			if (window) {
+				window.dataLayer = window.dataLayer || [];
+				window.dataLayer.push({
+					event: 'sign_up_success'
+				});
+			}
+			trackingStore.trackAction('Registered User Success');
 			gtag_report_conversion();
 			goto(redirectPath);
 
@@ -161,14 +163,20 @@
 	{#snippet actions()}
 		<div class="col-span-2 flex w-full justify-between">
 			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
-			<button
-				disabled={isLoading}
-				class="btn btn-text--primary btn-small"
-				type="submit"
-				form="create-account"
-			>
-				Create Account
-			</button>
+			{#if $registerUser.isPending}
+				<button disabled class="btn btn-text--disabled btn-small" type="submit">
+					Creating account...
+				</button>
+			{:else}
+				<button
+					disabled={isLoading}
+					class="btn btn-text--primary btn-small"
+					type="submit"
+					form="create-account"
+				>
+					Create Account
+				</button>
+			{/if}
 		</div>
 	{/snippet}
 </Card>
