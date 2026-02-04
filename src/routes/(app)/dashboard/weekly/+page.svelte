@@ -6,16 +6,15 @@
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
-	import UpcomingEventRow from '$lib/Components/Calender/UpcomingEventRow.svelte';
-	import { useUpcomingMeetings } from '$lib/API/meeting';
-	import GoalList from '../goalList.svelte';
-	import { useFeatureGate } from '$lib/Utils/featureGate';
+	import { useGetMyGoals } from '$lib/API/goals';
+	import GoalCard from '$lib/Components/GoalCard/GoalCard.svelte';
+	import GoalQuickUpdateCard from '$lib/Components/GoalCard/GoalQuickUpdateCard.svelte';
 
 	const { data } = $props();
 
 	let isNewMeetingOpen = $state(false);
 
-	let meetings = useUpcomingMeetings(data.meetings || []);
+	const myGoals = useGetMyGoals({ active: true, limit: 3, page: 1 });
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Weekly Check-in Dashboard');
@@ -32,23 +31,39 @@
 
 <PageContainer>
 	<div class="grid grid-cols-1 gap-4 py-2 md:grid-cols-2">
-		<Card headline="Add New Achievement">
-			<NewAchievementForm id="check-in" />
-			<div class="flex justify-end pt-2">
-				<button
-					form="check-in"
-					type="submit"
-					class="btn btn--primary"
-					onclick={() => trackingStore.trackAction('Add Achievement Click')}>Add Achievement</button
-				>
-			</div>
-		</Card>
 		<div>
-			<Card>
-				{#each $meetings.data as meeting}
-					<UpcomingEventRow {...meeting} hideActions={!useFeatureGate(2, data.user)} />
-				{/each}
+			<Card headline="Add New Achievement">
+				<NewAchievementForm id="check-in" />
+				<div class="flex justify-end pt-2">
+					<button
+						form="check-in"
+						type="submit"
+						class="btn btn--primary"
+						onclick={() => trackingStore.trackAction('Add Achievement Click')}
+						>Add Achievement</button
+					>
+				</div>
 			</Card>
+		</div>
+		<div class="space-y-4">
+			<div class="flex items-end justify-between">
+				<div>
+					<h2 class="text-lg font-semibold text-gray-900">Goals quick update</h2>
+				</div>
+
+				<div class="flex items-center gap-2">
+					<a class="text-sm font-medium text-gray-900 underline" href="/goals">View all</a>
+				</div>
+			</div>
+
+			<!-- Goal mini-cards -->
+			<ul class="flex flex-col gap-4">
+				{#each $myGoals.data as goal}
+					<li class="">
+						<GoalQuickUpdateCard goalItem={goal} />
+					</li>
+				{/each}
+			</ul>
 		</div>
 	</div>
 </PageContainer>

@@ -1,6 +1,6 @@
 import { createMutation, createQuery, QueryClient, useQueryClient } from '@tanstack/svelte-query';
 import { createApiClient } from './apiClient';
-import type { Achievement, GoalMilestoneChecklistItem } from '../../app';
+import type { Achievement, Goal, GoalMilestoneChecklistItem } from '../../app';
 
 async function getGoalSkills() {}
 
@@ -181,17 +181,6 @@ export const useCheckoffMilestone = (milestoneID: string, type: string) => {
 };
 
 // Helpers
-
-type Goal = {
-	id: string;
-	progress: number;
-	milestones: Array<{
-		id: string;
-		goalID: string;
-		progress: number;
-		targetCount: number;
-	}>;
-};
 
 function patchMilestoneProgressInCachedGoalLists(
 	qc: QueryClient,

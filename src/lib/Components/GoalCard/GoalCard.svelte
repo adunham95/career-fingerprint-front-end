@@ -65,7 +65,7 @@
 							{milestoneTypeKeyMap?.[milestone.kind] || 'Unknown'}
 						</p>
 					</dt>
-					<dd class="w-1/3">
+					<dd class=" w-1/3">
 						<p class="text-caption pb-0.5 text-end text-gray-500">
 							{#if milestone.kind === 'keywords_tags'}
 								{milestone.progress}/{milestone.targetCount} Linked Evidence
