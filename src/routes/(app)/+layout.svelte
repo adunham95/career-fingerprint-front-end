@@ -3,8 +3,6 @@
 
 	let { children, data } = $props();
 
-	console.log({ data });
-
 	const profileRoutes = $derived(() => {
 		if (data.user.userType === 'platform-admin') {
 			return [
