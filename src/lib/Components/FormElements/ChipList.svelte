@@ -34,7 +34,11 @@
 	{#each chips as chip, i}
 		<div class="flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800">
 			<span>{chip}</span>
-			<button class="ml-2 text-gray-500 hover:text-red-500" onclick={() => removeChip(i)}>
+			<button
+				type="button"
+				class="ml-2 text-gray-500 hover:text-red-500"
+				onclick={() => removeChip(i)}
+			>
 				✕
 			</button>
 		</div>
@@ -48,6 +52,6 @@
 			placeholder="Add..."
 			class="rounded border px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
 		/>
-		<button onclick={addChip} class="btn btn-small btn--primary"> Add </button>
+		<button type="button" onclick={addChip} class="btn btn-small btn--primary"> Add </button>
 	</div>
 </div>

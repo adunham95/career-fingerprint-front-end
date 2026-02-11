@@ -3,10 +3,10 @@ import * as Sentry from '@sentry/sveltekit';
 import type { Handle } from '@sveltejs/kit';
 import { PUBLIC_SENTRY_DSN } from '$env/static/public';
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && PUBLIC_SENTRY_DSN) {
 	Sentry.init({
 		dsn: PUBLIC_SENTRY_DSN,
-		tracesSampleRate: 1,
+		tracesSampleRate: 0.1,
 		enableLogs: false
 	});
 }
@@ -15,16 +15,15 @@ const botPatterns = [/\.php$/, /^\/wp-/, /^\/wordpress/];
 
 export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {
 	const path = event.url.pathname;
-	const ip = event.getClientAddress();
 
 	if (blacklistedPaths.includes(path) || botPatterns.some((p) => p.test(path))) {
+		const ip = event.getClientAddress();
 		console.warn(`Blocked bot at ${ip} trying to access ${path}`);
 		return new Response('Forbidden', { status: 403 });
 	}
 
 	const token = event.url.searchParams.get('token');
 	if (token) {
-		console.log(token);
 		event.cookies.set('accessToken', token, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',

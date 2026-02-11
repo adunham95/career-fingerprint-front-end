@@ -1,0 +1,127 @@
+[
+	{
+		"templateKey": "promotion_readiness_v1",
+		"title": "Prepare for promotion",
+		"description": "Build clear evidence, visibility, and readiness for your next level.",
+		"milestones": [
+			{
+				"type": "keywords_tags",
+				"title": "Deliver high-impact work",
+				"keywords": ["launched", "led", "shipped", "improved", "owned"],
+				"targetCount": 5,
+				"streak": 0,
+				"checklist": []
+			},
+			{
+				"type": "checklist",
+				"title": "Document promotion evidence",
+				"keywords": [],
+				"streak": 0,
+				"checklist": [
+					"Quantified business impact",
+					"Leadership or ownership examples",
+					"Cross-team collaboration examples",
+					"Feedback from manager or peers"
+				]
+			},
+			{
+				"type": "manual",
+				"title": "Align expectations with manager",
+				"keywords": [],
+				"streak": 0,
+				"checklist": []
+			}
+		]
+	},
+	{
+		"templateKey": "performance_visibility_v1",
+		"title": "Increase work visibility",
+		"description": "Make your contributions visible to the right stakeholders.",
+		"milestones": [
+			{
+				"type": "streak",
+				"title": "Share weekly updates",
+				"keywords": [],
+				"streak": 6,
+				"checklist": []
+			},
+			{
+				"type": "keywords_tags",
+				"title": "Capture visible wins",
+				"keywords": ["presented", "demoed", "unblocked", "recognized"],
+				"targetCount": 4,
+				"streak": 0,
+				"checklist": []
+			},
+			{
+				"type": "manual",
+				"title": "Reflect on visibility gaps",
+				"keywords": [],
+				"streak": 0,
+				"checklist": []
+			}
+		]
+	},
+	{
+		"templateKey": "skill_deepening_v1",
+		"title": "Deepen a core skill",
+		"description": "Strengthen expertise in a skill that matters for your role.",
+		"milestones": [
+			{
+				"type": "checklist",
+				"title": "Learn and research",
+				"keywords": [],
+				"streak": 0,
+				"checklist": [
+					"Read documentation or specs",
+					"Study real-world examples",
+					"Take notes on patterns and tradeoffs"
+				]
+			},
+			{
+				"type": "streak",
+				"title": "Practice weekly",
+				"keywords": [],
+				"streak": 4,
+				"checklist": []
+			},
+			{
+				"type": "keywords_tags",
+				"title": "Apply skill in real work",
+				"keywords": ["implemented", "refactored", "designed", "optimized"],
+				"targetCount": 3,
+				"streak": 0,
+				"checklist": []
+			}
+		]
+	},
+	{
+		"templateKey": "leadership_growth_v1",
+		"title": "Grow leadership skills",
+		"description": "Build influence, ownership, and decision-making skills.",
+		"milestones": [
+			{
+				"type": "keywords_tags",
+				"title": "Lead initiatives or decisions",
+				"keywords": ["led", "mentored", "facilitated", "owned"],
+				"targetCount": 4,
+				"streak": 0,
+				"checklist": []
+			},
+			{
+				"type": "streak",
+				"title": "Support teammates weekly",
+				"keywords": [],
+				"streak": 6,
+				"checklist": []
+			},
+			{
+				"type": "manual",
+				"title": "Reflect on leadership moments",
+				"keywords": [],
+				"streak": 0,
+				"checklist": []
+			}
+		]
+	}
+]

@@ -5,10 +5,16 @@
 	import '../app.css';
 	import '../button-variants.css';
 	import '@tailwindplus/elements';
+	import { QueryClientProvider } from '@tanstack/svelte-query';
+	import { queryClient } from '$lib/API/queryClient';
+	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
 
 	let { children } = $props();
 	mixpanel.init(PUBLIC_MIXPANEL_TOKEN, { debug: false, track_pageview: false });
 </script>
 
-<ToastContainer />
-{@render children()}
+<QueryClientProvider client={queryClient}>
+	<SvelteQueryDevtools buttonPosition="bottom-left" />
+	<ToastContainer />
+	{@render children()}
+</QueryClientProvider>

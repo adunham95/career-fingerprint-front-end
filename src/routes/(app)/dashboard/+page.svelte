@@ -14,20 +14,18 @@
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
-	import NewGoalForm from '$lib/Components/Forms/NewGoalForm.svelte';
-	import GoalList from './goalList.svelte';
 	import AchievementList from './achievementList.svelte';
+	import OrgTypeChip from '$lib/Components/OrgTypeChip.svelte';
 
 	let { data } = $props();
-
-	console.log(data);
 
 	let isAchievementOpen = $state(false);
 	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 	let showSelectOrg = $state(false);
 	let isLoadingInOrg = $state<string | null>(null);
-	let showNewGoal = $state(false);
+	const hasStarterFeatures = useFeatureGate(1, data.user);
+	const hasProFeatures = useFeatureGate(2, data.user);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -43,9 +41,7 @@
 			const newMeeting = await $createNewMeetingMutation.mutateAsync({
 				time: new Date().toISOString()
 			});
-			setTimeout(() => {
-				goto(`cheatsheet/${newMeeting?.id}`);
-			}, 1000);
+			goto(`cheatsheet/${newMeeting?.id}`);
 		} catch (error) {
 			isLoadingNewMeeting = false;
 			toastStore.show({ message: 'There was an error starting your meeting', type: 'error' });
@@ -75,10 +71,20 @@
 			icon={startIcon}
 			color="green"
 			actionName="Add Achievement Click"
-			premiumLocked={!useFeatureGate(1, data.user)}
+			premiumLocked={!hasStarterFeatures}
 			onClick={() => {
 				isAchievementOpen = true;
 			}}
+		/>
+
+		<DashboardActionButton
+			icon={trophyIcon}
+			title="Goals"
+			subTitle="View and create your goals"
+			href="/goals"
+			actionName="Goals Click"
+			color="orange"
+			premiumLocked={!hasProFeatures}
 		/>
 
 		<DashboardActionButton
@@ -89,7 +95,7 @@
 			disabled={isLoadingNewMeeting}
 			actionName="Start Meeting Click"
 			premiumAction={true}
-			premiumLocked={!useFeatureGate(2, data.user)}
+			premiumLocked={!hasProFeatures}
 			onClick={() => {
 				createNewMeeting();
 			}}
@@ -109,17 +115,7 @@
 			color="purple"
 			href="/prep"
 			premiumAction={true}
-			premiumLocked={!useFeatureGate(2, data.user)}
-		/>
-
-		<DashboardActionButton
-			icon={meetingIcon}
-			title="Previous Meetings"
-			subTitle="View your previous meetings details and notes"
-			href="/meetings?tab=previous"
-			actionName="Previous Meetings Click"
-			color="orange"
-			premiumLocked={!useFeatureGate(1, data.user)}
+			premiumLocked={!hasProFeatures}
 		/>
 
 		{#if data.user.orgAdminLinks.length === 1}
@@ -153,12 +149,12 @@
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
-			<AchievementList />
+			<AchievementList initialData={data.achievements} />
 		</div>
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
-				{#if useFeatureGate(1, data.user)}
+				{#if hasStarterFeatures}
 					<button
 						class="btn btn-outline--secondary flex items-center py-1"
 						onclick={() => {
@@ -171,7 +167,7 @@
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#if ($upcomingMeetings.data || []).length > 0}
 					{#each $upcomingMeetings.data || [] as meeting}
-						<UpcomingEventRow {...meeting} disableActions={!useFeatureGate(2, data.user)} />
+						<UpcomingEventRow {...meeting} disableActions={!hasProFeatures} />
 					{/each}
 				{:else}
 					<InfoBlock
@@ -190,7 +186,9 @@
 	subTitle="Add an a achievement here"
 	saveFormID="newAchievement"
 >
-	<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+	{#if isAchievementOpen}
+		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+	{/if}
 </Drawer>
 
 <Drawer
@@ -199,7 +197,9 @@
 	subTitle="Create a new interview, or internal meeting"
 	saveFormID="newMeeting"
 >
-	<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
+	{#if isNewMeetingOpen}
+		<NewMeetingForm id="newMeeting" onSuccess={() => (isNewMeetingOpen = false)} />
+	{/if}
 </Drawer>
 
 <Drawer bind:isOpen={showSelectOrg} title="Select an Organization">
@@ -246,17 +246,14 @@
 							</svg>
 						</div>
 					{/if}
-					<div class="min-w-0 flex-auto pt-2">
+					<div class="flex min-w-0 flex-auto flex-col items-start pt-2">
 						<p class="text-sm font-semibold text-gray-900">{orgAdmin.organization.name}</p>
+						<OrgTypeChip type={orgAdmin.organization.type} />
 					</div>
 				</button>
 			</li>
 		{/each}
 	</ul>
-</Drawer>
-
-<Drawer bind:isOpen={showNewGoal} title="Add New Goal" saveFormID="new-achievement">
-	<NewGoalForm formID="new-achievement" onSuccess={() => (showNewGoal = false)} />
 </Drawer>
 
 {#snippet startIcon()}

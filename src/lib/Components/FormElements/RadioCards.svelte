@@ -7,6 +7,7 @@
 		options: { id: string; label: string; subLabel?: string; snippet?: Snippet; name?: string }[];
 		value: string | string[];
 		wrapperClass?: string;
+		hideWrapper?: boolean;
 	}
 
 	let {
@@ -14,11 +15,18 @@
 		options,
 		groupName,
 		type = 'radio',
-		wrapperClass = ''
+		wrapperClass = '',
+		hideWrapper = false
 	}: Props = $props();
 </script>
 
-<div class={`mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 ${wrapperClass}`}>
+{#if hideWrapper}
+	{@render inside()}
+{:else}
+	<div class={`mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 ${wrapperClass}`}>{@render inside()}</div>
+{/if}
+
+{#snippet inside()}
 	{#each options as option}
 		<label
 			class="group has-checked:ring-primary-500 relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-hidden has-checked:ring-2"
@@ -46,4 +54,4 @@
 			></div>
 		</label>
 	{/each}
-</div>
+{/snippet}

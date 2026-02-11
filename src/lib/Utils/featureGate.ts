@@ -9,7 +9,6 @@ export function useFeatureGate(featureLevel: number, user: CurrentUser | null) {
 		return featureGateCache.get(key)!;
 	}
 
-	console.log({ featureLevel, planLevel: user?.planLevel });
 	if (user === null) {
 		featureGateCache.set(key, false);
 		return false;

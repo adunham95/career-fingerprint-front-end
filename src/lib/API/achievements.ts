@@ -218,10 +218,12 @@ export const useAchievementTags = () => {
 	});
 };
 
-export const usePreviewAchievements = () => {
+export const usePreviewAchievements = (initialData?: Achievement[]) => {
 	return createQuery({
 		queryKey: achievementKeys.preview,
-		queryFn: getPreviewAchievements
+		queryFn: getPreviewAchievements,
+		initialData,
+		staleTime: 30 * 1000
 	});
 };
 

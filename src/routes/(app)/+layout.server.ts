@@ -10,7 +10,6 @@ export const load = async (event) => {
 		redirect(302, '/logout');
 	}
 	event.locals.user = user;
-	console.log(event.url.pathname);
 
 	return { user };
 };

@@ -12,7 +12,8 @@
 			{ path: '/settings/membership', label: 'Membership' },
 			{ path: '/settings/billing', label: 'Billing' },
 			{ path: '/settings/referral', label: 'Referrals' },
-			{ path: '/settings/org', label: 'Organizations' }
+			{ path: '/settings/connections', label: 'Connetions' }
+			// { path: '/settings/org', label: 'Organizations' }
 		]}
 	/>
 

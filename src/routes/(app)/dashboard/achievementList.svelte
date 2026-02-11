@@ -3,8 +3,11 @@
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
+	import type { Achievement } from '../../../app';
 
-	const previewAchievements = usePreviewAchievements();
+	let { initialData = [] }: { initialData?: Achievement[] } = $props();
+
+	const previewAchievements = usePreviewAchievements(initialData);
 </script>
 
 <h1 class="font-title pb-4 text-2xl">My Achievement Timeline</h1>

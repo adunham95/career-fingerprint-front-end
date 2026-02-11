@@ -245,7 +245,8 @@ export const useUpcomingMeetings = (initialData?: Meeting[]) => {
 	return createQuery({
 		queryKey: meetingKeys.upcomingMeetings,
 		queryFn: () => getUpcomingMeeting(),
-		initialData
+		initialData,
+		staleTime: 30 * 1000
 	});
 };
 

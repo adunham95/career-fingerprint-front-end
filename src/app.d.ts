@@ -14,6 +14,10 @@ declare global {
 	}
 }
 
+export type GoalStatus = 'active' | 'completed' | 'archived';
+export type MilestoneKind = 'manual' | 'checklist' | 'keywords_tags' | 'streak';
+export type EvidenceLinkType = 'auto' | 'manual';
+
 interface JobPosition {
 	id: string;
 	name: string | null;
@@ -202,6 +206,69 @@ interface OrgAdminUser {
 	};
 }
 
+interface OrgUser {
+	id: string;
+	roles: string[];
+	status: 'active' | string;
+	subscriptionType: 'user-managed' | 'org-managed';
+	dataAccess: 'consented' | 'null' | 'ful';
+	joinedAt: string;
+	user?: {
+		id: number;
+		firstName: string;
+		lastName: string;
+		email: string;
+	};
+	org?: {
+		id: string;
+		name: string;
+		logoURL: string;
+	};
+}
+
+interface OrgSubscription {
+	createdAt: string;
+	currentPeriodEnd: string;
+	currentPeriodStart: string | null;
+	id: string;
+	isMetered: boolean;
+	managedByID: null | string;
+	meterCyclePeakSeats: number;
+	orgID: string;
+	plan: {
+		id: string;
+		key: string;
+		level: number;
+		type: string;
+		name: string;
+		description: string;
+		featureList: string[];
+		priceCents: number | null;
+		priceCentsYear: number | null;
+		priceCentsSeats: number | null;
+		interval: string;
+		features: string[];
+		maxSeats: number | null;
+		maxAdminSeats: number | null;
+		metadata: null | object;
+		createdAt: string;
+		updatedAt: string;
+		monthlyStripePriceID: string | null;
+		annualStripePriceID: string | null;
+		seatStripPriceID: string | null;
+		hasOrgManagement: boolean;
+		hasMeteredSeats: boolean;
+		userKey: string | null;
+	};
+	planID: string;
+	status: 'active';
+	stripeSessionID: string;
+	stripeSubId: string | null;
+	trialEndsAt: string | null;
+	updatedAt: string | null;
+	userID: string | null;
+}
+
 interface Organization {
 	createdAt: string;
 	domain: string;
@@ -214,7 +281,8 @@ interface Organization {
 	updatedAt: string;
 	logoURL: string;
 	domains: OrgDomain[];
-	orgSubscription: Subscription[];
+	orgSubscription: OrgSubscription[];
+	type: 'org' | 'coach';
 	_count?: {
 		orgSubscription: number;
 		orgAdmins: number;
@@ -260,6 +328,61 @@ interface MyFingerprint {
 	education: Education[];
 }
 
+export type ApiErrorResponse = {
+	statusCode: number;
+	message: string | string[];
+	code?: string;
+};
+
+export type Goal = {
+	id: string;
+	userID: number;
+	title: string;
+	description: string | null;
+	status: GoalStatus;
+	targetDate: string | null; // ISO
+	startedAt: string | null; // ISO
+	completedAt: string | null; // ISO
+	templateKey: string | null;
+	createdAt: string; // ISO
+	updatedAt: string; // ISO
+	progress: number;
+	milestones: GoalMilestone[];
+};
+
+export type GoalMilestone = {
+	id: string;
+	goalID: string;
+	title: string;
+	description: string | null;
+	order: number;
+	kind: MilestoneKind;
+	metricConfig: object;
+	completedAt: string | null; // ISO
+	createdAt: string; // ISO
+	updatedAt: string; // ISO
+	checklistItems: GoalMilestoneChecklistItem[];
+	evidenceLinks: GoalMilestoneEvidenceLink[];
+	progress: number;
+	targetCount: number;
+};
+
+export type GoalMilestoneChecklistItem = {
+	key: string;
+	label: string;
+	order: number;
+	checked: boolean;
+};
+
+export type GoalMilestoneEvidenceLink = {
+	id: string;
+	milestoneID: string;
+	evidenceID: string;
+	linkType: EvidenceLinkType;
+	matchReason: string | null;
+	createdAt: string; // ISO
+};
+
 export {
 	JobPosition,
 	Education,
@@ -280,5 +403,7 @@ export {
 	JobObject,
 	ResumeObject,
 	MyFingerprint,
-	OrgAdminUser
+	OrgAdminUser,
+	OrgUser,
+	Goal
 };

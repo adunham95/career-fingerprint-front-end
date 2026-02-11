@@ -2765,9 +2765,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-node@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@sveltejs/adapter-node@npm:5.4.0"
+"@sveltejs/adapter-node@npm:^5.5.2":
+  version: 5.5.2
+  resolution: "@sveltejs/adapter-node@npm:5.5.2"
   dependencies:
     "@rollup/plugin-commonjs": "npm:^28.0.1"
     "@rollup/plugin-json": "npm:^6.1.0"
@@ -2775,13 +2775,13 @@ __metadata:
     rollup: "npm:^4.9.5"
   peerDependencies:
     "@sveltejs/kit": ^2.4.0
-  checksum: 10c0/5fe9abdda0ac56cfe79ade1d2ef13e513558b03371f9804440a53c6c7febc7f082efaed188571aea4a32abc3b2a9aa7305d54e892b541c3ebc5800099aa90270
+  checksum: 10c0/10cceb16dfd6e0f6b3e5dd819a81191849f77ff87a961a16622f2043cd89e470cb836570555817df7c4f1fe6e563ac079f4592b9a990b3878654a7a7b23d6831
   languageName: node
   linkType: hard
 
-"@sveltejs/enhanced-img@npm:^0.8.4":
-  version: 0.8.4
-  resolution: "@sveltejs/enhanced-img@npm:0.8.4"
+"@sveltejs/enhanced-img@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "@sveltejs/enhanced-img@npm:0.8.5"
   dependencies:
     magic-string: "npm:^0.30.5"
     sharp: "npm:^0.34.1"
@@ -2792,38 +2792,41 @@ __metadata:
     "@sveltejs/vite-plugin-svelte": ^6.0.0
     svelte: ^5.0.0
     vite: ^6.3.0 || >=7.0.0
-  checksum: 10c0/2f1ed6fe0013eb59b39af4a18978fcefae7e7746c28471376063414743d37e83d08954273d2e6a664e5f1255846dfbe2072cb9a719225e761ec927c746aff5a0
+  checksum: 10c0/373b489aa6e78c486cf7ff78c1cd96241d650fe478308ed87ba60e2122047747b05a990654916822a10c7f783759bdc1e7acbc97828c902fb1a1e9c9f8ecd9a0
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.48.4":
-  version: 2.48.4
-  resolution: "@sveltejs/kit@npm:2.48.4"
+"@sveltejs/kit@npm:^2.50.2":
+  version: 2.50.2
+  resolution: "@sveltejs/kit@npm:2.50.2"
   dependencies:
     "@standard-schema/spec": "npm:^1.0.0"
     "@sveltejs/acorn-typescript": "npm:^1.0.5"
     "@types/cookie": "npm:^0.6.0"
     acorn: "npm:^8.14.1"
     cookie: "npm:^0.6.0"
-    devalue: "npm:^5.3.2"
+    devalue: "npm:^5.6.2"
     esm-env: "npm:^1.2.2"
     kleur: "npm:^4.1.5"
     magic-string: "npm:^0.30.5"
     mrmime: "npm:^2.0.0"
     sade: "npm:^1.8.1"
-    set-cookie-parser: "npm:^2.6.0"
+    set-cookie-parser: "npm:^3.0.0"
     sirv: "npm:^3.0.0"
   peerDependencies:
     "@opentelemetry/api": ^1.0.0
     "@sveltejs/vite-plugin-svelte": ^3.0.0 || ^4.0.0-next.1 || ^5.0.0 || ^6.0.0-next.0
     svelte: ^4.0.0 || ^5.0.0-next.0
+    typescript: ^5.3.3
     vite: ^5.0.3 || ^6.0.0 || ^7.0.0-beta.0
   peerDependenciesMeta:
     "@opentelemetry/api":
       optional: true
+    typescript:
+      optional: true
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/1795e8ef7e098508582b3b114399fef25f19123ff162e2acffc1af182115574c645d6f1ce8a82631364caf7d26a7ba0c724a64c8e15980a6eef1a8dc56231950
+  checksum: 10c0/a5e6c7781ae180bc35c5cdac8f17cc5795a3c50bd6b1ef422db11dafc0c52e95f3ab6f8fe2d08a90141d3541d60f4067deaff362d6da0022243263eee32d9205
   languageName: node
   linkType: hard
 
@@ -2840,19 +2843,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/vite-plugin-svelte@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "@sveltejs/vite-plugin-svelte@npm:6.2.1"
+"@sveltejs/vite-plugin-svelte@npm:^6.2.4":
+  version: 6.2.4
+  resolution: "@sveltejs/vite-plugin-svelte@npm:6.2.4"
   dependencies:
     "@sveltejs/vite-plugin-svelte-inspector": "npm:^5.0.0"
-    debug: "npm:^4.4.1"
     deepmerge: "npm:^4.3.1"
-    magic-string: "npm:^0.30.17"
+    magic-string: "npm:^0.30.21"
+    obug: "npm:^2.1.0"
     vitefu: "npm:^1.1.1"
   peerDependencies:
     svelte: ^5.0.0
     vite: ^6.3.0 || ^7.0.0
-  checksum: 10c0/b521837fbcf33586e1013d3b8b1b2ab20158a3e35ccc9db553b94a8eeb136be1f113705a8d9c1bbb086729fa621721eaa17e354b7f1b5f29818b6244028af26e
+  checksum: 10c0/db50e79dc3ce635b92287e1b1cdee46a5f97ed17df514f59d08a27431f673336fe357901c17710b311e5e75b7d982cd17eedbaa3117a73ae2a328fa1d1ac9eb3
   languageName: node
   linkType: hard
 
@@ -4221,10 +4224,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devalue@npm:^5.3.2":
-  version: 5.3.2
-  resolution: "devalue@npm:5.3.2"
-  checksum: 10c0/2dab403779233224285afe4b30eaded038df10cb89b8f2c1e41dd855a8e6b634aa24175b87f64df665204bb9a6a6e7758d172682719b9c5cf3cef336ff9fa507
+"devalue@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "devalue@npm:5.6.2"
+  checksum: 10c0/654f257ec525a2d3f35c941bfbb361148bc65ced060710969fbaa1c45abf1c9d7c4fcb77310bf8d2fb73c34cf60bad10710e7bf5b15643bbc082518ea04cb00b
   languageName: node
   linkType: hard
 
@@ -5012,10 +5015,10 @@ __metadata:
     "@sentry/sveltekit": "npm:^10.23.0"
     "@stripe/stripe-js": "npm:^7.5.0"
     "@sveltejs/adapter-auto": "npm:^6.1.1"
-    "@sveltejs/adapter-node": "npm:^5.4.0"
-    "@sveltejs/enhanced-img": "npm:^0.8.4"
-    "@sveltejs/kit": "npm:^2.48.4"
-    "@sveltejs/vite-plugin-svelte": "npm:^6.2.1"
+    "@sveltejs/adapter-node": "npm:^5.5.2"
+    "@sveltejs/enhanced-img": "npm:^0.8.5"
+    "@sveltejs/kit": "npm:^2.50.2"
+    "@sveltejs/vite-plugin-svelte": "npm:^6.2.4"
     "@tailwindcss/forms": "npm:^0.5.10"
     "@tailwindcss/typography": "npm:^0.5.19"
     "@tailwindcss/vite": "npm:^4.1.17"
@@ -6357,7 +6360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.30.0, magic-string@npm:^0.30.11, magic-string@npm:^0.30.17, magic-string@npm:^0.30.3, magic-string@npm:^0.30.5":
+"magic-string@npm:^0.30.0, magic-string@npm:^0.30.11, magic-string@npm:^0.30.3, magic-string@npm:^0.30.5":
   version: 0.30.17
   resolution: "magic-string@npm:0.30.17"
   dependencies:
@@ -7140,6 +7143,13 @@ __metadata:
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: 10c0/1f4df9945120325d041ccf7b86f31e8bcc14e73d29171e37a7903050e96b81323784ec59f93f102ec635bcf6fa8034ba3ea0a8c7e69fa202b87ae3b6cec5a414
+  languageName: node
+  linkType: hard
+
+"obug@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "obug@npm:2.1.1"
+  checksum: 10c0/59dccd7de72a047e08f8649e94c1015ec72f94eefb6ddb57fb4812c4b425a813bc7e7cd30c9aca20db3c59abc3c85cc7a62bb656a968741d770f4e8e02bc2e78
   languageName: node
   linkType: hard
 
@@ -8358,10 +8368,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.6.0":
-  version: 2.7.1
-  resolution: "set-cookie-parser@npm:2.7.1"
-  checksum: 10c0/060c198c4c92547ac15988256f445eae523f57f2ceefeccf52d30d75dedf6bff22b9c26f756bd44e8e560d44ff4ab2130b178bd2e52ef5571bf7be3bd7632d9a
+"set-cookie-parser@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "set-cookie-parser@npm:3.0.1"
+  checksum: 10c0/29bd085ab3167fd0b3ee25b20575c1be845bf1c051b816c83ea99aada02c6a1bf16458e3c2825abf702bd09725bbb4868730737596b7a2d48f712551cf733d1d
   languageName: node
   linkType: hard
 

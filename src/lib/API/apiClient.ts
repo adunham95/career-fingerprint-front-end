@@ -1,4 +1,22 @@
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { ApiErrorResponse } from '../../app';
+
+export class ApiError extends Error {
+	statusCode: number;
+	code?: string;
+	rawMessage: string | string[];
+
+	constructor(data: ApiErrorResponse) {
+		const message = Array.isArray(data.message) ? data.message.join(', ') : data.message;
+
+		super(message);
+
+		this.name = 'ApiError';
+		this.statusCode = data.statusCode;
+		this.code = data.code;
+		this.rawMessage = data.message;
+	}
+}
 
 function buildQuery(params?: Record<string, string | number | boolean | undefined>) {
 	if (!params) return '';
@@ -24,7 +42,11 @@ export interface ApiClient {
 	del<T>(path: string, options?: RequestInit): Promise<T>;
 }
 
-export function createApiClient(event?: { request: Request }) {
+export interface ApiEventInput {
+	request: Request;
+}
+
+export function createApiClient(event?: ApiEventInput) {
 	async function request<T>(
 		method: string,
 		path: string,
@@ -57,8 +79,20 @@ export function createApiClient(event?: { request: Request }) {
 		});
 
 		if (!res.ok) {
-			const text = await res.text();
-			throw new Error(`API error ${res.status}: ${text}`);
+			let errorData: ApiErrorResponse;
+
+			try {
+				errorData = (await res.json()) as ApiErrorResponse;
+			} catch {
+				errorData = {
+					statusCode: res.status,
+					message: await res.text()
+				};
+			}
+
+			console.log({ errorData });
+
+			throw new ApiError(errorData);
 		}
 
 		// Try parsing JSON, but allow empty body
