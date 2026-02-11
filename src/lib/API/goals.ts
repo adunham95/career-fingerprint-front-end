@@ -122,15 +122,19 @@ export const useGetGoalSkills = () => {
 	});
 };
 
-export const useGetMyGoals = (query: {
-	page?: number;
-	limit?: number;
-	active?: boolean;
-	showProgress?: boolean;
-}) => {
+export const useGetMyGoals = (
+	query: {
+		page?: number;
+		limit?: number;
+		active?: boolean;
+		showProgress?: boolean;
+	},
+	enabled = true
+) => {
 	return createQuery({
 		queryKey: goalsKeys.list(query),
-		queryFn: () => getMyGoals(query)
+		queryFn: () => getMyGoals(query),
+		enabled
 	});
 };
 
