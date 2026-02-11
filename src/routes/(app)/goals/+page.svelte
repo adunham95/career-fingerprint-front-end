@@ -7,6 +7,9 @@
 	import { onMount } from 'svelte';
 	import templates from './templates.json';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import { useFeatureGate } from '$lib/Utils/featureGate';
+
+	const { data } = $props();
 
 	interface Template {
 		templateKey: string;
@@ -28,6 +31,8 @@
 
 	const myGoals = useGetMyGoals({ active: true });
 
+	const hasProFeatures = useFeatureGate(2, data.user);
+
 	onMount(() => {
 		trackingStore.pageViewEvent('Goals');
 	});
@@ -41,60 +46,62 @@
 </div>
 
 <PageContainer>
-	<p>Templates</p>
-	<div class="auto-fit-250 grid gap-2 py-2">
-		{#each templates as temp}
-			<div
-				class="group hover:outline-primary focus:outline-primary relative flex cursor-pointer flex-col justify-start rounded-lg border border-gray-300 p-4 hover:outline-2 focus:outline-2"
-			>
-				<p class="text-start text-base font-medium text-gray-900">{temp.title}</p>
-				{#if temp.description}
-					<p class="mt-1 text-start text-sm text-gray-500">{temp.description}</p>
-				{/if}
-				<ul class="mt-1 list-inside list-disc text-start text-sm text-gray-500">
-					{#each temp.milestones as step}
-						<li>{step.title}</li>
-					{/each}
-				</ul>
-				<div class="flex-1"></div>
-				<div class="mt-2">
-					<button
-						class="btn btn-text--secondary btn-small"
-						onclick={() => {
-							selectedTemplate = temp as Template;
-							showGoalDrawer = true;
-							trackingStore.trackAction('Template Click', {
-								template: temp.title,
-								templateKey: temp.templateKey
-							});
-						}}
-					>
-						Use Template <span class="absolute inset-x-0 -top-px bottom-0"></span>
-					</button>
+	{#if hasProFeatures}
+		<p>Templates</p>
+		<div class="auto-fit-250 grid gap-2 py-2">
+			{#each templates as temp}
+				<div
+					class="group hover:outline-primary focus:outline-primary relative flex cursor-pointer flex-col justify-start rounded-lg border border-gray-300 p-4 hover:outline-2 focus:outline-2"
+				>
+					<p class="text-start text-base font-medium text-gray-900">{temp.title}</p>
+					{#if temp.description}
+						<p class="mt-1 text-start text-sm text-gray-500">{temp.description}</p>
+					{/if}
+					<ul class="mt-1 list-inside list-disc text-start text-sm text-gray-500">
+						{#each temp.milestones as step}
+							<li>{step.title}</li>
+						{/each}
+					</ul>
+					<div class="flex-1"></div>
+					<div class="mt-2">
+						<button
+							class="btn btn-text--secondary btn-small"
+							onclick={() => {
+								selectedTemplate = temp as Template;
+								showGoalDrawer = true;
+								trackingStore.trackAction('Template Click', {
+									template: temp.title,
+									templateKey: temp.templateKey
+								});
+							}}
+						>
+							Use Template <span class="absolute inset-x-0 -top-px bottom-0"></span>
+						</button>
+					</div>
 				</div>
-			</div>
-		{/each}
-	</div>
-	<div class="flex justify-end">
-		<div class="mt-6 flex-row items-center justify-center gap-3 text-sm text-slate-500">
-			<span>Didn’t find a template that fits?</span>
+			{/each}
+		</div>
+		<div class="flex justify-end">
+			<div class="mt-6 flex-row items-center justify-center gap-3 text-sm text-slate-500">
+				<span>Didn’t find a template that fits?</span>
 
-			<button
-				type="button"
-				onclick={() => {
-					selectedTemplate = null;
-					showGoalDrawer = true;
-					trackingStore.trackAction('Custom Template Click');
-				}}
-				class="rounded-md border border-slate-300 px-3 py-1.5 font-medium text-slate-600
+				<button
+					type="button"
+					onclick={() => {
+						selectedTemplate = null;
+						showGoalDrawer = true;
+						trackingStore.trackAction('Custom Template Click');
+					}}
+					class="rounded-md border border-slate-300 px-3 py-1.5 font-medium text-slate-600
             transition hover:border-slate-400
             hover:text-slate-800 focus:ring-2 focus:ring-slate-300 focus:ring-offset-2
             focus:outline-none"
-			>
-				Create a custom goal
-			</button>
+				>
+					Create a custom goal
+				</button>
+			</div>
 		</div>
-	</div>
+	{/if}
 	<p>In Progress</p>
 	<ul role="list" class="auto-fit-500 grid gap-6 py-4">
 		{#each $myGoals.data as goal}
@@ -103,10 +110,6 @@
 			</li>
 		{/each}
 	</ul>
-	<!-- <p>Completed</p>
-	<div class="auto-fit-250 grid">
-		<div></div>
-	</div> -->
 </PageContainer>
 
 <Drawer
