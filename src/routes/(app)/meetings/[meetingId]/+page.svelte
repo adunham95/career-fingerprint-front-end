@@ -153,7 +153,7 @@
 						buttons={[
 							{ title: 'Delete Meeting', onClick: () => deleteMeeting() },
 							{
-								title: 'EditMeeting',
+								title: 'Edit Meeting',
 								onClick: () => {
 									showMeetingDetails = true;
 								}
