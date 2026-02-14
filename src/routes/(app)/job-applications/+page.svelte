@@ -45,18 +45,6 @@
 
 	let migrateJobApp = useCreateJobPositionFromApp();
 
-	function setJobDetails(id: string) {
-		let selectedApp = $applications.data?.find((app) => app.id === id);
-		jobID = id;
-		jobTitle = selectedApp?.title || '';
-		company = selectedApp?.company || '';
-		companyURL = selectedApp?.companyURL || null;
-		jobStatus = selectedApp?.status || AppStatusEnum.APPLIED;
-		jobDescription = selectedApp?.jobDescription || null;
-		isOpen = true;
-		hasMigrated = selectedApp?.migrated || false;
-	}
-
 	async function loadMigrateJobApp() {
 		isMigrating = true;
 		if (!jobID || jobID === null) {

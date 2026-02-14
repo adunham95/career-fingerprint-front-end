@@ -3,7 +3,7 @@
 	import Select from '../FormElements/Select.svelte';
 	import TextInput from '../FormElements/TextInput.svelte';
 	import { toastStore } from '../Toasts/toast';
-	import AssignToJob from './AssignToJob.svelte';
+	import AssignToApplication from './AssignToApplication.svelte';
 	import { debounce } from '$lib/Utils/debounce';
 	import { useCreateMeetingMutation, useUpdateMeetingMutation } from '$lib/API/meeting';
 	import { useMyEducationQuery } from '$lib/API/education';
@@ -29,6 +29,8 @@
 
 	$effect(() => {
 		if (!meeting) return;
+
+		console.log(meeting);
 
 		title = meeting.title ?? '';
 		time = meeting.time ? getLocalDateTimeValue(new Date(meeting.time)) : getLocalDateTimeValue();
@@ -162,7 +164,7 @@
 			]}
 		/>
 		{#if type === 'Interview'}
-			<AssignToJob
+			<AssignToApplication
 				bind:selectedCompany={jobAppID}
 				className="space-y-2"
 				oninput={() => updateOnChange && saveToAPI()}
@@ -174,10 +176,13 @@
 				label="Link To Job"
 				bind:value={jobPositionID}
 				oninput={() => updateOnChange && saveToAPI()}
-				options={($jobPositions.data || []).map((j) => ({
-					id: j.id,
-					label: `${j.name} | ${j.company}`
-				}))}
+				options={[
+					{ id: null, label: 'Select Job' },
+					...($jobPositions.data || []).map((j) => ({
+						id: j.id,
+						label: `${j.name} | ${j.company}`
+					}))
+				]}
 				errorText={error.jobPositionID}
 			/>
 			<Select
@@ -185,10 +190,13 @@
 				label="Link To Education"
 				bind:value={educationID}
 				oninput={() => updateOnChange && saveToAPI()}
-				options={($education.data || []).map((j) => ({
-					id: j.id,
-					label: `${j.degree} | ${j.institution}`
-				}))}
+				options={[
+					{ id: null, label: 'Select Education' },
+					...($education.data || []).map((j) => ({
+						id: j.id,
+						label: `${j.degree} | ${j.institution}`
+					}))
+				]}
 				errorText={error.educationID}
 			/>
 		{/if}

@@ -108,10 +108,8 @@ export async function getMeetingByPage(page: number = 1): Promise<Meeting[] | nu
 
 export async function getMeetingByID(id: string): Promise<Meeting | null> {
 	try {
-		const res = await fetch(`${PUBLIC_API_URL}/meetings/${id}`, {
-			credentials: 'include'
-		});
-		return res.json();
+		const api = createApiClient();
+		return api.get(`/meetings/${id}`);
 	} catch (error) {
 		console.error(error);
 		return null;

@@ -8,7 +8,7 @@
 		className?: string;
 		checkItemClassName?: string;
 		oninput?: (e: Event & { currentTarget: HTMLSelectElement }) => void;
-		options?: { id: string; label?: string; selected?: boolean }[];
+		options?: { id: string | null; label?: string; selected?: boolean }[];
 		errorText?: string;
 	}
 
