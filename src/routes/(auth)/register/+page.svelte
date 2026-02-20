@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PUBLIC_GTAG } from '$env/static/public';
+	import { PUBLIC_GTAG, PUBLIC_GTAG_REGISTER_ID } from '$env/static/public';
 	import { useRegisterUserMutation } from '$lib/API/user';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
@@ -34,7 +34,7 @@
 
 		if (window && typeof window?.gtag === 'function') {
 			window?.gtag('event', 'conversion', {
-				send_to: `${PUBLIC_GTAG}/94kXCPz816YbEJej6c5B`,
+				send_to: `${PUBLIC_GTAG}/${PUBLIC_GTAG_REGISTER_ID}`,
 				value: 1.0,
 				currency: 'USD',
 				event_callback: callback
