@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		PUBLIC_GTAG,
-		PUBLIC_STRIPE_API_KEY,
-		PUBLIC_GTAG_SUBSCRIPTION_CREATED_ID
-	} from '$env/static/public';
+	import { PUBLIC_STRIPE_API_KEY } from '$env/static/public';
 	import {
 		useCreateCheckoutSession,
 		useGetEstimate,
@@ -43,24 +39,6 @@
 		trackingStore.pageViewEvent('Onboard Billing');
 	});
 
-	function gtag_report_conversion(url?: string) {
-		const callback = () => {
-			if (url && window) window.location.href = url;
-		};
-
-		if (window && typeof window?.gtag === 'function') {
-			window?.gtag('event', 'conversion', {
-				send_to: `${PUBLIC_GTAG}/${PUBLIC_GTAG_SUBSCRIPTION_CREATED_ID}`,
-				value: 1.0,
-				currency: 'USD',
-				event_callback: callback
-			});
-		} else {
-			console.warn('gtag not found');
-			callback(); // fallback
-		}
-	}
-
 	async function updateStripe(newPriceID: string) {
 		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		priceID = newPriceID;
@@ -99,7 +77,6 @@
 							if (result.type === 'success') {
 								console.log(result.session.id);
 								trackingStore.trackAction('Register User Subscription Success');
-								gtag_report_conversion();
 							}
 							checkingOut = false;
 						});
