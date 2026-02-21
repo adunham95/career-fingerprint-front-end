@@ -84,6 +84,7 @@ function safeMixpanelTrack(event: string, props: Record<string, any>) {
 		console.warn('Mixpanel track failed:', err);
 	}
 }
+
 function safeGoogleTagTracking(event: string, props: Record<string, any>) {
 	if (window) {
 		window.dataLayer = window.dataLayer || [];

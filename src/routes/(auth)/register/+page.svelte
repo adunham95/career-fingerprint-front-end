@@ -31,6 +31,7 @@
 
 	async function login() {
 		errorText = {};
+		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Required';
 		}
@@ -44,8 +45,6 @@
 		if (Object.keys(errorText).length > 0) {
 			return;
 		}
-
-		isLoading = true;
 
 		try {
 			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
