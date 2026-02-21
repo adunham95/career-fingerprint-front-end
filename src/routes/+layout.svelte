@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { PUBLIC_MIXPANEL_TOKEN, PUBLIC_GTM_ID } from '$env/static/public';
+	import {
+		PUBLIC_MIXPANEL_TOKEN,
+		PUBLIC_GTM_ID,
+		PUBLIC_TWAK_WIDGET_ID,
+		PUBLIC_TWAK_ID
+	} from '$env/static/public';
 	import mixpanel from 'mixpanel-browser';
 	import ToastContainer from '$lib/Components/Toasts/ToastContainer.svelte';
 	import '../app.css';
@@ -38,6 +43,25 @@
 	<ToastContainer />
 	{@render children()}
 </QueryClientProvider>
+
+{#if PUBLIC_TWAK_ID && PUBLIC_TWAK_WIDGET_ID}
+	<!--Start of Tawk.to Script-->
+	{@html `
+	<script type="text/javascript">
+		var Tawk_API = Tawk_API || {},
+			Tawk_LoadStart = new Date();
+		(function () {
+			var s1 = document.createElement('script'),
+				s0 = document.getElementsByTagName('script')[0];
+			s1.async = true;
+			s1.src = 'https://embed.tawk.to/${PUBLIC_TWAK_ID}/${PUBLIC_TWAK_WIDGET_ID}';
+			s1.charset = 'UTF-8';
+			s1.setAttribute('crossorigin', '*');
+			s0.parentNode.insertBefore(s1, s0);
+		})();
+	</script>
+	`}
+{/if}
 
 {#if PUBLIC_GTM_ID}
 	<!-- Google Tag Manager (noscript) -->
