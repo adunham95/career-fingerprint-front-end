@@ -1,24 +1,9 @@
 <script lang="ts">
 	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { queryClient } from '$lib/API/queryClient.js';
-	import { PUBLIC_GTAG } from '$env/static/public';
 	let { children } = $props();
 	let mobileNabOpen = $state(false);
 </script>
-
-<svelte:head>
-	{#if PUBLIC_GTAG}
-		<script async src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GTAG}`}></script>
-		{@html `
-			<script>
-				window.dataLayer = window.dataLayer || [];
-				function gtag(){dataLayer.push(arguments);}
-				gtag('js', new Date());
-				gtag('config', '${PUBLIC_GTAG}');
-			</script>
-		`}
-	{/if}
-</svelte:head>
 
 <QueryClientProvider client={queryClient}>
 	<header class="bg-background">

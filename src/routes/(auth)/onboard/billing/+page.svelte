@@ -70,13 +70,16 @@
 						}
 						checkout.confirm().then(async (result) => {
 							console.log(result);
-							trackingStore.trackAction('Register User Subscription Success');
 
 							if (result.type === 'error' && errors) {
 								errors.textContent = result.error.message;
 							}
 							if (result.type === 'success') {
 								console.log(result.session.id);
+								trackingStore.trackConversion(
+									'Register User Subscription Success',
+									'register_user_subscription_success'
+								);
 							}
 							checkingOut = false;
 						});

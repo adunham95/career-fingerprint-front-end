@@ -26,7 +26,10 @@ projects:
               - key: CLOUDFLARE_API_TOKEN
                 sync: false
               - key: PUBLIC_MIXPANEL_ENABLED
+                value: 'true'
                 sync: true
+              - key: PUBLIC_GTM_ID
+                sync: false
       - name: Stage
         services:
           - type: web
@@ -52,4 +55,6 @@ projects:
               - key: CLOUDFLARE_API_TOKEN
                 sync: false
               - key: PUBLIC_MIXPANEL_ENABLED
+                value: 'false'
+              - key: PUBLIC_GTM_ID
                 sync: false

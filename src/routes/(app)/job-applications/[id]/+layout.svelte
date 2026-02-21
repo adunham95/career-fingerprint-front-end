@@ -1,10 +1,16 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { useJobApplicationByIDQuery } from '$lib/API/job-applications';
+	import {
+		useJobApplicationByIDQuery,
+		useUpdateJobApplicationMutation
+	} from '$lib/API/job-applications';
 	import { useCreateJobPositionFromApp } from '$lib/API/job-positions';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
+	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import TabNav from '$lib/Components/Header/TabNav.svelte';
+	import Loader from '$lib/Components/Loader.svelte';
+	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { AppStatusEnum } from '$lib/Utils/AppStatusTypes';
@@ -13,6 +19,7 @@
 	const { children, data } = $props();
 
 	let isMigrating = $state(false);
+	let isCompanyOpen = $state(false);
 
 	let currentJob = useJobApplicationByIDQuery(data.application?.id || '', data.application);
 	let migrateJobApp = useCreateJobPositionFromApp();
@@ -30,6 +37,27 @@
 		} catch (error) {
 			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
 			isMigrating = false;
+		}
+	}
+
+	let updateJobApp = useUpdateJobApplicationMutation(data.application?.id);
+
+	async function updateJobApplication() {
+		if (!data.application || !data.application.id) {
+			toastStore.show({ message: 'No application to update' });
+			return;
+		}
+		try {
+			await $updateJobApp.mutateAsync({
+				id: data.application.id,
+				title: $currentJob.data?.title || data.application.title,
+				company: $currentJob.data?.company || data.application.company,
+				companyURL: $currentJob.data?.companyURL || '',
+				location: $currentJob.data?.location || ''
+			});
+			isCompanyOpen = false;
+		} catch (error) {
+			toastStore.show({ message: 'Error saving job application' });
 		}
 	}
 </script>
@@ -94,6 +122,7 @@
 					<div class="flex-auto">
 						<dd class="mt-1 text-base font-semibold text-gray-700">{$currentJob?.data?.company}</dd>
 					</div>
+					<button class="btn btn-text--primary" onclick={() => (isCompanyOpen = true)}>Edit</button>
 				</dl>
 			</Card>
 
@@ -135,3 +164,21 @@
 		</div>
 	</div>
 </PageContainer>
+
+<Drawer
+	bind:isOpen={isCompanyOpen}
+	title="Update Company"
+	subTitle="Update Company Details"
+	saveFormID="updateCompany"
+>
+	{#if $currentJob.data}
+		<form id="updateCompany" onsubmit={updateJobApplication}>
+			<TextInput id="jobTitle" label="Job Title" bind:value={$currentJob.data.title} required />
+			<TextInput id="company" label="Company" bind:value={$currentJob.data.company} required />
+			<TextInput id="companyURL" label="Company URL" bind:value={$currentJob.data.companyURL} />
+			<TextInput id="location" label="Location" bind:value={$currentJob.data.location} />
+		</form>
+	{:else}
+		<Loader />
+	{/if}
+</Drawer>

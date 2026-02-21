@@ -32,8 +32,6 @@
 		try {
 			await $updateJobApp.mutateAsync({
 				id: data.application.id,
-				title: data.application.title || '',
-				company: data.application.company || '',
 				status,
 				jobDescription: jobDescription || null
 			});

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PUBLIC_GTAG } from '$env/static/public';
 	import { useRegisterUserMutation } from '$lib/API/user';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
@@ -26,31 +25,13 @@
 
 	let registerUser = useRegisterUserMutation();
 
-	// Define the conversion function
-	function gtag_report_conversion(url?: string) {
-		const callback = () => {
-			if (url && window) window.location.href = url;
-		};
-
-		if (window && typeof window?.gtag === 'function') {
-			window?.gtag('event', 'conversion', {
-				send_to: `${PUBLIC_GTAG}/94kXCPz816YbEJej6c5B`,
-				value: 1.0,
-				currency: 'USD',
-				event_callback: callback
-			});
-		} else {
-			console.warn('gtag not found');
-			callback(); // fallback
-		}
-	}
-
 	onMount(() => {
 		trackingStore.pageViewEvent('Register');
 	});
 
 	async function login() {
 		errorText = {};
+		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Required';
 		}
@@ -64,8 +45,6 @@
 		if (Object.keys(errorText).length > 0) {
 			return;
 		}
-
-		isLoading = true;
 
 		try {
 			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -83,14 +62,7 @@
 				type: 'success',
 				message: `User saved`
 			});
-			if (window) {
-				window.dataLayer = window.dataLayer || [];
-				window.dataLayer.push({
-					event: 'sign_up_success'
-				});
-			}
-			trackingStore.trackAction('Registered User Success');
-			gtag_report_conversion();
+			trackingStore.trackConversion('Registered User Success', 'register_user_success');
 			goto(redirectPath);
 
 			isLoading = false;

@@ -2,13 +2,18 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery, useQueryClient } from '@tanstack/svelte-query';
 import type { JobApplication } from '../../app';
 import type { AppStatusEnum } from '$lib/Utils/AppStatusTypes';
+import { createApiClient } from './apiClient';
 
 export async function fetchMyJobApplications(): Promise<JobApplication[]> {
-	const resHighlights = await fetch(`${PUBLIC_API_URL}/job-applications/my`, {
-		credentials: 'include'
-	});
+	const api = createApiClient();
+	return api.get('/job-applications/my');
+}
 
-	return resHighlights.json();
+export async function fetchMyJobApplicationsList(): Promise<
+	Pick<JobApplication, 'id' | 'title' | 'company'>[]
+> {
+	const api = createApiClient();
+	return api.get('/job-applications/my/active');
 }
 
 export async function fetchJobApplicationByID(id: string): Promise<JobApplication> {
@@ -93,6 +98,7 @@ export async function patchJobApplication(updateJobApp: UpdateJobApp) {
 export const jobApplicationKeys = {
 	all: ['job-apps'] as const,
 	my: ['my-jobs', 'job-apps'] as const,
+	myList: ['my-jobs', 'job-list'] as const,
 	byId: (id: string) => [...jobApplicationKeys.all, id] as const
 };
 
@@ -102,6 +108,16 @@ export const useMyJobApplicationsQuery = (initialData?: JobApplication[]) => {
 	return createQuery({
 		queryKey: jobApplicationKeys.my,
 		queryFn: fetchMyJobApplications,
+		initialData
+	});
+};
+
+export const useMyJobApplicationsListQuery = (
+	initialData?: Pick<JobApplication, 'id' | 'title' | 'company'>[]
+) => {
+	return createQuery({
+		queryKey: jobApplicationKeys.myList,
+		queryFn: fetchMyJobApplicationsList,
 		initialData
 	});
 };
@@ -121,7 +137,7 @@ export const useCreateJobApplicationMutation = () => {
 		mutationFn: postJobApplication,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: jobApplicationKeys.my
+				queryKey: ['my-jobs']
 			});
 		},
 		onError: (error) => {

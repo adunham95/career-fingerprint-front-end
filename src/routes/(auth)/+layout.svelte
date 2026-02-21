@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_GTAG } from '$env/static/public';
 	import { queryClient } from '$lib/API/queryClient';
 	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
@@ -14,20 +13,6 @@
 		};
 	});
 </script>
-
-<svelte:head>
-	{#if PUBLIC_GTAG}
-		<script async src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GTAG}`}></script>
-		{@html `
-			<script>
-				window.dataLayer = window.dataLayer || [];
-				function gtag(){dataLayer.push(arguments);}
-				gtag('js', new Date());
-				gtag('config', '${PUBLIC_GTAG}');
-			</script>
-		`}
-	{/if}
-</svelte:head>
 
 <QueryClientProvider client={queryClient}>
 	<div class=" flex h-screen w-full items-center justify-center overflow-hidden">

@@ -77,6 +77,10 @@
 								errors.textContent = result.error.message;
 							}
 							if (result.type === 'success') {
+								trackingStore.trackConversion(
+									'Register User Subscription Success',
+									'register_user_subscription_success'
+								);
 								console.log(result.session.id);
 							}
 							checkingOut = false;

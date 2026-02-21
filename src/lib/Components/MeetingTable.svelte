@@ -31,6 +31,18 @@
 			<th
 				scope="col"
 				class=" hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+			>
+				Company
+			</th>
+			<th
+				scope="col"
+				class=" hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+			>
+				Position
+			</th>
+			<th
+				scope="col"
+				class=" hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
 				>Type</th
 			>
 			{#if !disableViewClick}
@@ -61,6 +73,12 @@
 				<td class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell">
 					{format(date, 'PPP p')}
 				</td>
+				<td class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell"
+					>{meeting?.jobApp?.company || meeting.jobPosition?.company || 'N/A'}</td
+				>
+				<td class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell"
+					>{meeting?.jobApp?.title || meeting.jobPosition?.name || 'N/A'}</td
+				>
 				<td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{meeting.type}</td>
 				{#if !disableViewClick}
 					<td class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-0">
