@@ -46,16 +46,35 @@ function createTrackingStore() {
 		}
 	}
 
+	function trackConversion(
+		actionName: string,
+		conversionID: string,
+		options: { [key: string]: string | null | boolean } = {}
+	) {
+		const { pageName } = get({ subscribe }); // get current store value
+
+		console.log('Tracking Conversion', { actionName, conversionID, pageName, options });
+
+		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
+			safeGoogleTagTracking(conversionID, { pageName, ...options });
+			safeMixpanelTrack(actionName, {
+				pageName,
+				conversionID,
+				...options
+			});
+		}
+	}
+
 	return {
 		subscribe,
 		pageViewEvent,
-		trackAction
+		trackAction,
+		trackConversion
 	};
 }
 
 function safeMixpanelTrack(event: string, props: Record<string, any>) {
 	if (!mixpanel || typeof mixpanel.track !== 'function') return;
-
 	// Mixpanel sometimes sets a flag when not initialized
 	if (mixpanel.__loaded !== true) return;
 
@@ -63,6 +82,15 @@ function safeMixpanelTrack(event: string, props: Record<string, any>) {
 		mixpanel.track(event, props);
 	} catch (err) {
 		console.warn('Mixpanel track failed:', err);
+	}
+}
+function safeGoogleTagTracking(event: string, props: Record<string, any>) {
+	if (window) {
+		window.dataLayer = window.dataLayer || [];
+		window.dataLayer.push({
+			event: event.toLocaleLowerCase(),
+			...props
+		});
 	}
 }
 

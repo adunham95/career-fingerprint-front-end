@@ -76,7 +76,10 @@
 							}
 							if (result.type === 'success') {
 								console.log(result.session.id);
-								trackingStore.trackAction('Register User Subscription Success');
+								trackingStore.trackConversion(
+									'Register User Subscription Success',
+									'register_user_subscription_success'
+								);
 							}
 							checkingOut = false;
 						});

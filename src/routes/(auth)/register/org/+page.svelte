@@ -58,7 +58,7 @@
 				type: 'success',
 				message: `Organization Created`
 			});
-			trackingStore.trackAction('Register Organization');
+			trackingStore.trackConversion('Registered Org Success', 'register_org_success');
 			goto('/dashboard');
 		} catch (error) {
 			let message = 'Something went wrong.';

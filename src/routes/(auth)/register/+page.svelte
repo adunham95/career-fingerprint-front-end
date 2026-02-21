@@ -63,7 +63,7 @@
 				type: 'success',
 				message: `User saved`
 			});
-			trackingStore.trackAction('Registered User Success');
+			trackingStore.trackConversion('Registered User Success', 'register_user_success');
 			goto(redirectPath);
 
 			isLoading = false;
