@@ -17,7 +17,7 @@ function createTrackingStore() {
 
 		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
 			const conversionPageName = pageName.replace(/\s+/g, '_').toLowerCase();
-			safeGoogleTagTracking(conversionPageName, { pageName, ...options });
+			safeGoogleTagTracking(`${conversionPageName}_page_view`, { pageName, ...options });
 			safeMixpanelTrack(`${pageName} Page View`, {
 				pageName,
 				...options
