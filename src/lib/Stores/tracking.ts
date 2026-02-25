@@ -50,33 +50,10 @@ function createTrackingStore() {
 		}
 	}
 
-	/* 
-	@deprecated
-	**/
-	function trackConversion(
-		actionName: string,
-		conversionID: string,
-		options: { [key: string]: string | null | boolean } = {}
-	) {
-		const { pageName } = get({ subscribe }); // get current store value
-
-		console.log('Tracking Conversion', { actionName, conversionID, pageName, options });
-
-		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
-			safeGoogleTagTracking(conversionID, { pageName, ...options });
-			safeMixpanelTrack(actionName, {
-				pageName,
-				conversionID,
-				...options
-			});
-		}
-	}
-
 	return {
 		subscribe,
 		pageViewEvent,
-		trackAction,
-		trackConversion
+		trackAction
 	};
 }
 
