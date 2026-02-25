@@ -81,7 +81,7 @@
 
 <Card headline="Sign in" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<p>
-		Don't have an account <a href="/register" class=" text-primary hover:text-primary-800">
+		Create Your Account and <a href="/register" class=" text-primary hover:text-primary-800">
 			Start a 14 day free trial
 		</a>
 	</p>

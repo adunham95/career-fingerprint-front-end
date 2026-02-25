@@ -53,7 +53,7 @@
 				type: 'success',
 				message: `User saved`
 			});
-			trackingStore.trackConversion('Registered User Success', 'register_user_success');
+			trackingStore.trackAction('Registered User Success');
 			goto('/dashboard');
 		} catch (error) {
 			toastStore.show({

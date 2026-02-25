@@ -41,7 +41,7 @@ projects:
             startCommand: node build
             envVars:
               - key: PUBLIC_API_URL
-                value: https://api-stage.careerfingerprint.app # replace with your actual NestJS URL
+                value: https://stage-api.careerfingerprint.app # replace with your actual NestJS URL
               - key: NODE_ENV
                 value: production
               - key: PUBLIC_DEFAULT_SUBSCRIPTION_KEY
