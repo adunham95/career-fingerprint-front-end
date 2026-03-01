@@ -17,6 +17,7 @@ export const loginWithToken = (token: string) => {
 		return api.get<{
 			tokenValid: boolean;
 			accessToken?: string;
+			sessionID?: string;
 			type?: string;
 		}>(`/login-token/verify/${token}`);
 	} catch (error) {
