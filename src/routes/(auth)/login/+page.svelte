@@ -23,7 +23,6 @@
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
 		showError = false;
-		trackingStore.trackAction('Login Click');
 
 		console.log({ email, password });
 
@@ -81,14 +80,24 @@
 
 <Card headline="Sign in" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	<p>
-		Create Your Account and <a href="/register" class=" text-primary hover:text-primary-800">
+		Create Your Account and <a
+			onclick={() => trackingStore.trackAction('Go To Register Click')}
+			href="/register"
+			class=" text-primary hover:text-primary-800"
+		>
 			Start a 14 day free trial
 		</a>
 	</p>
 	{#if showError}
 		<p class="text-error-600 text-sm">{errorMessage}</p>
 	{/if}
-	<form onsubmit={(e) => login(e)} class="space-y-2">
+	<form
+		onsubmit={(e) => {
+			trackingStore.trackAction('Login Submit');
+			login(e);
+		}}
+		class="space-y-2"
+	>
 		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
 		<PasswordInput
 			id="password"
@@ -97,8 +106,16 @@
 			autocomplete={'current-password webauthn'}
 		/>
 		<div class="flex w-full justify-between pt-2">
-			<a href="/forgot-password" class="btn btn-text--primary btn-small">Forgot Password</a>
-			<button disabled={isLoading} class="btn btn-text--primary btn-small">Login</button>
+			<a
+				href="/forgot-password"
+				class="btn btn-text--primary btn-small"
+				onclick={() => trackingStore.trackAction('Forgot Password Click')}>Forgot Password</a
+			>
+			<button
+				disabled={isLoading}
+				class="btn btn-text--primary btn-small"
+				onclick={() => trackingStore.trackAction('Login Click')}>Login</button
+			>
 		</div>
 	</form>
 </Card>

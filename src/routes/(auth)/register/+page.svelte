@@ -62,7 +62,7 @@
 				type: 'success',
 				message: `User saved`
 			});
-			trackingStore.trackAction('Registered User Success');
+			trackingStore.trackAction('Registered Account Success');
 			goto(redirectPath);
 
 			isLoading = false;
@@ -79,7 +79,7 @@
 		id="create-account"
 		onsubmit={(e) => {
 			e.preventDefault();
-			trackingStore.trackAction('Submit New Account Click');
+			trackingStore.trackAction('Register Account Submit');
 			login();
 		}}
 		class="gap-2 space-y-2 md:grid md:grid-cols-2"
@@ -134,13 +134,18 @@
 	</form>
 	{#snippet actions()}
 		<div class="col-span-2 flex w-full justify-between">
-			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
+			<a
+				onclick={() => trackingStore.trackAction('Go To Login Click')}
+				href="/login"
+				class="btn btn-text--primary btn-small">Login</a
+			>
 			{#if $registerUser.isPending}
 				<button disabled class="btn btn-text--disabled btn-small" type="submit">
 					Creating account...
 				</button>
 			{:else}
 				<button
+					onclick={() => trackingStore.trackAction('Register Click')}
 					disabled={isLoading}
 					class="btn btn-text--primary btn-small"
 					type="submit"
