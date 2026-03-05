@@ -26,7 +26,7 @@
 	});
 
 	async function handleNext() {
-		trackingStore.trackAction('Next Step Click');
+		trackingStore.trackAction('Next Step Click - Job');
 		try {
 			await $createJob.mutateAsync(job);
 			toastStore.show({ message: 'New Job Added', type: 'success' });
@@ -50,7 +50,7 @@
 				href="/onboard/membership"
 				class={`btn btn-text--primary`}
 				onclick={() => {
-					trackingStore.trackAction('Skip Onboarding Click');
+					trackingStore.trackAction('Skip Onboarding Click - Job');
 				}}>Skip For Now</a
 			>
 			<button

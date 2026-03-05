@@ -20,7 +20,7 @@
 	});
 
 	async function handleNext() {
-		trackingStore.trackAction('Next Step Click');
+		trackingStore.trackAction('Next Step Click - Achievement');
 		error = {};
 
 		if (!myContribution) {
@@ -76,7 +76,7 @@
 				href="/onboard/membership"
 				class="btn btn-text--primary"
 				onclick={() => {
-					trackingStore.trackAction('Skip Onboarding Click');
+					trackingStore.trackAction('Skip Onboarding Click - Achievement');
 				}}
 			>
 				Skip For Now</a
