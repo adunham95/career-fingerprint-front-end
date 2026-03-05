@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { useRegisterUserMutation } from '$lib/API/user';
-	import Card from '$lib/Components/Containers/Card.svelte';
+	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
+	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
@@ -10,6 +11,7 @@
 	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import AuthValueProps from '../authValueProps.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -21,7 +23,7 @@
 	const orgID = page.url.searchParams.get('org') || undefined;
 
 	const urlParams = new URLSearchParams(page.url.search || '');
-	const redirectPath = urlParams.get('redirect') || '/onboard/billing';
+	const redirectPath = urlParams.get('redirect') || '/onboard/job';
 
 	let registerUser = useRegisterUserMutation();
 
@@ -35,7 +37,7 @@
 		if (!email) {
 			errorText['email'] = 'Required';
 		}
-		if (!email) {
+		if (!firstName) {
 			errorText['firstName'] = 'Required';
 		}
 		if (!validatePassword(password, confirmPassword).isValid) {
@@ -43,6 +45,7 @@
 		}
 
 		if (Object.keys(errorText).length > 0) {
+			isLoading = false;
 			return;
 		}
 
@@ -74,7 +77,17 @@
 	}
 </script>
 
-<Card headline="Create Account" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
+<SplitCard className="w-full max-w-[860px] md:mx-4" size="lg" actionsClassName="justify-between">
+	{#snippet valueProp()}
+		<AuthValueProps />
+	{/snippet}
+
+	<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
+	<p class="mb-1 text-sm tracking-wide text-gray-400">Then Create Your First Achievement</p>
+	<p class="mb-5 text-sm tracking-wide text-gray-400">
+		Start your 14-day free trial. Cancel any time.
+	</p>
+
 	<form
 		id="create-account"
 		onsubmit={(e) => {
@@ -82,63 +95,69 @@
 			trackingStore.trackAction('Register Account Submit');
 			login();
 		}}
-		class="gap-2 space-y-2 md:grid md:grid-cols-2"
+		class="space-y-3"
 	>
+		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+			<TextInput
+				id="firstName"
+				label="First Name"
+				bind:value={firstName}
+				autocomplete="given-name"
+				required
+				errorText={errorText['firstName']}
+			/>
+			<TextInput
+				id="lastName"
+				label="Last Name"
+				bind:value={lastName}
+				autocomplete="family-name"
+				errorText={errorText['lastName']}
+			/>
+		</div>
 		<TextInput
-			id="firstName"
-			label="First Name"
-			bind:value={firstName}
-			autocomplete="given-name"
-			required
-			errorText={errorText['firstName']}
-		/>
-		<TextInput
-			id="lastName"
-			label="Last Name"
-			bind:value={lastName}
-			errorText={errorText['lastName']}
-		/>
-		<TextInput
-			className="col-span-2"
 			id="email"
 			label="Email"
 			type="email"
 			bind:value={email}
-			autocomplete={'email'}
+			autocomplete="email"
 			required
 			errorText={errorText['email']}
 		/>
-		<TextInput
-			required
+		<PasswordInput
 			id="password"
 			label="Password"
-			type="password"
 			bind:value={password}
-			autocomplete={'new-password'}
+			autocomplete="new-password"
 		/>
-		<TextInput
-			required
+		<PasswordInput
 			id="confirmPassword"
 			label="Confirm Password"
-			type="password"
 			bind:value={confirmPassword}
-			autocomplete={'new-password'}
+			autocomplete="new-password"
 		/>
 		<ErrorText errorText={errorText['password']} />
-		<PasswordRequirements {password} className="col-span-2" {confirmPassword} />
-		<p class="col-span-2 text-[10px] text-gray-500">
-			By creating an account, you agree to our
-			<a href="https://mycareerfingerprint.com/terms" class="underline">Terms of Service</a> and
-			<a href="https://mycareerfingerprint.com/privacy" class="underline">Privacy Policy</a>.
+		<PasswordRequirements {password} {confirmPassword} />
+		<p class="text-[10px] leading-relaxed text-gray-400">
+			By creating an account you agree to our
+			<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
+				>Terms of Service</a
+			>
+			and
+			<a href="https://mycareerfingerprint.com/privacy" class="hover:text-secondary underline"
+				>Privacy Policy</a
+			>.
 		</p>
 	</form>
+
 	{#snippet actions()}
-		<div class="col-span-2 flex w-full justify-between">
+		<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
 			<a
 				onclick={() => trackingStore.trackAction('Go To Login Click')}
 				href="/login"
-				class="btn btn-text--primary btn-small">Login</a
+				class="btn btn-text--primary md:btn-small w-full text-center"
 			>
+				Sign in instead
+			</a>
 			{#if $registerUser.isPending}
 				<button disabled class="btn btn-text--disabled btn-small" type="submit">
 					Creating account...
@@ -147,13 +166,13 @@
 				<button
 					onclick={() => trackingStore.trackAction('Register Click')}
 					disabled={isLoading}
-					class="btn btn-text--primary btn-small"
+					class="btn btn--primary md:btn-small w-full"
 					type="submit"
 					form="create-account"
 				>
-					Create Account
+					Create account
 				</button>
 			{/if}
 		</div>
 	{/snippet}
-</Card>
+</SplitCard>

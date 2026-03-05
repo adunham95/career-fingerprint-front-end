@@ -15,7 +15,7 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
-	<div class=" flex h-screen w-full items-center justify-center overflow-hidden">
+	<div class="flex items-center justify-center md:h-screen md:w-full md:overflow-y-auto md:py-20">
 		{@render children()}
 	</div>
 </QueryClientProvider>
@@ -24,11 +24,11 @@
 	:global(.login-page) {
 		background-image: url('/images/pexels-pixabay-434337.jpg');
 		background-size: cover;
-		overflow: hidden;
+		/* overflow: hidden; */
 		height: 100vh;
 	}
 	:global(.login-page html),
 	:global(.login-page body) {
-		overflow: hidden;
+		/* overflow: hidden; */
 	}
 </style>
