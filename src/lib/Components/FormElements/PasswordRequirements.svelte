@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { validatePassword } from '$lib/Utils/validatePassword';
 
-	let { password = '', className = '', confirmPassword = '' } = $props();
+	let {
+		password = '',
+		className = '',
+		confirmPassword = '',
+		useConfirmPassword = false
+	} = $props();
 
-	let result = $derived(validatePassword(password, confirmPassword));
+	let result = $derived(validatePassword(password, confirmPassword, useConfirmPassword));
 </script>
 
 <div class={`${className} @container/pw-requirements`}>

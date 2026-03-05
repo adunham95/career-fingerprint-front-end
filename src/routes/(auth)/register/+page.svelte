@@ -97,23 +97,14 @@
 		}}
 		class="space-y-3"
 	>
-		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-			<TextInput
-				id="firstName"
-				label="First Name"
-				bind:value={firstName}
-				autocomplete="given-name"
-				required
-				errorText={errorText['firstName']}
-			/>
-			<TextInput
-				id="lastName"
-				label="Last Name"
-				bind:value={lastName}
-				autocomplete="family-name"
-				errorText={errorText['lastName']}
-			/>
-		</div>
+		<TextInput
+			id="firstName"
+			label="First Name"
+			bind:value={firstName}
+			autocomplete="given-name"
+			required
+			errorText={errorText['firstName']}
+		/>
 		<TextInput
 			id="email"
 			label="Email"
@@ -129,14 +120,8 @@
 			bind:value={password}
 			autocomplete="new-password"
 		/>
-		<PasswordInput
-			id="confirmPassword"
-			label="Confirm Password"
-			bind:value={confirmPassword}
-			autocomplete="new-password"
-		/>
 		<ErrorText errorText={errorText['password']} />
-		<PasswordRequirements {password} {confirmPassword} />
+		<PasswordRequirements {password} />
 		<p class="text-[10px] leading-relaxed text-gray-400">
 			By creating an account you agree to our
 			<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
