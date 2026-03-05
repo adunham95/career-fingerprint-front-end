@@ -52,7 +52,7 @@
 		try {
 			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-			await $registerUser.mutateAsync({
+			const newUser = await $registerUser.mutateAsync({
 				firstName,
 				lastName,
 				email,
@@ -61,6 +61,7 @@
 				orgID
 			});
 
+			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
 			toastStore.show({
 				type: 'success',
 				message: `User saved`

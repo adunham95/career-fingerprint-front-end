@@ -50,10 +50,22 @@ function createTrackingStore() {
 		}
 	}
 
+	function identifyUser(userId: string, email: string) {
+		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
+			try {
+				mixpanel.identify(userId);
+				mixpanel.people.set({ $email: email });
+			} catch (err) {
+				console.warn('Mixpanel identify failed:', err);
+			}
+		}
+	}
+
 	return {
 		subscribe,
 		pageViewEvent,
-		trackAction
+		trackAction,
+		identifyUser
 	};
 }
 
