@@ -7,9 +7,14 @@
 		discounts: number[];
 		taxes: number[];
 		total: number;
+		trialDays?: number; // e.g. 14
+		postTrialLabel?: string; // e.g. "then $7.99/mo" or "then $79.99/yr"
 	}
 
-	const { lineItems, subTotal, discounts, taxes, total }: Props = $props();
+	const { lineItems, subTotal, discounts, taxes, total, trialDays, postTrialLabel }: Props =
+		$props();
+
+	const isTrial = trialDays != null && trialDays > 0;
 </script>
 
 <div>
@@ -43,10 +48,23 @@
 			</div>
 		{/if}
 	</dl>
-	<p
-		class="mt-6 flex items-center justify-between border-t border-gray-200 pt-6 text-sm font-medium text-gray-900"
-	>
-		<span class="text-base">Estimated First Total</span>
-		<span class="text-base">${centsToDollars(total)}</span>
-	</p>
+
+	<div class="mt-6 border-t border-gray-200 pt-6">
+		<div class="flex items-baseline justify-between">
+			<span class="text-base font-medium text-gray-900">Due Today</span>
+			<div class="text-right">
+				{#if isTrial}
+					<span class="text-base font-semibold text-emerald-600">$0.00</span>
+				{:else}
+					<span class="text-base font-medium text-gray-900">${centsToDollars(total)}</span>
+				{/if}
+			</div>
+		</div>
+
+		{#if isTrial}
+			<p class="mt-1 text-right text-xs text-gray-400">
+				Free for {trialDays} days{postTrialLabel ? ` — ${postTrialLabel}` : ''}. Cancel any time.
+			</p>
+		{/if}
+	</div>
 </div>

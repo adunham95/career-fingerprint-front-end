@@ -11,19 +11,22 @@ export const load = async (event) => {
 		if (tokenDetails?.accessToken) {
 			console.log('accessToken', tokenDetails.accessToken);
 			const isProd = process.env.NODE_ENV === 'production';
-			// User cookie just to create trial
-			event.cookies.set('accessToken', tokenDetails.accessToken, {
+			const cookieOptions = {
 				httpOnly: true,
 				secure: isProd,
-				sameSite: isProd ? 'none' : 'lax',
-				maxAge: 60 * 60 * 24 * 1, // 7 days
+				sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
+				maxAge: 60 * 60 * 24 * 7,
 				path: '/',
-				...(isProd && {
-					domain: process.env.COOKIE_DOMAIN // <-- only in prod
-				})
-			});
+				...(isProd && { domain: process.env.COOKIE_DOMAIN })
+			};
+			event.cookies.set('accessToken', tokenDetails.accessToken, cookieOptions);
 
-			event.locals.tokens = { accessToken: tokenDetails?.accessToken };
+			if (tokenDetails.sessionID) {
+				event.cookies.set('sessionAccessToken', tokenDetails.sessionID, cookieOptions);
+				event.locals.session = tokenDetails.sessionID;
+			}
+
+			event.locals.tokens = { accessToken: tokenDetails.accessToken };
 			event.locals.user = null; // not fetched yet
 		}
 		switch (tokenDetails?.type) {

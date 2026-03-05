@@ -85,7 +85,7 @@
 			autocomplete="new-password"
 		/>
 		<ErrorText {errorText} />
-		<PasswordRequirements {confirmPassword} {password} />
+		<PasswordRequirements useConfirmPassword {confirmPassword} {password} />
 		<div class="flex w-full justify-between pt-2">
 			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
 			<button disabled={isLoading} class="btn btn-text--primary btn-small">Reset Password</button>

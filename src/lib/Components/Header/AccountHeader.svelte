@@ -58,10 +58,10 @@
 	<div class="lg:divide-content-3 mx-auto max-w-7xl px-2 sm:px-4 lg:divide-y lg:px-8">
 		<div class="relative flex h-16 justify-between">
 			<div class="relative z-10 flex px-2 py-2 lg:px-0">
-				<div class="flex shrink-0 items-center">
+				<a href="/dashboard" class="flex shrink-0 items-center">
 					<img class="h-8 w-auto" src="/logo-brand.svg" alt="Career Fingerprint Logo" />
 					<span class="ml-2 text-2xl">{appTitle}</span>
-				</div>
+				</a>
 			</div>
 			<div class="relative z-10 flex items-center lg:hidden">
 				<!-- Mobile menu button -->

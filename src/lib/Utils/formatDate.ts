@@ -14,8 +14,8 @@ export function getMonthName(monthNumber: number): string {
 		'December'
 	];
 
-	if (monthNumber < 1 || monthNumber > 12) {
-		throw new Error('Month number must be between 1 and 12');
+	if (monthNumber <= 0 || monthNumber > 12) {
+		throw new Error('Month number must be between 0 and 12');
 	}
 
 	return months[monthNumber];

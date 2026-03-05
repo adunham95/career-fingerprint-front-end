@@ -181,7 +181,12 @@
 				errorText={error?.confirmPassword}
 				className="md:col-span-2 col-span-1"
 			/>
-			<PasswordRequirements {password} className="md:col-span-4 col-span-1" {confirmPassword} />
+			<PasswordRequirements
+				useConfirmPassword
+				{password}
+				className="md:col-span-4 col-span-1"
+				{confirmPassword}
+			/>
 		</div>
 	</div>
 	<p class="col-span-2 text-[10px] text-gray-500">

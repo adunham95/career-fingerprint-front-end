@@ -34,6 +34,7 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 			domain: process.env.COOKIE_DOMAIN
 		});
 		event.locals.tokens = { accessToken: token };
+		event.locals.session = event.cookies.get('sessionAccessToken') ?? null;
 		event.locals.user = null; // not fetched yet
 
 		// Optionally redirect user cleanly without token in URL
@@ -41,7 +42,9 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 	}
 
 	const accessToken = event.cookies.get('accessToken');
+	const session = event.cookies.get('sessionAccessToken') ?? null;
 	event.locals.tokens = { accessToken };
+	event.locals.session = session;
 	event.locals.user = null; // not fetched yet
 
 	return resolve(event);
