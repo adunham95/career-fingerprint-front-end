@@ -3,7 +3,6 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
-	import FeatureBlock from '$lib/Components/FeatureBlock.svelte';
 	import FeatureLocked from '$lib/Components/FeatureLocked.svelte';
 	import PremiumBadge from '$lib/Components/PremiumBadge.svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
