@@ -99,10 +99,9 @@
 				<a
 					href="/settings/membership"
 					onclick={() => {
-						trackingStore.trackAction(actionName, { unlockPremium: 'true' });
+						trackingStore.trackAction('Unlock Membership - Resume', { unlockPremium: 'true' });
 					}}
 					class="relative block w-full cursor-pointer rounded-lg border-3 border-dashed border-gray-600/30 bg-gray-600/10 p-12 text-center focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:outline-hidden"
-					disabled
 				>
 					<FeatureLocked />
 					<svg
