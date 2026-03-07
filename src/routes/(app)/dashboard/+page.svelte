@@ -16,6 +16,9 @@
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
 	import AchievementList from './achievementList.svelte';
 	import OrgTypeChip from '$lib/Components/OrgTypeChip.svelte';
+	import AchievementActivity from '$lib/Components/AchievementActivity/AchievementActivity.svelte';
+	import { useAchievementActivity } from '$lib/API/achievements';
+	import StreakBanner from '$lib/Components/AchievementActivity/StreakBanner.svelte';
 
 	let { data } = $props();
 
@@ -34,6 +37,7 @@
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const upcomingMeetings = useUpcomingMeetings(data.meetings);
 	const loadIntoOrgMutation = useLoginOrgAdminMutation();
+	const activity = useAchievementActivity();
 
 	async function createNewMeeting() {
 		isLoadingNewMeeting = true;
@@ -145,6 +149,14 @@
 				color="red"
 			/>
 		{/if}
+	</div>
+
+	<div class="py-2">
+		<StreakBanner streak={20} />
+	</div>
+
+	<div class="">
+		<AchievementActivity weekData={$activity.data} />
 	</div>
 
 	<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

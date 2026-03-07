@@ -193,4 +193,15 @@
 	--text-base: 1em;
 	--text-caption: 0.8em;
 	--text-small-print: 0.64em;
+
+	--animate-shimmer: shimmer 5s linear infinite;
+
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
 }
