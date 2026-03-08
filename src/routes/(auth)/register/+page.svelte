@@ -20,6 +20,14 @@
 	let lastName = $state('');
 	let isLoading = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
+
+	const trackedFields = new Set<string>();
+	function trackFieldFilled(field: string, value: string) {
+		if (value && !trackedFields.has(field)) {
+			trackedFields.add(field);
+			trackingStore.trackAction('Register - Field Filled', { field });
+		}
+	}
 	const orgID = page.url.searchParams.get('org') || undefined;
 
 	const urlParams = new URLSearchParams(page.url.search || '');
@@ -78,14 +86,19 @@
 	}
 </script>
 
-<SplitCard className="w-full max-w-[860px] md:mx-4" size="lg" actionsClassName="justify-between">
+<SplitCard
+	className="w-full max-w-[860px] md:mx-4"
+	size="lg"
+	actionsClassName="justify-between"
+	leftClassName="hidden md:block"
+>
 	{#snippet valueProp()}
 		<AuthValueProps />
 	{/snippet}
 
 	<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
-	<p class="mb-1 text-sm tracking-wide text-gray-400">Then Create Your First Achievement</p>
-	<p class="mb-5 text-sm tracking-wide text-gray-400">
+	<p class="mb-1 text-sm tracking-wide text-gray-600">Then Create Your First Achievement</p>
+	<p class="mb-5 text-sm tracking-wide text-gray-600">
 		Start your 14-day free trial. Cancel any time.
 	</p>
 
@@ -105,6 +118,7 @@
 			autocomplete="given-name"
 			required
 			errorText={errorText['firstName']}
+			onblur={() => trackFieldFilled('first_name', firstName)}
 		/>
 		<TextInput
 			id="email"
@@ -114,12 +128,14 @@
 			autocomplete="email"
 			required
 			errorText={errorText['email']}
+			onblur={() => trackFieldFilled('email', email)}
 		/>
 		<PasswordInput
 			id="password"
 			label="Password"
 			bind:value={password}
 			autocomplete="new-password"
+			onblur={() => trackFieldFilled('password', password)}
 		/>
 		<ErrorText errorText={errorText['password']} />
 		<PasswordRequirements {password} />

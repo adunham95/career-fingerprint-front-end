@@ -1,7 +1,14 @@
 <script lang="ts">
 	import AccountHeader from '$lib/Components/Header/AccountHeader.svelte';
+	import { onMount } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	let { children, data } = $props();
+
+	onMount(() => {
+		window.addEventListener('beforeunload', trackingStore.flushTimeOnPage);
+		return () => window.removeEventListener('beforeunload', trackingStore.flushTimeOnPage);
+	});
 
 	const profileRoutes = $derived(() => {
 		if (data.user.userType === 'platform-admin') {
