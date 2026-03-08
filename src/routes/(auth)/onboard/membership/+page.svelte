@@ -46,6 +46,9 @@
 		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		priceID = newPriceID;
 		stripeCheckoutLoading = true;
+		if (!showBillingForm) {
+			trackingStore.trackAction('Onboard Membership - Billing Form Shown', { planType });
+		}
 		showBillingForm = true;
 		if (stripe) {
 			stripe.initCheckout({ fetchClientSecret }).then((checkout) => {

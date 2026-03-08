@@ -48,6 +48,7 @@
 				if (data.resetToken) {
 					goto(`/reset-password?email=${data.user.email}&token=${data.resetToken}`);
 				} else {
+					trackingStore.identifyUser(data.user.id, data.user.email);
 					toastStore.show({ message: 'Successfully logged in', type: 'success' });
 					goto(pageData.redirectPath);
 				}

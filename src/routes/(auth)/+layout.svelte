@@ -2,14 +2,17 @@
 	import { queryClient } from '$lib/API/queryClient';
 	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	let { children } = $props();
 
 	onMount(() => {
 		document.body.classList.add('login-page');
+		window.addEventListener('beforeunload', trackingStore.flushTimeOnPage);
 
 		return () => {
 			document.body.classList.remove('login-page');
+			window.removeEventListener('beforeunload', trackingStore.flushTimeOnPage);
 		};
 	});
 </script>

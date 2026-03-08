@@ -15,7 +15,12 @@
 	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
 
 	let { children } = $props();
-	mixpanel.init(PUBLIC_MIXPANEL_TOKEN, { debug: false, track_pageview: false });
+	mixpanel.init(PUBLIC_MIXPANEL_TOKEN, {
+		debug: false,
+		track_pageview: false,
+		cookie_domain: '.mycareerfingerprint.com',
+		record_sessions_percent: 1
+	});
 </script>
 
 <svelte:head>

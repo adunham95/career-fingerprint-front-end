@@ -16,6 +16,7 @@
 	import { useLoginOrgAdminMutation } from '$lib/API/auth.js';
 	import AchievementList from './achievementList.svelte';
 	import OrgTypeChip from '$lib/Components/OrgTypeChip.svelte';
+	import { useAchievementActivity } from '$lib/API/achievements';
 
 	let { data } = $props();
 

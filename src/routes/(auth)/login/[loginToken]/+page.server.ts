@@ -1,4 +1,5 @@
 import { loginWithToken } from '$lib/API/auth.js';
+import { loadUser } from '$lib/server/auth.js';
 import { isRedirect, redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
@@ -27,17 +28,23 @@ export const load = async (event) => {
 			}
 
 			event.locals.tokens = { accessToken: tokenDetails.accessToken };
-			event.locals.user = null; // not fetched yet
+			event.locals.user = null;
 		}
+
+		let redirectPath: string;
 		switch (tokenDetails?.type) {
 			case 'check-in':
-				throw redirect(303, '/dashboard/weekly');
+				redirectPath = '/dashboard/weekly';
 				break;
 
 			default:
-				throw redirect(303, '/dashboard');
+				redirectPath = '/dashboard';
 				break;
 		}
+
+		const user = await loadUser(event);
+
+		return { redirectPath, user };
 	} catch (error) {
 		if (isRedirect(error)) throw error;
 		console.error(error);

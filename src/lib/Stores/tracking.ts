@@ -8,6 +8,14 @@ interface TrackingObject {
 	component?: string;
 }
 
+let currentTimedPage: string | null = null;
+
+function flushTimeOnPage() {
+	if (!currentTimedPage) return;
+	safeMixpanelTrack('Time on Page', { pageName: currentTimedPage });
+	currentTimedPage = null;
+}
+
 function createTrackingStore() {
 	const { subscribe, update } = writable<TrackingObject>({});
 	const trackingEnabled = browser && PUBLIC_MIXPANEL_ENABLED === 'true';
@@ -22,6 +30,15 @@ function createTrackingStore() {
 				pageName,
 				...options
 			});
+
+			// Flush previous page timer then start a new one
+			flushTimeOnPage();
+			try {
+				mixpanel.time_event('Time on Page');
+				currentTimedPage = pageName;
+			} catch {
+				// mixpanel not ready
+			}
 		}
 
 		update((trackingObject) => {
@@ -50,10 +67,23 @@ function createTrackingStore() {
 		}
 	}
 
+	function identifyUser(userId: string, email: string) {
+		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
+			try {
+				mixpanel.identify(userId);
+				mixpanel.people.set({ $email: email });
+			} catch (err) {
+				console.warn('Mixpanel identify failed:', err);
+			}
+		}
+	}
+
 	return {
 		subscribe,
 		pageViewEvent,
-		trackAction
+		trackAction,
+		identifyUser,
+		flushTimeOnPage
 	};
 }
 

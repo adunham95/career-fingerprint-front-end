@@ -129,10 +129,21 @@ export async function getAchievements(
 	return api.get('/achievement/my', queries);
 }
 
+export interface ActivityWeek {
+	weekStart: string;
+	count: number;
+}
+
+export async function getAchievementActivity(): Promise<ActivityWeek[]> {
+	const api = createApiClient();
+	return api.get<ActivityWeek[]>('/achievement/my/activity');
+}
+
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
 	preview: ['achievements', 'preview'] as const,
+	activity: ['achievements', 'activity'] as const,
 	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
 	allWithOptions: (
 		includedDetails: boolean | null = false,
@@ -224,6 +235,14 @@ export const usePreviewAchievements = (initialData?: Achievement[]) => {
 		queryFn: getPreviewAchievements,
 		initialData,
 		staleTime: 30 * 1000
+	});
+};
+
+export const useAchievementActivity = () => {
+	return createQuery({
+		queryKey: achievementKeys.activity,
+		queryFn: getAchievementActivity,
+		staleTime: 5 * 60 * 1000
 	});
 };
 

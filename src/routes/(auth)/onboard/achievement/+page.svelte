@@ -15,6 +15,14 @@
 
 	let newAchievement = useCreateOnboardingAchievementMutation();
 
+	const trackedFields = new Set<string>();
+	function trackFieldFilled(field: string, value: string) {
+		if (value && !trackedFields.has(field)) {
+			trackedFields.add(field);
+			trackingStore.trackAction('Onboard Achievement - Field Filled', { field });
+		}
+	}
+
 	onMount(async () => {
 		trackingStore.pageViewEvent('Onboard Achievement');
 	});
@@ -55,6 +63,7 @@
 		subLabel="Describe the context or background of the task."
 		bind:value={description}
 		errorText={error?.description}
+		onblur={() => trackFieldFilled('situation', description)}
 	/>
 	<TextArea
 		id="ach-contribution"
@@ -62,6 +71,7 @@
 		subLabel="Describe the task or action that you took."
 		bind:value={myContribution}
 		errorText={error?.myContribution}
+		onblur={() => trackFieldFilled('task_action', myContribution)}
 	/>
 	<TextArea
 		id="ach-result"
@@ -69,6 +79,7 @@
 		subLabel="Describe the impact of the task/action."
 		bind:value={result}
 		errorText={error?.result}
+		onblur={() => trackFieldFilled('result', result)}
 	/>
 	{#snippet actions()}
 		<div class="col-span-2 flex w-full justify-between">
