@@ -20,6 +20,12 @@
 	let lastName = $state('');
 	let isLoading = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
+	let hasRequired = $derived(() => {
+		if (!email) {
+			return false;
+		}
+		return true;
+	});
 
 	const trackedFields = new Set<string>();
 	function trackFieldFilled(field: string, value: string) {
@@ -39,14 +45,13 @@
 		trackingStore.pageViewEvent('Register');
 	});
 
+	$inspect(hasRequired());
+
 	async function login() {
 		errorText = {};
 		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Required';
-		}
-		if (!firstName) {
-			errorText['firstName'] = 'Required';
 		}
 		if (!validatePassword(password, confirmPassword).isValid) {
 			errorText['password'] = 'Password not valid';
@@ -74,13 +79,14 @@
 				type: 'success',
 				message: `User saved`
 			});
-			trackingStore.trackAction('Registered Account Success');
+			+trackingStore.trackAction('Registered Account Success');
 			goto(redirectPath);
 
 			isLoading = false;
 		} catch (error) {
-			toastStore.show({ message: 'Creating Account', type: 'error' });
+			toastStore.show({ message: 'Error Creating Account', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
+			trackingStore.trackAction('Registered Account Error', { error: JSON.stringify(error) });
 			isLoading = false;
 		}
 	}
@@ -115,8 +121,8 @@
 			id="firstName"
 			label="First Name"
 			bind:value={firstName}
+			placeholder="Your First Name"
 			autocomplete="given-name"
-			required
 			errorText={errorText['firstName']}
 			onblur={() => trackFieldFilled('first_name', firstName)}
 		/>
@@ -124,6 +130,7 @@
 			id="email"
 			label="Email"
 			type="email"
+			placeholder="Your Email"
 			bind:value={email}
 			autocomplete="email"
 			required
@@ -134,6 +141,7 @@
 			id="password"
 			label="Password"
 			bind:value={password}
+			required
 			autocomplete="new-password"
 			onblur={() => trackFieldFilled('password', password)}
 		/>
@@ -167,8 +175,8 @@
 			{:else}
 				<button
 					onclick={() => trackingStore.trackAction('Register Click')}
-					disabled={isLoading}
-					class="btn btn--primary md:btn-small w-full"
+					disabled={!hasRequired() || isLoading}
+					class="btn btn--primary md:btn-small w-full disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
 					type="submit"
 					form="create-account"
 				>

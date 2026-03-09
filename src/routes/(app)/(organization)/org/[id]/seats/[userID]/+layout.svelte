@@ -14,6 +14,7 @@
 		</h2>
 	</div>
 	<TabNav
+		id="org-seats"
 		options={[
 			{ path: 'my-fingerprint', label: 'My Fingerprint' },
 			// { path: 'resumes', label: 'Resumes' }

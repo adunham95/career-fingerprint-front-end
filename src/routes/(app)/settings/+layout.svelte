@@ -7,6 +7,7 @@
 
 <PageContainer>
 	<TabNav
+		id="settings-selector"
 		options={[
 			{ path: '/settings/profile', label: 'My Account' },
 			{ path: '/settings/membership', label: 'Membership' },

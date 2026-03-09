@@ -18,8 +18,11 @@
 				Thank you for signing up
 			</h2>
 			<p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-				You now have to access to more features
+				You now have to access to Career Fingerprint
 			</p>
+			<div class="mt-8">
+				<a href="/dashboard" class="btn btn--primary">Go To My Dashboard</a>
+			</div>
 		</div>
 	</div>
 	<div

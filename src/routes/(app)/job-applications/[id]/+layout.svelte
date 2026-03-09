@@ -80,6 +80,7 @@
 	<div class="grid gap-4 pt-4 lg:grid-cols-3">
 		<div class=" pb-4 lg:col-span-2 lg:row-span-2 lg:row-end-2">
 			<TabNav
+				id="job-apps"
 				options={[
 					{ path: `/job-applications/${data.application?.id}`, label: 'Details' },
 					{ path: `/job-applications/${data.application?.id}/meetings`, label: 'Meetings' },

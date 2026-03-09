@@ -16,6 +16,7 @@
 		subLabel?: string;
 		autocomplete?: FullAutoFill | null;
 		onblur?: () => void;
+		required?: boolean;
 	}
 
 	let {
@@ -29,7 +30,8 @@
 		hideLabel,
 		subLabel,
 		autocomplete,
-		onblur = () => null
+		onblur = () => null,
+		required = false
 	}: Props = $props();
 
 	let show = $state(false);
@@ -48,6 +50,7 @@
 		{autocomplete}
 		inputClassName={`pr-10 ${inputClassName}`}
 		{onblur}
+		{required}
 	>
 		{#snippet afterChildren()}
 			<button
