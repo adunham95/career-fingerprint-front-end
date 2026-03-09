@@ -103,7 +103,7 @@
 		</div>
 	{/if}
 	<p>In Progress</p>
-	<ul role="list" class="auto-fit-500 grid gap-6 py-4">
+	<ul role="list" class="sm:auto-fit-500 grid gap-6 py-4">
 		{#each $myGoals.data as goal}
 			<li class="">
 				<GoalCard goalItem={goal} />
