@@ -2,10 +2,11 @@
 	import { goto } from '$app/navigation';
 
 	interface Props {
+		id: string;
 		options: { path: string; label: string }[];
 	}
 
-	const { options }: Props = $props();
+	const { options, id }: Props = $props();
 
 	import { page } from '$app/state';
 
@@ -23,9 +24,10 @@
 <div>
 	<div class="grid grid-cols-1 sm:hidden">
 		<select
+			{id}
 			aria-label="Select a tab"
 			class="col-start-1 row-start-1 mt-2 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
-			value={currentURL}
+			value={options.find((o) => currentURL.startsWith(o.path))?.path ?? currentURL}
 			onchange={(e) => onChange(e)}
 		>
 			{#each options as option}
@@ -60,7 +62,7 @@
 {#snippet navItem(path: string, label: string, currentPath: string)}
 	<a
 		href={path}
-		class={`w-1/4 border-b-2  px-1 py-4 text-center text-sm font-medium  ${currentPath.endsWith(path) ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+		class={`w-1/4 border-b-2  px-1 py-4 text-center text-sm font-medium  ${currentPath.startsWith(path) ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
 	>
 		{label}</a
 	>

@@ -39,13 +39,13 @@
 
 <Card
 	headline="Add Your Current Job"
-	className=" w-full max-w-[500px] max-h-[calc(100vh-20px)] md:my-4 md:mx-2"
+	className=" w-full max-w-[500px] md:max-h-[calc(100vh-20px)] md:my-4 md:mx-2"
 	contentClassName="space-y-3"
 >
 	<OnboardSteps step={1} />
 	<JobDetails bind:job={job as JobPosition} />
 	{#snippet actions()}
-		<div class="col-span-2 flex w-full justify-between">
+		<div class="col-span-2 flex w-full justify-end md:justify-between">
 			<a
 				href="/onboard/membership"
 				class={`btn btn-text--primary`}

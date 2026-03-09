@@ -27,6 +27,7 @@
 		errorText,
 		preInlineAddOn,
 		afterChildren,
+		required = false,
 		...props
 	}: Props = $props();
 </script>
@@ -35,7 +36,7 @@
 	class={`${className} [fieldset:disabled_&]:pointer-events-none
   [fieldset:disabled_&]:opacity-50`}
 >
-	<Label {id} {label} {hideLabel} labelClassName={`${labelClassName}`} {subLabel} />
+	<Label {id} {label} {hideLabel} labelClassName={`${labelClassName}`} {subLabel} {required} />
 	<div>
 		<input
 			{id}
