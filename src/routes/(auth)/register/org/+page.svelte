@@ -33,13 +33,36 @@
 
 	let createOrgAndUser = useRegisterOrg();
 
+	const trackedOrgFields = new Set<string>();
+	function trackOrgField(field: string, value: string) {
+		if (value && !trackedOrgFields.has(field)) {
+			trackedOrgFields.add(field);
+			trackingStore.trackAction('Register Org - Field Filled', { field });
+		}
+	}
+
 	async function createOrganization() {
 		try {
 			if (password !== confirmPassword) {
 				error.confirmPassword = 'Passwords Do not match';
+				trackingStore.trackAction('Register Org - Validation Error', {
+					field: 'confirm_password',
+					reason: 'mismatch'
+				});
 				return;
 			}
 			if (!email || !firstName || !password || !orgName || !orgEmail) {
+				const missingFields = [
+					!orgName && 'org_name',
+					!orgEmail && 'org_email',
+					!firstName && 'first_name',
+					!email && 'email',
+					!password && 'password'
+				].filter(Boolean);
+				trackingStore.trackAction('Register Org - Validation Error', {
+					reason: 'missing_fields',
+					missing: missingFields
+				});
 				toastStore.show({ message: 'Missing account elements', type: 'error' });
 				return;
 			}
@@ -65,7 +88,7 @@
 			if (error instanceof Error) {
 				message = error.message;
 			}
-
+			trackingStore.trackAction('Registered Org Error', { error: message });
 			errorMessage = message;
 		}
 	}
@@ -85,7 +108,7 @@
 		<h2 class="text-lg font-medium text-gray-900">Organization information</h2>
 
 		<div class="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-6">
-			<TextInput bind:value={orgName} required id="name" label="Name" className="md:col-span-6" />
+			<TextInput bind:value={orgName} required id="name" label="Name" className="md:col-span-6" onblur={() => trackOrgField('org_name', orgName)} />
 			<TextInput
 				required
 				id="org-email"
@@ -93,6 +116,7 @@
 				label="Billing Email"
 				className="md:col-span-3"
 				type="email"
+				onblur={() => trackOrgField('org_email', orgEmail)}
 			/>
 			<!-- Collect Billing Address -->
 			<TextInput
@@ -150,6 +174,7 @@
 				bind:value={firstName}
 				label="First Name"
 				className="md:col-span-2 col-span-1"
+				onblur={() => trackOrgField('first_name', firstName)}
 			/>
 			<TextInput
 				required
@@ -157,6 +182,7 @@
 				bind:value={lastName}
 				label="Last Name"
 				className="md:col-span-2 col-span-1"
+				onblur={() => trackOrgField('last_name', lastName)}
 			/>
 			<TextInput
 				required
@@ -165,6 +191,7 @@
 				label="Email"
 				className="md:col-span-4 col-span-1"
 				type="email"
+				onblur={() => trackOrgField('email', email)}
 			/>
 			<TextInput
 				required

@@ -70,7 +70,7 @@ export async function registerUser(newProfile: {
 		}
 	} catch (error) {
 		console.log(error);
-		throw new Error(`Failed to register user`);
+		throw error;
 	}
 }
 
