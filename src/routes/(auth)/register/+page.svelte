@@ -47,9 +47,11 @@
 		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Required';
+			trackingStore.trackAction('Register - Validation Error', { field: 'email', reason: 'required' });
 		}
 		if (!validatePassword(password, confirmPassword).isValid) {
 			errorText['password'] = 'Password not valid';
+			trackingStore.trackAction('Register - Validation Error', { field: 'password', reason: 'invalid' });
 		}
 
 		if (Object.keys(errorText).length > 0) {
@@ -85,7 +87,8 @@
 		} catch (error) {
 			toastStore.show({ message: 'Error Creating Account', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
-			trackingStore.trackAction('Registered Account Error', { error: JSON.stringify(error) });
+			const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+			trackingStore.trackAction('Registered Account Error', { error: errorMessage });
 			isLoading = false;
 		}
 	}
@@ -111,7 +114,11 @@
 		id="create-account"
 		onsubmit={(e) => {
 			e.preventDefault();
-			trackingStore.trackAction('Register Account Submit');
+			trackingStore.trackAction('Register Account Submit', {
+				has_first_name: !!firstName,
+				has_email: !!email,
+				has_password: !!password
+			});
 			login();
 		}}
 		class="space-y-3"

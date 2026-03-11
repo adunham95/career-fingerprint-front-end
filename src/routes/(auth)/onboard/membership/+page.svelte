@@ -79,10 +79,16 @@
 
 							if (result.type === 'error' && errors) {
 								errors.textContent = result.error.message;
+								trackingStore.trackAction('Register User Subscription Error', {
+									error: result.error.message,
+									plan_type: planType
+								});
 							}
 							if (result.type === 'success') {
 								console.log(result.session.id);
-								trackingStore.trackAction('Register User Subscription Success');
+								trackingStore.trackAction('Register User Subscription Success', {
+									plan_type: planType
+								});
 							}
 							checkingOut = false;
 						});
@@ -177,13 +183,26 @@
 					{/if}
 				</div>
 				<div class="w-full pt-4">
-					<button class="text-sm" onclick={() => (showPromoCode = !showPromoCode)}
-						>Have a promo code?</button
+					<button
+						class="text-sm"
+						onclick={() => {
+							showPromoCode = !showPromoCode;
+							if (showPromoCode) {
+								trackingStore.trackAction('Onboard Membership - Promo Code Opened', {
+									plan_type: planType
+								});
+							}
+						}}>Have a promo code?</button
 					>
 					<div class={` ${showPromoCode ? 'block' : 'hidden'}`}>
 						<DiscountCodeInput
 							bind:promoID
-							promoValidated={() => priceID && updateStripe(priceID)}
+							promoValidated={() => {
+								trackingStore.trackAction('Onboard Membership - Promo Code Applied', {
+									plan_type: planType
+								});
+								if (priceID) updateStripe(priceID);
+							}}
 						/>
 					</div>
 				</div>

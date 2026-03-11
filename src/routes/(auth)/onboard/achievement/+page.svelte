@@ -28,11 +28,19 @@
 	});
 
 	async function handleNext() {
-		trackingStore.trackAction('Next Step Click - Achievement');
+		trackingStore.trackAction('Next Step Click - Achievement', {
+			has_situation: !!description,
+			has_task_action: !!myContribution,
+			has_result: !!result
+		});
 		error = {};
 
 		if (!myContribution) {
 			error.myContribution = 'Missing Contribution';
+			trackingStore.trackAction('Onboard Achievement - Validation Error', {
+				field: 'task_action',
+				reason: 'required'
+			});
 			return;
 		}
 
@@ -43,9 +51,15 @@
 				myContribution,
 				achievementTags: []
 			});
+			trackingStore.trackAction('Onboard Achievement - Save Success', {
+				has_situation: !!description,
+				has_result: !!result
+			});
 			toastStore.show({ message: 'New Achievement Added', type: 'success' });
 			goto('/onboard/membership');
-		} catch {
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'unknown';
+			trackingStore.trackAction('Onboard Achievement - Save Error', { error: message });
 			toastStore.show({ message: 'Could not save achievement', type: 'error' });
 		}
 	}
