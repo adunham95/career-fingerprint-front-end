@@ -28,12 +28,14 @@
 	});
 
 	const trackedFields = new Set<string>();
+
 	function trackFieldFilled(field: string, value: string) {
 		if (value && !trackedFields.has(field)) {
 			trackedFields.add(field);
 			trackingStore.trackAction('Register - Field Filled', { field });
 		}
 	}
+
 	const orgID = page.url.searchParams.get('org') || undefined;
 
 	const urlParams = new URLSearchParams(page.url.search || '');
@@ -59,6 +61,10 @@
 
 		if (Object.keys(errorText).length > 0) {
 			isLoading = false;
+			trackingStore.trackAction('Registered Account Validation Error', {
+				error: JSON.stringify(errorText)
+			});
+			toastStore.show({ message: 'Error Creating Account', type: 'error' });
 			return;
 		}
 
@@ -77,9 +83,9 @@
 			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
 			toastStore.show({
 				type: 'success',
-				message: `User saved`
+				message: `Account Created Successfully`
 			});
-			+trackingStore.trackAction('Registered Account Success');
+			trackingStore.trackAction('Registered Account Success');
 			goto(redirectPath);
 
 			isLoading = false;

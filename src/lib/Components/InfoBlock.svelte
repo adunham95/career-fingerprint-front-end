@@ -3,13 +3,14 @@
 
 	interface Props {
 		title: string;
-		description: string;
+		description?: string;
 		className?: string;
 		actions?: Snippet;
 		icon?: 'alert' | 'lightbulb';
+		children?: Snippet;
 	}
 
-	const { title, description, className = '', actions, icon = 'alert' }: Props = $props();
+	const { title, description, className = '', actions, icon = 'alert', children }: Props = $props();
 </script>
 
 <div class={`bg-info-100 border-info-200 rounded-md border-3 p-4 ${className}`}>
@@ -49,9 +50,14 @@
 		<div class="ml-3">
 			<h3 class="text-info-800 text-sm font-bold">{title}</h3>
 			<div class="text-info-700 mt-2 text-sm">
-				<p>
-					{description}
-				</p>
+				{#if description}
+					<p>
+						{description}
+					</p>
+				{/if}
+				{#if children}
+					{@render children()}
+				{/if}
 			</div>
 			{#if actions}
 				<div>

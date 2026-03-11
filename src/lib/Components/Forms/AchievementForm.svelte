@@ -12,6 +12,7 @@
 	import type { Achievement } from '../../../app';
 	import SplitDateInput from '../FormElements/SplitDateInput.svelte';
 	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
+	import InfoBlock from '../InfoBlock.svelte';
 
 	interface Props {
 		id: string;
@@ -42,6 +43,7 @@
 	let endDate = $state<string | null>(null);
 	let selectedCategory = $state('');
 	let error = $state<{ [key: string]: string }>({});
+	let linkType = $state<'job' | 'education'>('job');
 
 	let education = useMyEducationQuery();
 	let jobs = useMyJobPositionsQuery();
@@ -156,41 +158,91 @@
 		<TextArea
 			id="ach-desc"
 			label="Situation"
-			subLabel="Describe the context or background of the task."
+			subLabel="What was the context or challenge?"
+			placeholder="e.g. We were losing customers due to a slow, frustrating onboarding process…"
 			bind:value={description}
 			errorText={error?.description}
 		/>
 		<TextArea
 			id="ach-contriubution"
 			label="Task/Action"
-			subLabel="Describe the task or action that you took."
+			subLabel="What did you do? What was your specific role?"
+			placeholder="e.g. I coordinated across three teams and built a plan to address it directly…"
 			bind:value={myContribution}
 			errorText={error?.myContribution}
 		/>
 		<TextArea
 			id="ach-reult"
 			label="Result"
-			subLabel="Describe the impact of the task/action."
+			subLabel="What happened? Quantify the impact if you can."
+			placeholder="e.g. The team hit their targets for the first time in two quarters…"
 			bind:value={result}
 			errorText={error?.result}
 		/>
-		<Select
-			id="select-job"
-			label="Link To Job"
-			bind:value={jobPositionID}
-			options={($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))}
-			errorText={error?.jobPositionID}
-		/>
-		<Select
-			id="select-education"
-			label="Link To Education"
-			bind:value={educationID}
-			options={($education.data || []).map((j) => ({
-				id: j.id,
-				label: `${j.degree} | ${j.institution}`
-			}))}
-			errorText={error?.educationID}
-		/>
+		<p>Link To:</p>
+		<nav aria-label="Tabs" class="flex space-x-4">
+			<!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
+			<button
+				type="button"
+				onclick={() => {
+					linkType = 'job';
+					educationID = null;
+				}}
+				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'job' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+			>
+				Job
+			</button>
+			<button
+				type="button"
+				onclick={() => {
+					linkType = 'education';
+					jobPositionID = null;
+				}}
+				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'education' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+			>
+				Education
+			</button>
+		</nav>
+		{#if linkType === 'job'}
+			{#if ($jobs.data?.length || 0) > 0}
+				<Select
+					id="select-job"
+					label="Link To Job"
+					bind:value={jobPositionID}
+					options={[
+						{ id: null, label: 'Select a Job' },
+						...($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))
+					]}
+					errorText={error?.jobPositionID}
+				/>
+			{:else}
+				<InfoBlock icon="lightbulb" title="Missing Education">
+					Add a job in Your Fingerprint, then come back to link this achievement to it.
+					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+				</InfoBlock>
+			{/if}
+		{:else if linkType === 'education'}
+			{#if ($education.data?.length || 0) > 0}
+				<Select
+					id="select-education"
+					label="Link To Education"
+					bind:value={educationID}
+					options={[
+						{ id: null, label: 'Select Education' },
+						...($education.data || []).map((j) => ({
+							id: j.id,
+							label: `${j.degree} | ${j.institution}`
+						}))
+					]}
+					errorText={error?.educationID}
+				/>
+			{:else}
+				<InfoBlock icon="lightbulb" title="Missing Education">
+					Add a education in Your Fingerprint, then come back to link this achievement to it.
+					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+				</InfoBlock>
+			{/if}
+		{/if}
 		<!-- TODO Figure out date details -->
 		<SplitDateInput
 			label="Start Date"
@@ -202,6 +254,11 @@
 		/>
 		<!-- showDate -->
 		<!-- <DateInput label="End Date" id="ach-end" bind:value={endDate} showDate /> -->
-		<AutocompleteTags label="Category" id="ach-category" bind:value={selectedCategory} />
+		<AutocompleteTags
+			label="Category"
+			id="ach-category"
+			placeholder="Type to search or create Category"
+			bind:value={selectedCategory}
+		/>
 	</div>
 </form>
