@@ -19,6 +19,7 @@
 	let firstName = $state('');
 	let lastName = $state('');
 	let isLoading = $state(false);
+	let accountCreated = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
 	let hasRequired = $derived(!!email);
 
@@ -82,11 +83,8 @@
 			});
 
 			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
-			toastStore.show({
-				type: 'success',
-				message: `Account Created Successfully`
-			});
 			trackingStore.trackAction('Registered Account Success');
+			accountCreated = true;
 			goto(redirectPath);
 
 			isLoading = false;
@@ -110,77 +108,95 @@
 		<AuthValueProps />
 	{/snippet}
 
-	<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
-	<p class="mb-1 text-sm tracking-wide text-gray-600">Then Create Your First Achievement</p>
-	<p class="mb-1 text-sm tracking-wide text-gray-600">
-		Start your 14-day free trial. Cancel any time.
-	</p>
-	<p class="mb-5 text-sm tracking-wide text-gray-600">
-		Already have an account? <a
-			onclick={() => trackingStore.trackAction('Go To Login Click')}
-			href="/login"
-			class=" text-primary inline"
-		>
-			Sign in here
-		</a>
-	</p>
-
-	<form
-		id="create-account"
-		onsubmit={(e) => {
-			e.preventDefault();
-			trackingStore.trackAction('Register Account Submit', {
-				has_first_name: !!firstName,
-				has_email: !!email,
-				has_password: !!password
-			});
-			login();
-		}}
-		class="space-y-3"
-	>
-		<TextInput
-			id="firstName"
-			label="First Name"
-			bind:value={firstName}
-			placeholder="Your First Name"
-			autocomplete="given-name"
-			errorText={errorText['firstName']}
-			onblur={() => trackFieldFilled('first_name', firstName)}
-		/>
-		<TextInput
-			id="email"
-			label="Email"
-			type="email"
-			placeholder="Your Email"
-			bind:value={email}
-			autocomplete="email"
-			required
-			errorText={errorText['email']}
-			onblur={() => trackFieldFilled('email', email)}
-		/>
-		<PasswordInput
-			id="password"
-			label="Password"
-			bind:value={password}
-			required
-			autocomplete="new-password"
-			onblur={() => trackFieldFilled('password', password)}
-		/>
-		<ErrorText errorText={errorText['password']} />
-		<PasswordRequirements {password} />
-		<p class="text-[10px] leading-relaxed text-gray-400">
-			By creating an account you agree to our
-			<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
-				>Terms of Service</a
-			>
-			and
-			<a href="https://mycareerfingerprint.com/privacy" class="hover:text-secondary underline"
-				>Privacy Policy</a
-			>.
+	{#if accountCreated}
+		<div class="flex flex-col items-center justify-center py-8 text-center">
+			<div class="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+				<svg class="text-primary h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+				</svg>
+			</div>
+			<h3 class="font-title text-secondary mb-2 text-2xl font-normal">Account created!</h3>
+			<p class="text-sm text-gray-600">Setting up your workspace, just a moment...</p>
+			<div class="mt-4 flex gap-1">
+				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 0ms"></span>
+				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 150ms"></span>
+				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 300ms"></span>
+			</div>
+		</div>
+	{:else}
+		<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
+		<p class="mb-1 text-sm tracking-wide text-gray-600">Then Create Your First Achievement</p>
+		<p class="mb-1 text-sm tracking-wide text-gray-600">
+			Start your 14-day free trial. Cancel any time.
 		</p>
-	</form>
+		<p class="mb-5 text-sm tracking-wide text-gray-600">
+			Already have an account? <a
+				onclick={() => trackingStore.trackAction('Go To Login Click')}
+				href="/login"
+				class=" text-primary inline"
+			>
+				Sign in here
+			</a>
+		</p>
+
+		<form
+			id="create-account"
+			onsubmit={(e) => {
+				e.preventDefault();
+				trackingStore.trackAction('Register Account Submit', {
+					has_first_name: !!firstName,
+					has_email: !!email,
+					has_password: !!password
+				});
+				login();
+			}}
+			class="space-y-3"
+		>
+			<TextInput
+				id="firstName"
+				label="First Name"
+				bind:value={firstName}
+				placeholder="Your First Name"
+				autocomplete="given-name"
+				errorText={errorText['firstName']}
+				onblur={() => trackFieldFilled('first_name', firstName)}
+			/>
+			<TextInput
+				id="email"
+				label="Email"
+				type="email"
+				placeholder="Your Email"
+				bind:value={email}
+				autocomplete="email"
+				required
+				errorText={errorText['email']}
+				onblur={() => trackFieldFilled('email', email)}
+			/>
+			<PasswordInput
+				id="password"
+				label="Password"
+				bind:value={password}
+				required
+				autocomplete="new-password"
+				onblur={() => trackFieldFilled('password', password)}
+			/>
+			<ErrorText errorText={errorText['password']} />
+			<PasswordRequirements {password} />
+			<p class="text-[10px] leading-relaxed text-gray-400">
+				By creating an account you agree to our
+				<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
+					>Terms of Service</a
+				>
+				and
+				<a href="https://mycareerfingerprint.com/privacy" class="hover:text-secondary underline"
+					>Privacy Policy</a
+				>.
+			</p>
+		</form>
+	{/if}
 
 	{#snippet actions()}
+		{#if !accountCreated}
 		<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
 			{#if $registerUser.isPending}
 				<button disabled class="btn btn-text--disabled btn-small" type="submit">
@@ -198,5 +214,6 @@
 				</button>
 			{/if}
 		</div>
+		{/if}
 	{/snippet}
 </SplitCard>
