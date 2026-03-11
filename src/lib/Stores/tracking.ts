@@ -51,7 +51,7 @@ function createTrackingStore() {
 
 	function trackAction(
 		actionName: string,
-		options: { [key: string]: string | null | boolean } = {}
+		options: { [key: string]: string | null | boolean | string[] } = {}
 	) {
 		const { pageName } = get({ subscribe }); // get current store value
 

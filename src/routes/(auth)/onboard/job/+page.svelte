@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import { useCreateOnboardingJobMutation } from '$lib/API/onboarding.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
@@ -25,13 +25,38 @@
 		currentPosition: true
 	});
 
+	const trackedJobFields = new Set<string>();
+	$effect(() => {
+		const fields: [string, unknown][] = [
+			['title', job.name],
+			['company', job.company],
+			['location', job.location],
+			['start_date', job.startDate],
+			['summary', job.description]
+		];
+		for (const [field, value] of fields) {
+			if (value && !trackedJobFields.has(field)) {
+				trackedJobFields.add(field);
+				trackingStore.trackAction('Onboard Job - Field Filled', { field });
+			}
+		}
+	});
+
 	async function handleNext() {
-		trackingStore.trackAction('Next Step Click - Job');
+		trackingStore.trackAction('Next Step Click - Job', {
+			fields_filled: ['title', 'company', 'location', 'start_date', 'summary'].filter((f) =>
+				trackedJobFields.has(f)
+			)
+		});
 		try {
 			await $createJob.mutateAsync(job);
+			trackingStore.trackAction('Onboard Job - Save Success');
 			toastStore.show({ message: 'New Job Added', type: 'success' });
+			preloadCode('/onboard/achievement');
 			goto('/onboard/achievement');
-		} catch {
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'unknown';
+			trackingStore.trackAction('Onboard Job - Save Error', { error: message });
 			toastStore.show({ message: 'Could not save job', type: 'error' });
 		}
 	}

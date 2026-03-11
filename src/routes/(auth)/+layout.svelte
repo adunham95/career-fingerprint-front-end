@@ -25,10 +25,15 @@
 
 <style>
 	:global(.login-page) {
-		background-image: url('/images/pexels-pixabay-434337.jpg');
-		background-size: cover;
 		/* overflow: hidden; */
 		height: 100vh;
+	}
+
+	@media (min-width: 768px) {
+		:global(.login-page) {
+			background-image: url('/images/pexels-pixabay-434337.jpg');
+			background-size: cover;
+		}
 	}
 	:global(.login-page html),
 	:global(.login-page body) {
