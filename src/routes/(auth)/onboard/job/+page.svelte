@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import { useCreateOnboardingJobMutation } from '$lib/API/onboarding.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import JobDetails from '$lib/Components/Forms/JobDetails.svelte';
@@ -52,6 +52,7 @@
 			await $createJob.mutateAsync(job);
 			trackingStore.trackAction('Onboard Job - Save Success');
 			toastStore.show({ message: 'New Job Added', type: 'success' });
+			preloadCode('/onboard/achievement');
 			goto('/onboard/achievement');
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'unknown';

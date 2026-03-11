@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import { useRegisterUserMutation } from '$lib/API/user';
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
@@ -85,6 +85,7 @@
 			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
 			trackingStore.trackAction('Registered Account Success');
 			accountCreated = true;
+			preloadCode(redirectPath);
 			goto(redirectPath);
 
 			isLoading = false;
@@ -111,16 +112,29 @@
 	{#if accountCreated}
 		<div class="flex flex-col items-center justify-center py-8 text-center">
 			<div class="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-				<svg class="text-primary h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<svg
+					class="text-primary h-7 w-7"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
 				</svg>
 			</div>
 			<h3 class="font-title text-secondary mb-2 text-2xl font-normal">Account created!</h3>
 			<p class="text-sm text-gray-600">Setting up your workspace, just a moment...</p>
 			<div class="mt-4 flex gap-1">
-				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 0ms"></span>
-				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 150ms"></span>
-				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 300ms"></span>
+				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 0ms"
+				></span>
+				<span
+					class="bg-primary/40 h-2 w-2 animate-bounce rounded-full"
+					style="animation-delay: 150ms"
+				></span>
+				<span
+					class="bg-primary/40 h-2 w-2 animate-bounce rounded-full"
+					style="animation-delay: 300ms"
+				></span>
 			</div>
 		</div>
 	{:else}
@@ -197,23 +211,23 @@
 
 	{#snippet actions()}
 		{#if !accountCreated}
-		<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
-			{#if $registerUser.isPending}
-				<button disabled class="btn btn-text--disabled btn-small" type="submit">
-					Creating account...
-				</button>
-			{:else}
-				<button
-					onclick={() => trackingStore.trackAction('Register Click')}
-					disabled={!hasRequired || isLoading}
-					class="btn btn--primary md:btn-small w-full disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
-					type="submit"
-					form="create-account"
-				>
-					Create account
-				</button>
-			{/if}
-		</div>
+			<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
+				{#if $registerUser.isPending}
+					<button disabled class="btn btn-text--disabled btn-small" type="submit">
+						Creating account...
+					</button>
+				{:else}
+					<button
+						onclick={() => trackingStore.trackAction('Register Click')}
+						disabled={!hasRequired || isLoading}
+						class="btn btn--primary md:btn-small w-full disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
+						type="submit"
+						form="create-account"
+					>
+						Create account
+					</button>
+				{/if}
+			</div>
 		{/if}
 	{/snippet}
 </SplitCard>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import { useCreateOnboardingAchievementMutation } from '$lib/API/onboarding';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
@@ -56,6 +56,7 @@
 				has_result: !!result
 			});
 			toastStore.show({ message: 'New Achievement Added', type: 'success' });
+			preloadCode('/onboard/membership');
 			goto('/onboard/membership');
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'unknown';

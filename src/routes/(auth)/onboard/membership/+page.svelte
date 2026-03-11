@@ -216,6 +216,10 @@
 					trialDays={14}
 					postTrialLabel={`then $${centsToDollars(orderEstimate.total)}/${planType === 'annual' ? 'yr' : 'mo'}`}
 				/>
+			{:else if $orderEstimateCall.isPending}
+				<div class="flex justify-center">
+					<Loader />
+				</div>
 			{/if}
 			<form id="payment-form" class={`relative ${!showBillingForm ? 'hidden' : 'block'} w-full`}>
 				<div id="payment-element">
@@ -243,7 +247,7 @@
 			<button
 				id="pay-button"
 				disabled={checkingOut}
-				class={`btn btn-text--primary ${priceID === null ? 'hidden' : ''}`}
+				class={`btn btn--primary w-full ${priceID === null ? 'hidden' : ''}`}
 				onclick={() => {
 					trackingStore.trackAction('Register User Subscription Click');
 				}}
