@@ -47,11 +47,17 @@
 		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Required';
-			trackingStore.trackAction('Register - Validation Error', { field: 'email', reason: 'required' });
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'required'
+			});
 		}
 		if (!validatePassword(password, confirmPassword).isValid) {
 			errorText['password'] = 'Password not valid';
-			trackingStore.trackAction('Register - Validation Error', { field: 'password', reason: 'invalid' });
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'password',
+				reason: 'invalid'
+			});
 		}
 
 		if (Object.keys(errorText).length > 0) {
@@ -106,8 +112,17 @@
 
 	<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
 	<p class="mb-1 text-sm tracking-wide text-gray-600">Then Create Your First Achievement</p>
-	<p class="mb-5 text-sm tracking-wide text-gray-600">
+	<p class="mb-1 text-sm tracking-wide text-gray-600">
 		Start your 14-day free trial. Cancel any time.
+	</p>
+	<p class="mb-5 text-sm tracking-wide text-gray-600">
+		Already have an account? <a
+			onclick={() => trackingStore.trackAction('Go To Login Click')}
+			href="/login"
+			class=" text-primary inline"
+		>
+			Sign in here
+		</a>
 	</p>
 
 	<form
@@ -167,13 +182,6 @@
 
 	{#snippet actions()}
 		<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
-			<a
-				onclick={() => trackingStore.trackAction('Go To Login Click')}
-				href="/login"
-				class="btn btn-text--primary md:btn-small w-full text-center"
-			>
-				Sign in instead
-			</a>
 			{#if $registerUser.isPending}
 				<button disabled class="btn btn-text--disabled btn-small" type="submit">
 					Creating account...

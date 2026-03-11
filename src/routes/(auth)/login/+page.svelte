@@ -103,6 +103,15 @@
 			autocomplete={'current-password webauthn'}
 		/>
 	</form>
+	<div class="flex justify-end">
+		<a
+			href="/forgot-password"
+			class="btn btn-text--primary btn-small text-center"
+			onclick={() => trackingStore.trackAction('Forgot Password Click')}
+		>
+			Forgot password?
+		</a>
+	</div>
 
 	<div class="mt-6 border-t border-gray-100 pt-4 text-center">
 		<p class="flex flex-col text-sm text-gray-400">
@@ -119,13 +128,6 @@
 
 	{#snippet actions()}
 		<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
-			<a
-				href="/forgot-password"
-				class="btn btn-text--primary md:btn-small w-full text-center"
-				onclick={() => trackingStore.trackAction('Forgot Password Click')}
-			>
-				Forgot password?
-			</a>
 			<button
 				disabled={isLoading}
 				class="btn btn--secondary md:btn-small w-full text-center"
