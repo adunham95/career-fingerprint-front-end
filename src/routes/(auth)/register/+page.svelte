@@ -20,12 +20,7 @@
 	let lastName = $state('');
 	let isLoading = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
-	let hasRequired = $derived(() => {
-		if (!email) {
-			return false;
-		}
-		return true;
-	});
+	let hasRequired = $derived(!!email);
 
 	const trackedFields = new Set<string>();
 
@@ -46,8 +41,6 @@
 	onMount(() => {
 		trackingStore.pageViewEvent('Register');
 	});
-
-	$inspect(hasRequired());
 
 	async function login() {
 		errorText = {};
@@ -181,7 +174,7 @@
 			{:else}
 				<button
 					onclick={() => trackingStore.trackAction('Register Click')}
-					disabled={!hasRequired() || isLoading}
+					disabled={!hasRequired || isLoading}
 					class="btn btn--primary md:btn-small w-full disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
 					type="submit"
 					form="create-account"
