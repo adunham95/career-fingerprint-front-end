@@ -28,7 +28,7 @@
 	});
 
 	const trackedFields = new Set<string>();
-	
+
 	function trackFieldFilled(field: string, value: string) {
 		if (value && !trackedFields.has(field)) {
 			trackedFields.add(field);
@@ -64,6 +64,7 @@
 			trackingStore.trackAction('Registered Account Validation Error', {
 				error: JSON.stringify(errorText)
 			});
+			toastStore.show({ message: 'Error Creating Account', type: 'error' });
 			return;
 		}
 
