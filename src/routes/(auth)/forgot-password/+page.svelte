@@ -7,7 +7,6 @@
 	import { onMount } from 'svelte';
 
 	let email = $state('');
-	let password = $state('');
 	let isLoading = $state(false);
 	let showError = $state(false);
 	let showSuccess = $state(false);
@@ -19,7 +18,10 @@
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
 
-		console.log({ email, password });
+		if (!email) {
+			showError = true;
+			return;
+		}
 
 		showSuccess = false;
 		showError = false;
@@ -37,17 +39,8 @@
 					email
 				})
 			});
-			if (res.ok) {
-				toastStore.show({ message: 'Successfully rest password', type: 'success' });
-				const data = await res.json();
-				console.log(data);
-				isLoading = false;
-				showSuccess = true;
-			} else {
-				const data = await res.json();
-				isLoading = false;
-				showError = true;
-			}
+			isLoading = false;
+			showSuccess = true;
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error);
 			isLoading = false;
@@ -62,10 +55,10 @@
 	contentClassName="space-y-3"
 >
 	{#if showError}
-		<p>There was an error resetting your password</p>
+		<p>Something went wrong. Please try again.</p>
 	{/if}
 	{#if showSuccess}
-		<p>Check your email for an reset link</p>
+		<p>Check your email - if you have an account, you'll receive a reset link shortly.</p>
 	{/if}
 	<form onsubmit={(e) => login(e)} class="space-y-2">
 		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
