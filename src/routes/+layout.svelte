@@ -19,7 +19,8 @@
 		debug: false,
 		track_pageview: false,
 		cookie_domain: '.mycareerfingerprint.com',
-		record_sessions_percent: 1
+		record_sessions_percent: 1,
+		record_mask_all_inputs: false
 	});
 </script>
 

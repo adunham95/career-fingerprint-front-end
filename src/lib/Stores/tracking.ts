@@ -5,10 +5,19 @@ import { PUBLIC_MIXPANEL_ENABLED } from '$env/static/public';
 
 interface TrackingObject {
 	pageName?: string;
-	component?: string;
 }
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 let currentTimedPage: string | null = null;
+
+function isMixpanelReady(): boolean {
+	return !!mixpanel && typeof mixpanel.track === 'function' && (mixpanel as any).__loaded === true;
+}
+
+function toSnakeCase(str: string): string {
+	return str.replace(/\s+/g, '_').toLowerCase();
+}
 
 function flushTimeOnPage() {
 	if (!currentTimedPage) return;
@@ -17,21 +26,18 @@ function flushTimeOnPage() {
 }
 
 function createTrackingStore() {
-	const { subscribe, update } = writable<TrackingObject>({});
+	const store = writable<TrackingObject>({});
+	const { subscribe, update } = store;
 	const trackingEnabled = browser && PUBLIC_MIXPANEL_ENABLED === 'true';
+	const shouldTrack = isProduction && trackingEnabled;
 
 	function pageViewEvent(pageName: string, options: { [key: string]: string | boolean } = {}) {
-		console.log('Tracking', { pageName, options });
+		if (!isProduction) console.log('Tracking', { pageName, options });
 
-		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
-			const conversionPageName = pageName.replace(/\s+/g, '_').toLowerCase();
-			safeGoogleTagTracking(`${conversionPageName}_page_view`, { pageName, ...options });
-			safeMixpanelTrack(`${pageName} Page View`, {
-				pageName,
-				...options
-			});
+		if (shouldTrack) {
+			safeGoogleTagTracking(`${toSnakeCase(pageName)}_page_view`, { pageName, ...options });
+			safeMixpanelTrack(`${pageName} Page View`, { pageName, ...options });
 
-			// Flush previous page timer then start a new one
 			flushTimeOnPage();
 			try {
 				mixpanel.time_event('Time on Page');
@@ -41,41 +47,29 @@ function createTrackingStore() {
 			}
 		}
 
-		update((trackingObject) => {
-			return {
-				...trackingObject,
-				pageName
-			};
-		});
+		update((obj) => ({ ...obj, pageName }));
 	}
 
 	function trackAction(
 		actionName: string,
 		options: { [key: string]: string | null | boolean | string[] } = {}
 	) {
-		const { pageName } = get({ subscribe }); // get current store value
+		const { pageName } = get(store);
 
-		console.log('Tracking Action', { actionName, pageName, options });
+		if (!isProduction) console.log('Tracking Action', { actionName, pageName, options });
 
-		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
-			const conversionAction = actionName.replace(/\s+/g, '_').toLowerCase();
-			safeGoogleTagTracking(conversionAction, { pageName, ...options });
-			safeMixpanelTrack(actionName, {
-				pageName,
-				...options
-			});
+		if (shouldTrack) {
+			safeGoogleTagTracking(toSnakeCase(actionName), { pageName, ...options });
+			safeMixpanelTrack(actionName, { pageName, ...options });
 		}
 	}
 
+	function trackSession() {
+		if (shouldTrack) safeMixpanelSessionReplay();
+	}
+
 	function identifyUser(userId: string, email: string) {
-		if (process.env.NODE_ENV === 'production' && trackingEnabled) {
-			try {
-				mixpanel.identify(userId);
-				mixpanel.people.set({ $email: email });
-			} catch (err) {
-				console.warn('Mixpanel identify failed:', err);
-			}
-		}
+		if (shouldTrack) safeMixpanelIdentify(userId, email);
 	}
 
 	return {
@@ -83,15 +77,13 @@ function createTrackingStore() {
 		pageViewEvent,
 		trackAction,
 		identifyUser,
-		flushTimeOnPage
+		flushTimeOnPage,
+		trackSession
 	};
 }
 
 function safeMixpanelTrack(event: string, props: Record<string, any>) {
-	if (!mixpanel || typeof mixpanel.track !== 'function') return;
-	// Mixpanel sometimes sets a flag when not initialized
-	if (mixpanel.__loaded !== true) return;
-
+	if (!isMixpanelReady()) return;
 	try {
 		mixpanel.track(event, props);
 	} catch (err) {
@@ -99,14 +91,28 @@ function safeMixpanelTrack(event: string, props: Record<string, any>) {
 	}
 }
 
-function safeGoogleTagTracking(event: string, props: Record<string, any>) {
-	if (window) {
-		window.dataLayer = window.dataLayer || [];
-		window.dataLayer.push({
-			event: event.toLocaleLowerCase(),
-			...props
-		});
+function safeMixpanelIdentify(userId: string, email: string) {
+	if (!isMixpanelReady()) return;
+	try {
+		mixpanel.identify(userId);
+		mixpanel.people.set({ $email: email });
+	} catch (err) {
+		console.warn('Mixpanel identify failed:', err);
 	}
+}
+
+function safeMixpanelSessionReplay() {
+	if (!isMixpanelReady()) return;
+	try {
+		mixpanel.start_session_recording();
+	} catch (err) {
+		console.warn('Mixpanel session recording failed:', err);
+	}
+}
+
+function safeGoogleTagTracking(event: string, props: Record<string, any>) {
+	window.dataLayer = window.dataLayer || [];
+	window.dataLayer.push({ event: event.toLowerCase(), ...props });
 }
 
 export const trackingStore = createTrackingStore();

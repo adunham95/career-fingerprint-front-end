@@ -41,6 +41,7 @@
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Register');
+		trackingStore.trackSession();
 	});
 
 	async function login() {
