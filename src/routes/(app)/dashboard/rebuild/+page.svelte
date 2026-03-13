@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { useAchievementActivity } from '$lib/API/achievements';
+	import { useAchievementActivity, useAchievementStreak } from '$lib/API/achievements';
 	import AchievementActivity from '$lib/Components/AchievementActivity/AchievementActivity.svelte';
 	import StreakBanner from '$lib/Components/AchievementActivity/StreakBanner.svelte';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import DashboardActionButton from '$lib/Components/DashboardActionButton.svelte';
+	import DashboardActionButtonV2 from '$lib/Components/DashboardActionButtonV2.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
 	import { useFeatureGate } from '$lib/Utils/featureGate';
 	let { data } = $props();
 
 	const activity = useAchievementActivity();
+	const streak = useAchievementStreak();
 
 	const hasStarterFeatures = useFeatureGate(1, data.user);
 	const hasProFeatures = useFeatureGate(2, data.user);
@@ -21,11 +23,11 @@
 </script>
 
 <PageContainer className="py-6">
-	<div class="flex flex-col items-center justify-between md:flex-row">
-		<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
+	<div class="flex flex-col items-center md:flex-row">
+		<p class="font-title flex-2 text-4xl">Hello, {data.user.firstName}</p>
 
-		<div class="py-2">
-			<StreakBanner streak={5} />
+		<div class="block w-full flex-1 py-2">
+			<StreakBanner streak={$streak.data} />
 		</div>
 	</div>
 
@@ -55,15 +57,16 @@
 		</div>
 	</dl>
 
-	<div class="grid grid-cols-6 pt-4">
+	<div class="grid grid-cols-1 gap-4 pt-4 md:grid-cols-6">
 		<div class="col-span-3">
-			<h2 class="font-title text-3 font-semibold">You Achievement History</h2>
-			<AchievementActivity weekData={$activity.data} />
+			<Card headline="Your Achievement History">
+				<AchievementActivity weekData={$activity.data} />
+			</Card>
 		</div>
 		<div class="col-span-3">
 			<Card headline="Quick Actions">
 				<div class="grid grid-cols-2 gap-2">
-					<DashboardActionButton
+					<DashboardActionButtonV2
 						title="Add Achievement"
 						subTitle="Take note of your achievements"
 						icon={startIcon}
@@ -75,7 +78,7 @@
 						}}
 					/>
 
-					<DashboardActionButton
+					<DashboardActionButtonV2
 						icon={trophyIcon}
 						title="Goals"
 						subTitle="View and create your goals"
@@ -85,7 +88,7 @@
 						premiumLocked={!hasProFeatures}
 					/>
 
-					<DashboardActionButton
+					<DashboardActionButtonV2
 						title="Start Meeting"
 						subTitle="Quickly access your cheat sheet for an interview or 1:1"
 						color="blue"
@@ -103,9 +106,9 @@
 								<Loader />
 							</div>
 						{/if}
-					</DashboardActionButton>
+					</DashboardActionButtonV2>
 
-					<DashboardActionButton
+					<DashboardActionButtonV2
 						icon={prepIcon}
 						title="Prepare"
 						subTitle="Prepare your 1:1, Annual Review or Interview"
@@ -115,36 +118,6 @@
 						premiumAction={true}
 						premiumLocked={!hasProFeatures}
 					/>
-
-					{#if data.user.orgAdminLinks.length === 1}
-						<DashboardActionButton
-							title="Manage Organization"
-							subTitle="View and manage your organization"
-							icon={buildingIcon}
-							onClick={() => {
-								// logIntoOrg(data.user.orgAdminLinks[0].organization.id)
-							}}
-							actionName="Manage Organization Click"
-							color="red"
-						>
-							{#if isLoadingInOrg == data.user.orgAdminLinks[0].organization.id}
-								<div class="absolute inset-0 flex items-center justify-center">
-									<Loader />
-								</div>
-							{/if}
-						</DashboardActionButton>
-					{:else if data.user.orgAdminLinks.length > 1}
-						<DashboardActionButton
-							title="Manage Organizations"
-							subTitle="View and manage your organization"
-							icon={buildingIcon}
-							onClick={() => {
-								showSelectOrg = true;
-							}}
-							actionName="Manage Organization Click"
-							color="red"
-						/>
-					{/if}
 				</div>
 			</Card>
 		</div>
