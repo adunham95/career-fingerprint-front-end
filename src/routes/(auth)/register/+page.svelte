@@ -44,18 +44,27 @@
 		trackingStore.trackSession();
 	});
 
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 	async function login() {
 		errorText = {};
 		isLoading = true;
 		if (!email) {
-			errorText['email'] = 'Required';
+			errorText['email'] = 'Email Required';
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'email',
 				reason: 'required'
 			});
 		}
+		if (!emailRegex.test(email)) {
+			errorText['email'] = 'Please enter a valid email address';
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'invalid_format'
+			});
+		}
 		if (!validatePassword(password, confirmPassword).isValid) {
-			errorText['password'] = 'Password not valid';
+			errorText['password'] = 'Please make sure your password meets all requirements';
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'password',
 				reason: 'invalid'
@@ -179,7 +188,7 @@
 			<TextInput
 				id="email"
 				label="Email"
-				type="email"
+				type="text"
 				placeholder="Your Email"
 				bind:value={email}
 				autocomplete="email"
