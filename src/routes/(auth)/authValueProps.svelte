@@ -6,7 +6,7 @@
 			Log Your Wins Weekly.<br /><em class="text-primary">Your Resume<br />Writes Itself.</em>
 		</h2>
 		<ul class="space-y-3">
-			{#each ['Weekly email prompts keep you consistent', 'Achievements auto-formatted with STAR method', 'Generate a polished resume in one click', 'Visual timeline of your entire career'] as benefit}
+			{#each ['Weekly email prompts keep you consistent', 'Achievements auto-formatted with STAR method', 'Visual timeline of your entire career'] as benefit}
 				<li class="flex items-start gap-2.5 text-sm leading-relaxed tracking-wide text-white/75">
 					<span class="bg-accent mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"></span>
 					{benefit}
