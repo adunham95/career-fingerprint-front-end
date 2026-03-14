@@ -14,7 +14,7 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { centsToDollars } from '$lib/Utils/centsToDollars';
 	import { loadStripe, type Stripe } from '@stripe/stripe-js';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import OnboardSteps from '../OnboardSteps.svelte';
 
 	const currentUserBillingStatus = useGetCurrentUserBillingStatus();
@@ -23,7 +23,7 @@
 
 	console.log({ data });
 
-	let stripe: Stripe | null = null;
+	let stripe: Stripe | null = $state(null);
 	let stripeCheckout: StripeCheckout | null = null;
 	let priceID: string | null = $state(null);
 	let planType: 'annual' | 'monthly' = $state('monthly');
@@ -42,15 +42,28 @@
 		trackingStore.pageViewEvent('Onboard Membership');
 	});
 
+	$effect(() => {
+		if (
+			stripe &&
+			!priceID &&
+			data.availablePlans?.monthlyStripePriceID &&
+			$currentUserBillingStatus.isFetched
+		) {
+			updateStripe(data.availablePlans.monthlyStripePriceID);
+		}
+	});
+
 	async function updateStripe(newPriceID: string) {
-		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		priceID = newPriceID;
+		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		stripeCheckoutLoading = true;
 		if (!showBillingForm) {
 			trackingStore.trackAction('Onboard Membership - Billing Form Shown', { planType });
 		}
 		showBillingForm = true;
+		await tick();
 		if (stripe) {
+			console.log('initilizting checkout');
 			stripe.initCheckout({ fetchClientSecret }).then((checkout) => {
 				console.log({ checkout });
 				stripeCheckout = checkout;
@@ -118,7 +131,7 @@
 		className=" w-full max-w-[500px] md:max-h-[calc(100vh-160px)] md:my-4 md:mx-2 overflow-y-auto"
 		contentClassName="space-y-3"
 	>
-		<OnboardSteps step={3} />
+		<OnboardSteps step={2} />
 		{#if data.availablePlans}
 			<div class={`pt-4`}>
 				<p class="pb-2 text-center text-sm font-semibold text-gray-400">
@@ -162,6 +175,7 @@
 								name="billing-cycle"
 								value={data.availablePlans.monthlyStripePriceID}
 								class="sr-only"
+								checked={planType === 'monthly'}
 								onchange={() => {
 									priceID = data.availablePlans?.monthlyStripePriceID || '';
 									planType = 'monthly';
@@ -257,5 +271,36 @@
 		{/snippet}
 	</Card>
 {:else}
-	<Loader />
+	<Card headline="Loading payment options...">
+		<div class="flex flex-col items-center justify-center py-8 text-center">
+			<div class="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+				<svg
+					class="text-primary h-7 w-7"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
+					/>
+				</svg>
+			</div>
+			<p class="text-sm text-gray-600">Connecting securely, just a moment...</p>
+			<div class="mt-4 flex gap-1">
+				<span class="bg-primary/40 h-2 w-2 animate-bounce rounded-full" style="animation-delay: 0ms"
+				></span>
+				<span
+					class="bg-primary/40 h-2 w-2 animate-bounce rounded-full"
+					style="animation-delay: 150ms"
+				></span>
+				<span
+					class="bg-primary/40 h-2 w-2 animate-bounce rounded-full"
+					style="animation-delay: 300ms"
+				></span>
+			</div>
+		</div>
+	</Card>
 {/if}

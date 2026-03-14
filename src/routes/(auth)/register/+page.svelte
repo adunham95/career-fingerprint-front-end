@@ -35,7 +35,7 @@
 	const orgID = page.url.searchParams.get('org') || undefined;
 
 	const urlParams = new URLSearchParams(page.url.search || '');
-	const redirectPath = urlParams.get('redirect') || '/onboard/job';
+	const redirectPath = urlParams.get('redirect') || '/onboard/achievement';
 
 	let registerUser = useRegisterUserMutation();
 

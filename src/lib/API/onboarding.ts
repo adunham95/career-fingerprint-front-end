@@ -21,6 +21,7 @@ interface OnboardingAchievement {
 	startDate?: string | null;
 	endDate?: string | null;
 	achievementTags?: string[];
+	jobName?: string;
 }
 
 export async function createOnboardingJob(job: OnboardingJob): Promise<JobPosition | null> {
