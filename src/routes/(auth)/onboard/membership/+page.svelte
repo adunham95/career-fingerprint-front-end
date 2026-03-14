@@ -132,65 +132,7 @@
 			<p class="pb-2 text-center text-sm font-semibold text-gray-400">
 				14 days free — no charge until your trial ends. Cancel any time.
 			</p>
-			<div class="grid gap-4 pt-2 md:grid-cols-2">
-				{#if data.availablePlans.annualStripePriceID !== null}
-					<label
-						class="has-[:checked]:border-primary relative cursor-pointer rounded border-2 border-gray-200 p-4 transition-colors"
-					>
-						<input
-							type="radio"
-							name="billing-cycle"
-							value={data.availablePlans.annualStripePriceID}
-							class="sr-only"
-							onchange={() => {
-								priceID = data.availablePlans?.annualStripePriceID || null;
-								planType = 'annual';
-								updateStripe(data.availablePlans?.annualStripePriceID || '');
-								trackingStore.trackAction('Yearly Plan Click', {
-									type: 'Yearly',
-									planKey: data.availablePlans?.key || ''
-								});
-							}}
-						/>
-						<p class="font-title mt-2 gap-x-2">
-							<span class="text-3xl font-semibold tracking-tight text-gray-900">
-								${centsToDollars(data.availablePlans.priceCentsYear)}
-							</span>
-							<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/year</span>
-						</p>
-						<p class="text-sm font-semibold text-gray-600">ANNUAL</p>
-					</label>
-				{/if}
-				{#if data.availablePlans.monthlyStripePriceID}
-					<label
-						class="has-[:checked]:border-primary relative cursor-pointer rounded border-2 border-gray-200 p-4 transition-colors"
-					>
-						<input
-							type="radio"
-							name="billing-cycle"
-							value={data.availablePlans.monthlyStripePriceID}
-							class="sr-only"
-							checked={planType === 'monthly'}
-							onchange={() => {
-								priceID = data.availablePlans?.monthlyStripePriceID || '';
-								planType = 'monthly';
-								updateStripe(data.availablePlans?.monthlyStripePriceID || '');
-								trackingStore.trackAction('Monthly Plan Click', {
-									type: 'Monthly',
-									planKey: data.availablePlans?.key || ''
-								});
-							}}
-						/>
-						<p class="font-title mt-2 gap-x-2">
-							<span class="text-3xl font-semibold tracking-tight text-gray-900">
-								${centsToDollars(data.availablePlans.priceCents)}
-							</span>
-							<span class="text-sm/6 font-semibold tracking-wide text-gray-600">/mo</span>
-						</p>
-						<p class="text-sm font-semibold text-gray-600">MONTHLY</p>
-					</label>
-				{/if}
-			</div>
+
 			<div class="w-full pt-4">
 				<button
 					class="text-sm"
@@ -218,6 +160,10 @@
 		</div>
 		{#if orderEstimate}
 			<BillingEstimate
+				lineItems={orderEstimate.lineItems.map((item) => ({
+					...item,
+					description: 'Monthly plan'
+				}))}
 				discounts={orderEstimate?.discounts.map((d) => d.amount) || []}
 				subTotal={orderEstimate?.subtotal || 0}
 				taxes={orderEstimate?.tax.map((t) => t.amount) || []}
@@ -292,10 +238,10 @@
 			disabled={checkingOut}
 			class={`btn btn--primary w-full ${priceID === null ? 'hidden' : ''}`}
 			onclick={() => {
-				trackingStore.trackAction('Register User Subscription Click');
+				trackingStore.trackAction('Register Start Free Trial Click');
 			}}
 		>
-			Create Account
+			Start Free Trial
 		</button>
 	{/snippet}
 </Card>

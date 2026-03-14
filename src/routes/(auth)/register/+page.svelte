@@ -63,11 +63,17 @@
 				reason: 'invalid_format'
 			});
 		}
-		if (!validatePassword(password, confirmPassword).isValid) {
-			errorText['password'] = 'Please make sure your password meets all requirements';
+		const passwordResult = validatePassword(password, confirmPassword);
+		if (!passwordResult.isValid) {
+			const missing = passwordResult.requirements
+				.filter((r) => !r.pass)
+				.map((r) => r.label)
+				.join(', ');
+			errorText['password'] = `Password missing requirements: ${missing}`;
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'password',
-				reason: 'invalid'
+				reason: 'invalid',
+				missing
 			});
 		}
 
