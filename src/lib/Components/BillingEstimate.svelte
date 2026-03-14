@@ -39,7 +39,7 @@
 		{/if}
 
 		{#if discounts.length > 0}
-			<div class="flex justify-between text-lg">
+			<div class="flex justify-between">
 				{#each discounts as discount}
 					<dt class="flex">Discount</dt>
 					<dd class="text-gray-900">-${centsToDollars(discount)}</dd>
