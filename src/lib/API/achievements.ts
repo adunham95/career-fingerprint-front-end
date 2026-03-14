@@ -139,11 +139,22 @@ export async function getAchievementActivity(): Promise<ActivityWeek[]> {
 	return api.get<ActivityWeek[]>('/achievement/my/activity');
 }
 
+export async function getAchievementStreak(): Promise<number> {
+	try {
+		const api = createApiClient();
+		return api.get<number>('/achievement/my/streak');
+	} catch (error) {
+		console.log(error);
+		return 0;
+	}
+}
+
 export const achievementKeys = {
 	all: ['achievements'] as const,
 	tags: ['achievement-tags'] as const,
 	preview: ['achievements', 'preview'] as const,
 	activity: ['achievements', 'activity'] as const,
+	streak: ['achievements', 'streak'] as const,
 	tagsByQuery: (query: string) => [...achievementKeys.tags, query] as const,
 	allWithOptions: (
 		includedDetails: boolean | null = false,
@@ -242,6 +253,14 @@ export const useAchievementActivity = () => {
 	return createQuery({
 		queryKey: achievementKeys.activity,
 		queryFn: getAchievementActivity,
+		staleTime: 5 * 60 * 1000
+	});
+};
+
+export const useAchievementStreak = () => {
+	return createQuery({
+		queryKey: achievementKeys.streak,
+		queryFn: getAchievementStreak,
 		staleTime: 5 * 60 * 1000
 	});
 };
