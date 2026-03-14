@@ -1,7 +1,7 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import type { CurrentUser } from '../../app';
-import { createApiClient } from './apiClient';
+import { createApiClient, type ApiClient } from './apiClient';
 
 export interface RegisteredUserData {
 	accessToken: string;
@@ -299,9 +299,11 @@ export async function currentUser(): Promise<CurrentUser | null> {
 	}
 }
 
-export async function currentUserBillingStatus(): Promise<{ stripeUserID: string }> {
+export async function currentUserBillingStatus(api?: ApiClient): Promise<{ stripeUserID: string }> {
 	try {
-		const api = createApiClient();
+		if (!api) {
+			api = createApiClient();
+		}
 		return api.get('/users/me/billing-status');
 	} catch (error) {
 		console.log(error);
