@@ -109,14 +109,12 @@
 			</div>
 		</div>
 	{:else}
-		<p class="text-base text-gray-500">
-			Want to set up your trial membership first? <a
-				href="/onboard/membership"
-				class="text-primary hover:text-primary-700"
-			>
-				Skip to membership</a
-			>
-		</p>
+		<div>
+			<p class="text-base text-gray-500">Want to set up your trial membership first?</p>
+			<a href="/onboard/membership" class="text-primary hover:text-primary-700">
+				Skip to membership
+			</a>
+		</div>
 		<OnboardSteps step={1} />
 		<TextArea
 			id="ach-desc"
