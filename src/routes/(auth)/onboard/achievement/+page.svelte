@@ -116,39 +116,36 @@
 			</a>
 		</div>
 		<OnboardSteps step={1} />
-		<TextArea
-			id="ach-desc"
-			label="Situation"
-			subLabel="Describe the context or background of the task."
-			bind:value={description}
-			errorText={error?.description}
-			onblur={() => trackFieldFilled('situation', description)}
-		/>
-		<TextArea
-			id="ach-contribution"
-			label="Task/Action"
-			subLabel="Describe the task or action that you took."
-			bind:value={myContribution}
-			errorText={error?.myContribution}
-			onblur={() => trackFieldFilled('task_action', myContribution)}
-		/>
-		<TextArea
-			id="ach-result"
-			label="Result"
-			subLabel="Describe the impact of the task/action."
-			bind:value={result}
-			errorText={error?.result}
-			onblur={() => trackFieldFilled('result', result)}
-		/>
+		<div class="space-y-6">
+			<TextArea
+				id="ach-desc"
+				label="Situation"
+				placeholder="e.g. We were losing customers due to a slow, frustrating onboarding process…"
+				bind:value={description}
+				errorText={error?.description}
+				onblur={() => trackFieldFilled('situation', description)}
+			/>
+			<TextArea
+				id="ach-contribution"
+				label="Task/Action"
+				placeholder="e.g. I coordinated across three teams and built a plan to address it directly…"
+				bind:value={myContribution}
+				errorText={error?.myContribution}
+				onblur={() => trackFieldFilled('task_action', myContribution)}
+			/>
+			<TextArea
+				id="ach-result"
+				label="Result"
+				placeholder="e.g. The team hit their targets for the first time in two quarters…"
+				bind:value={result}
+				errorText={error?.result}
+				onblur={() => trackFieldFilled('result', result)}
+			/>
+		</div>
 		<div aria-hidden="true" class="w-full border-t border-gray-300"></div>
-		<p class="text-sm text-gray-500">Which job is this for? (optional)</p>
-		<p class="text-sm text-gray-500">
-			Linking achievements to a job keeps your career story organized and makes your resume export
-			way more useful.
-		</p>
 		<TextInput
 			id="job"
-			label="Job Title"
+			label="Job Title (optional)"
 			bind:value={jobName}
 			onblur={() => trackFieldFilled('jobName', jobName)}
 		/>

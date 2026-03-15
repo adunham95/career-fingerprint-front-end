@@ -3,9 +3,11 @@ export type PasswordRequirement = {
 	pass: boolean;
 };
 
+export type PasswordStrength = 0 | 1 | 2 | 3 | 4;
+
 export function validatePassword(
 	password: string,
-	confirmPassword: string,
+	confirmPassword: string = '',
 	useConfirmPassword: boolean = false
 ) {
 	const requirements: PasswordRequirement[] = [
@@ -27,6 +29,24 @@ export function validatePassword(
 	}
 
 	const isValid = requirements.every((r) => r.pass);
+	const strength = getPasswordStrength(password);
 
-	return { isValid, requirements };
+	return { isValid, requirements, strength };
+}
+
+function getPasswordStrength(password: string): PasswordStrength {
+	if (!password) return 0;
+	const passed = [
+		password.length >= 8,
+		password.length >= 12,
+		/[A-Z]/.test(password),
+		/[a-z]/.test(password),
+		/\d/.test(password),
+		/[!@#$%&*\-_+()?]/.test(password)
+	].filter(Boolean).length;
+
+	if (passed <= 1) return 1;
+	if (passed <= 3) return 2;
+	if (passed <= 4) return 3;
+	return 4;
 }
