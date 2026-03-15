@@ -4,7 +4,6 @@
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
-	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
@@ -12,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
+	import PasswordStrength from '$lib/Components/PasswordStrength.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -211,7 +211,7 @@
 				onblur={() => trackFieldFilled('password', password)}
 			/>
 			<ErrorText errorText={errorText['password']} />
-			<PasswordRequirements {password} />
+			<PasswordStrength {password} />
 			<p class="text-[10px] leading-relaxed text-gray-400">
 				By creating an account you agree to our
 				<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
