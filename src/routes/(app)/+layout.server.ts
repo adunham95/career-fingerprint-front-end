@@ -1,8 +1,10 @@
-import { loadUser } from '$lib/server/auth';
+import { loadUserFromSession } from '$lib/server/better-auth';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
-	const user = await loadUser(event);
+	const user = await loadUserFromSession(event);
+
+	console.log('user', user);
 
 	if (!user) {
 		throw redirect(302, `/login?redirect=${event.url.pathname}`);

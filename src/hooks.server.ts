@@ -43,8 +43,10 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 
 	const accessToken = event.cookies.get('accessToken');
 	const session = event.cookies.get('sessionAccessToken') ?? null;
+	const baSession = event.cookies.get('cf.session_token') ?? null;
 	event.locals.tokens = { accessToken };
 	event.locals.session = session;
+	event.locals.baSession = baSession;
 	event.locals.user = null; // not fetched yet
 
 	return resolve(event);

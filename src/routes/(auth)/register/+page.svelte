@@ -15,12 +15,12 @@
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
+	import { authClient } from '$lib/auth-client';
 
 	let email = $state('');
 	let password = $state('');
 	let confirmPassword = $state('');
 	let firstName = $state('');
-	let lastName = $state('');
 	let isLoading = $state(false);
 	let accountCreated = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
@@ -39,8 +39,6 @@
 
 	const urlParams = new URLSearchParams(page.url.search || '');
 	const redirectPath = urlParams.get('redirect') || '/onboard/achievement';
-
-	let registerUser = useRegisterUserMutation();
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Register');
@@ -92,14 +90,15 @@
 		try {
 			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-			const newUser = await $registerUser.mutateAsync({
-				firstName,
-				lastName,
+			const { data: newUser, error } = await authClient.signUp.email({
 				email,
 				password,
-				timezone,
-				orgID
+				name: firstName
 			});
+
+			if (error) {
+				throw error;
+			}
 
 			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
 			trackingStore.trackAction('Registered Account Success');
@@ -250,7 +249,7 @@
 	{#snippet actions()}
 		{#if !accountCreated}
 			<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
-				{#if $registerUser.isPending}
+				{#if isLoading}
 					<button disabled class="btn btn-text--disabled btn-small" type="submit">
 						Creating account...
 					</button>

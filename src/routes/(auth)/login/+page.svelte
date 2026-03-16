@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import {
-		PUBLIC_API_URL,
-		PUBLIC_GOOGLE_LOGIN_ENABLED,
-		PUBLIC_LINKEDIN_LOGIN_ENABLED
-	} from '$env/static/public';
+	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
@@ -14,6 +10,7 @@
 	import AuthValueProps from '../authValueProps.svelte';
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
+	import { authClient } from '$lib/auth-client';
 
 	const { data: pageData } = $props();
 
@@ -30,54 +27,21 @@
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
 		showError = false;
-
-		console.log({ email, password });
-
 		isLoading = true;
-		const url = `${PUBLIC_API_URL}/auth/login`;
 
-		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					email,
-					password
-				})
-			});
-			if (res.ok) {
-				const data = await res.json();
-				console.log(data);
-				if (data.resetToken) {
-					goto(`/reset-password?email=${data.user.email}&token=${data.resetToken}`);
-				} else {
-					trackingStore.identifyUser(data.user.id, data.user.email);
-					toastStore.show({ message: 'Successfully logged in', type: 'success' });
-					goto(pageData.redirectPath);
-				}
-				isLoading = false;
-			} else {
-				const data = await res.json();
-				console.log(res, data);
-				if (data.message) {
-					errorMessage = data.message;
-				}
-				showError = true;
-				isLoading = false;
-			}
-		} catch (error) {
-			if (error instanceof Error) {
-				errorMessage = error.message;
-			} else {
-				errorMessage = String(error);
-			}
+		const { data, error } = await authClient.signIn.email({ email, password });
+
+		if (error) {
+			errorMessage = error.message ?? 'Invalid login credentials. Please try again.';
 			showError = true;
-			console.error('There was a problem with the fetch operation:', error);
 			isLoading = false;
+			return;
 		}
+
+		trackingStore.identifyUser(String(data.user.id), data.user.email);
+		toastStore.show({ message: 'Successfully logged in', type: 'success' });
+		goto(pageData.redirectPath);
+		isLoading = false;
 	}
 </script>
 
