@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import {
+		PUBLIC_API_URL,
+		PUBLIC_GOOGLE_LOGIN_ENABLED,
+		PUBLIC_LINKEDIN_LOGIN_ENABLED
+	} from '$env/static/public';
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
@@ -8,6 +12,8 @@
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 	import AuthValueProps from '../authValueProps.svelte';
+	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
+	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 
 	const { data: pageData } = $props();
 
@@ -112,6 +118,25 @@
 			Forgot password?
 		</a>
 	</div>
+
+	{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
+		<div class="mt-2">
+			<div class="relative">
+				<div aria-hidden="true" class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-gray-200"></div>
+				</div>
+				<div class="relative flex justify-center text-sm/6 font-medium">
+					<span class="bg-white px-6 text-gray-900">Or continue with</span>
+				</div>
+			</div>
+
+			<div class="mt-6 flex gap-4">
+				<GoogleSignIn />
+
+				<LinkedinLogin />
+			</div>
+		</div>
+	{/if}
 
 	<div class="mt-6 border-t border-gray-100 pt-4 text-center">
 		<p class="flex flex-col text-sm text-gray-400">

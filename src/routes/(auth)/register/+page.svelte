@@ -12,6 +12,9 @@
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
 	import PasswordStrength from '$lib/Components/PasswordStrength.svelte';
+	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
+	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
+	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
 
 	let email = $state('');
 	let password = $state('');
@@ -212,6 +215,25 @@
 			/>
 			<ErrorText errorText={errorText['password']} />
 			<PasswordStrength {password} />
+
+			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
+				<div class="mt-2">
+					<div class="relative">
+						<div aria-hidden="true" class="absolute inset-0 flex items-center">
+							<div class="w-full border-t border-gray-200"></div>
+						</div>
+						<div class="relative flex justify-center text-sm/6 font-medium">
+							<span class="bg-white px-6 text-gray-900">Or continue with</span>
+						</div>
+					</div>
+
+					<div class="mt-6 flex gap-4">
+						<GoogleSignIn />
+
+						<LinkedinLogin />
+					</div>
+				</div>
+			{/if}
 			<p class="text-[10px] leading-relaxed text-gray-400">
 				By creating an account you agree to our
 				<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
