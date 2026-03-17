@@ -30,13 +30,24 @@
 		trackingStore.pageViewEvent('Onboard Achievement');
 	});
 
+	const nextStep = '/onboard/membership';
+
 	async function handleNext() {
 		trackingStore.trackAction('Next Step Click - Achievement', {
 			has_situation: !!description,
 			has_task_action: !!myContribution,
-			has_result: !!result
+			has_result: !!result,
+			hasJobName: !!jobName
 		});
 		error = {};
+
+		preloadCode(nextStep);
+
+		if (!description && !myContribution && !result && !jobName) {
+			trackingStore.trackAction('Onboard Achievement - Skip Achievement');
+			goto(nextStep);
+			return;
+		}
 
 		if (!myContribution) {
 			error.myContribution = 'Missing Contribution';
@@ -58,11 +69,13 @@
 			achievementSaved = true;
 			trackingStore.trackAction('Onboard Achievement - Save Success', {
 				has_situation: !!description,
-				has_result: !!result
+				has_result: !!result,
+				has_task_action: !!myContribution,
+				hasJobName: !!jobName
 			});
 			toastStore.show({ message: 'New Achievement Added', type: 'success' });
-			preloadCode('/onboard/membership');
-			goto('/onboard/membership');
+
+			goto(nextStep);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'unknown';
 			trackingStore.trackAction('Onboard Achievement - Save Error', { error: message });
@@ -157,7 +170,11 @@
 				disabled={$newAchievement.isPending}
 				onclick={handleNext}
 			>
-				{$newAchievement.isPending ? 'Saving...' : 'Next'}
+				{$newAchievement.isPending
+					? 'Saving...'
+					: description || myContribution || result || jobName
+						? 'Save'
+						: 'Skip'}
 			</button>
 		</div>
 	{/snippet}
