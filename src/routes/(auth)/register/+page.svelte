@@ -56,13 +56,6 @@
 				reason: 'required'
 			});
 		}
-		if (!emailRegex.test(email)) {
-			errorText['email'] = 'Please enter a valid email address';
-			trackingStore.trackAction('Register - Validation Error', {
-				field: 'email',
-				reason: 'invalid_format'
-			});
-		}
 		const passwordResult = validatePassword(password, confirmPassword);
 		if (!passwordResult.isValid) {
 			const missing = passwordResult.requirements
