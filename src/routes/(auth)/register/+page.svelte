@@ -12,6 +12,7 @@
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
 	import PasswordStrength from '$lib/Components/PasswordStrength.svelte';
+	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -204,7 +205,7 @@
 				onblur={() => trackFieldFilled('password', password)}
 			/>
 			<ErrorText errorText={errorText['password']} />
-			<PasswordStrength {password} />
+			<PasswordRequirements useConfirmPassword={false} {password} />
 			<p class="text-[10px] leading-relaxed text-gray-400">
 				By creating an account you agree to our
 				<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
