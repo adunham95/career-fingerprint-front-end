@@ -31,15 +31,21 @@ export const load = async (event) => {
 			event.locals.user = null;
 		}
 
-		let redirectPath: string;
-		switch (tokenDetails?.type) {
-			case 'check-in':
-				redirectPath = '/dashboard/weekly';
-				break;
+		const redirectParam = event.url.searchParams.get('redirect');
 
-			default:
-				redirectPath = '/dashboard';
-				break;
+		let redirectPath: string;
+		if (redirectParam) {
+			redirectPath = redirectParam;
+		} else {
+			switch (tokenDetails?.type) {
+				case 'check-in':
+					redirectPath = '/dashboard/weekly';
+					break;
+
+				default:
+					redirectPath = '/dashboard';
+					break;
+			}
 		}
 
 		const user = await loadUser(event);
