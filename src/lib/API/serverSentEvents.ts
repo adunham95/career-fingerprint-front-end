@@ -4,6 +4,7 @@ import { toastStore } from '$lib/Components/Toasts/toast';
 let source: EventSource | null = null;
 
 export function initSSE() {
+	return;
 	if (source) return; // avoid duplicate connections
 
 	source = new EventSource(`${PUBLIC_API_URL}/sse/events`, {

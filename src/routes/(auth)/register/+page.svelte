@@ -13,12 +13,15 @@
 	import AuthValueProps from '../authValueProps.svelte';
 	import PasswordStrength from '$lib/Components/PasswordStrength.svelte';
 	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
+	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
+	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
+	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
+	import { authClient } from '$lib/auth-client';
 
 	let email = $state('');
 	let password = $state('');
 	let confirmPassword = $state('');
 	let firstName = $state('');
-	let lastName = $state('');
 	let isLoading = $state(false);
 	let accountCreated = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
@@ -38,14 +41,10 @@
 	const urlParams = new URLSearchParams(page.url.search || '');
 	const redirectPath = urlParams.get('redirect') || '/onboard/achievement';
 
-	let registerUser = useRegisterUserMutation();
-
 	onMount(() => {
 		trackingStore.pageViewEvent('Register');
 		trackingStore.trackSession();
 	});
-
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	async function login() {
 		errorText = {};
@@ -64,10 +63,11 @@
 				.map((r) => r.label)
 				.join(', ');
 			errorText['password'] = `Password missing requirements: ${missing}`;
-			trackingStore.trackAction('Register - Validation Error', {
+			trackingStore.trackAction('Register - Password Validation Error', {
 				field: 'password',
 				reason: 'invalid',
-				missing
+				missing,
+				passwordLength: password.length.toString() || '0'
 			});
 		}
 
@@ -83,14 +83,15 @@
 		try {
 			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-			const newUser = await $registerUser.mutateAsync({
-				firstName,
-				lastName,
+			const { data: newUser, error } = await authClient.signUp.email({
 				email,
 				password,
-				timezone,
-				orgID
+				name: firstName
 			});
+
+			if (error) {
+				throw error;
+			}
 
 			trackingStore.identifyUser(String(newUser.user.id), newUser.user.email);
 			trackingStore.trackAction('Registered Account Success');
@@ -206,6 +207,25 @@
 			/>
 			<ErrorText errorText={errorText['password']} />
 			<PasswordRequirements useConfirmPassword={false} {password} />
+
+			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
+				<div class="mt-2">
+					<div class="relative">
+						<div aria-hidden="true" class="absolute inset-0 flex items-center">
+							<div class="w-full border-t border-gray-200"></div>
+						</div>
+						<div class="relative flex justify-center text-sm/6 font-medium">
+							<span class="bg-white px-6 text-gray-900">Or continue with</span>
+						</div>
+					</div>
+
+					<div class="mt-6 flex gap-4">
+						<GoogleSignIn />
+
+						<LinkedinLogin />
+					</div>
+				</div>
+			{/if}
 			<p class="text-[10px] leading-relaxed text-gray-400">
 				By creating an account you agree to our
 				<a href="https://mycareerfingerprint.com/terms" class="hover:text-secondary underline"
@@ -222,7 +242,7 @@
 	{#snippet actions()}
 		{#if !accountCreated}
 			<div class="flex w-full flex-col-reverse items-center justify-between gap-y-2 md:flex-row">
-				{#if $registerUser.isPending}
+				{#if isLoading}
 					<button disabled class="btn btn-text--disabled btn-small" type="submit">
 						Creating account...
 					</button>
