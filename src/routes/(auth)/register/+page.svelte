@@ -74,8 +74,7 @@
 			trackingStore.trackAction('Register - Password Validation Error', {
 				field: 'password',
 				reason: 'invalid',
-				missing,
-				passwordLength: password.length.toString() || '0'
+				missing
 			});
 		}
 
