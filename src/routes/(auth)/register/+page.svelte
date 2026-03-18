@@ -71,10 +71,11 @@
 				.map((r) => r.label)
 				.join(', ');
 			errorText['password'] = `Password missing requirements: ${missing}`;
-			trackingStore.trackAction('Register - Validation Error', {
+			trackingStore.trackAction('Register - Password Validation Error', {
 				field: 'password',
 				reason: 'invalid',
-				missing
+				missing,
+				passwordLength: password.length.toString() || '0'
 			});
 		}
 
