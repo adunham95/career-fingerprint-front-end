@@ -21,7 +21,7 @@
 		}
 		return [
 			{ title: 'Account', path: '/settings/profile' },
-			{ title: 'Connections', path: '/settings/connections' },
+			// { title: 'Connections', path: '/settings/connections' },
 			{ title: 'Membership', path: '/settings/membership' },
 			{ title: 'Referrals', path: '/settings/referral' }
 		];
