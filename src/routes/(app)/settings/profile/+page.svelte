@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { authClient } from '$lib/auth-client';
 	import { useDeleteUserMutation, useStartEmailVerification } from '$lib/API/user.js';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
@@ -12,11 +13,13 @@
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
+	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 
 	const { data } = $props();
 
-	let newPassword = $state<string | null>(null);
-	let confirmPassword = $state(null);
+	let currentPassword = $state('');
+	let newPassword = $state('');
+	let confirmPassword = $state('');
 	let errorMessages = $state<{ [key: string]: string }>({});
 
 	const deleteUserMutation = useDeleteUserMutation();
@@ -26,7 +29,7 @@
 		trackingStore.pageViewEvent('Profile Settings');
 	});
 
-	function getUserData(saveType: 'profile' | 'password' | 'account') {
+	function getUserData(saveType: 'profile' | 'account') {
 		switch (saveType) {
 			case 'account':
 				return {
@@ -34,10 +37,6 @@
 					lastName: data.user.lastName,
 					profileImage: data.user.profileImage,
 					email: data.user.email
-				};
-			case 'password':
-				return {
-					password: newPassword
 				};
 			case 'profile':
 				return {
@@ -51,47 +50,53 @@
 		}
 	}
 
-	async function updateAccount(saveType: 'profile' | 'password' | 'account') {
+	async function updateAccount(saveType: 'profile' | 'account') {
 		const url = `${PUBLIC_API_URL}/users/${data.user.id}`;
 		errorMessages = {};
-
-		if (saveType === 'password' && newPassword !== confirmPassword) {
-			toastStore.show({
-				type: 'error',
-				message: `Passwords do not match`
-			});
-			errorMessages = { ...errorMessages, password: 'Passwords do not match' };
-			return;
-		}
-
-		if (saveType === 'password' && newPassword !== null && newPassword.length < 6) {
-			toastStore.show({
-				type: 'error',
-				message: `Passwords must be longer than 6 characters`
-			});
-			errorMessages = { ...errorMessages, password: 'Passwords must be longer than 6 characters' };
-			return;
-		}
 
 		const res = await fetch(url, {
 			method: 'PATCH',
 			credentials: 'include',
 			headers: {
-				'Content-Type': 'application/json' // Set content type to JSON
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(getUserData(saveType))
 		});
 
 		if (res.ok) {
-			toastStore.show({
-				type: 'success',
-				message: `User saved`
-			});
+			toastStore.show({ type: 'success', message: `User saved` });
 		} else {
-			toastStore.show({
-				type: 'error',
-				message: `Error updating User`
-			});
+			toastStore.show({ type: 'error', message: `Error updating User` });
+		}
+	}
+
+	async function changePassword(e: SubmitEvent) {
+		e.preventDefault();
+		errorMessages = {};
+
+		if (newPassword !== confirmPassword) {
+			errorMessages = { password: 'Passwords do not match' };
+			return;
+		}
+
+		if (newPassword.length < 6) {
+			errorMessages = { password: 'Password must be at least 6 characters' };
+			return;
+		}
+
+		const { error } = await authClient.changePassword({
+			currentPassword,
+			newPassword,
+			revokeOtherSessions: false
+		});
+
+		if (error) {
+			errorMessages = { password: error.message ?? 'Could not update password' };
+		} else {
+			toastStore.show({ type: 'success', message: 'Password updated' });
+			currentPassword = '';
+			newPassword = '';
+			confirmPassword = '';
 		}
 	}
 
@@ -172,31 +177,43 @@
 	<TwoColumn title={'Password'}>
 		<Card className="md:col-span-2">
 			<form
-				id="resetPassword"
+				id="changePassword"
 				onsubmit={(e) => {
-					e.preventDefault();
-					updateAccount('password');
+					changePassword(e);
 					trackingStore.trackAction('Update Account Click', { type: 'password' });
 				}}
 			>
-				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 pb-2 sm:grid-cols-6">
+					<TextInput
+						className="sm:col-span-6"
+						id="current-password"
+						label="Current Password"
+						type="password"
+						bind:value={currentPassword}
+						autocomplete="current-password"
+					/>
 					<TextInput
 						className="sm:col-span-3"
 						id="password"
-						label="Password"
+						label="New Password"
+						type="password"
 						bind:value={newPassword}
+						autocomplete="new-password"
 					/>
 					<TextInput
 						className="sm:col-span-3"
 						id="confirm-password"
 						label="Confirm Password"
+						type="password"
 						bind:value={confirmPassword}
+						autocomplete="new-password"
 					/>
 				</div>
+				<PasswordRequirements {confirmPassword} useConfirmPassword password={newPassword} />
 			</form>
 			<ErrorText errorText={errorMessages.password} />
 			{#snippet actions()}
-				<button type="submit" form="resetPassword" class="btn btn--primary">Update</button>
+				<button type="submit" form="changePassword" class="btn btn--primary">Update</button>
 			{/snippet}
 		</Card>
 	</TwoColumn>
