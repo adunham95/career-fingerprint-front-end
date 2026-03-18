@@ -45,8 +45,6 @@
 		trackingStore.trackSession();
 	});
 
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 	async function login() {
 		errorText = {};
 		isLoading = true;
@@ -55,13 +53,6 @@
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'email',
 				reason: 'required'
-			});
-		}
-		if (!emailRegex.test(email)) {
-			errorText['email'] = 'Please enter a valid email address';
-			trackingStore.trackAction('Register - Validation Error', {
-				field: 'email',
-				reason: 'invalid_format'
 			});
 		}
 		const passwordResult = validatePassword(password, confirmPassword);
