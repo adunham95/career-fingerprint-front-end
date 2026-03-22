@@ -62,7 +62,7 @@
 		if (!passwordResult.isValid) {
 			const missing = passwordResult.requirements
 				.filter((r) => !r.pass)
-				.map((r) => r.label)
+				.map((r) => r.errorLabel)
 				.join(', ');
 			errorText['password'] = `Password missing requirements: ${missing}`;
 			trackingStore.trackAction('Register - Password Validation Failed', {

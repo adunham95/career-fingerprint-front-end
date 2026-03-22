@@ -19,7 +19,9 @@
 		debug: false,
 		track_pageview: false,
 		cookie_domain: '.mycareerfingerprint.com',
-		record_sessions_percent: 1
+		record_sessions_percent: 1,
+		record_mask_all_text: false, // show all text by default
+		record_mask_all_inputs: true // mask all inputs (this is already the default, but explicit is fine)
 	});
 </script>
 

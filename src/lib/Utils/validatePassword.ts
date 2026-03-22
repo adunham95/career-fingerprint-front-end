@@ -1,6 +1,7 @@
 export type PasswordRequirement = {
 	label: string;
 	pass: boolean;
+	errorLabel: string;
 };
 
 export type PasswordStrength = 0 | 1 | 2 | 3 | 4;
@@ -11,15 +12,20 @@ export function validatePassword(
 	useConfirmPassword: boolean = false
 ) {
 	const requirements: PasswordRequirement[] = [
-		{ label: 'At least 8 characters', pass: password.length >= 8 },
-		{ label: 'Contains an uppercase letter', pass: /[A-Z]/.test(password) },
-		{ label: 'Contains a lowercase letter', pass: /[a-z]/.test(password) },
-		{ label: 'Contains a number', pass: /\d/.test(password) }
+		{
+			label: 'At least 8 characters',
+			errorLabel: 'Must contain at least 8 characters',
+			pass: password.length >= 8
+		},
+		{ label: 'Contains an uppercase letter', errorLabel: 'Must contain at least one uppercase letter', pass: /[A-Z]/.test(password) },
+		{ label: 'Contains a lowercase letter', errorLabel: 'Must contain at least one lowercase letter', pass: /[a-z]/.test(password) },
+		{ label: 'Contains a number', errorLabel: 'Must contain at least one number', pass: /\d/.test(password) }
 	];
 
 	if (useConfirmPassword) {
 		requirements.push({
 			label: 'Passwords match',
+			errorLabel: 'Passwords do not match',
 			pass: confirmPassword !== '' && password === confirmPassword
 		});
 	}
