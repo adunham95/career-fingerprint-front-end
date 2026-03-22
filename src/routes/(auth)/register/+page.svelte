@@ -26,6 +26,7 @@
 	let accountCreated = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
 	let hasRequired = $derived(!!email);
+	let timesSubmitted = 0;
 
 	const trackedFields = new Set<string>();
 
@@ -48,6 +49,7 @@
 
 	async function login() {
 		errorText = {};
+		timesSubmitted += 1;
 		isLoading = true;
 		if (!email) {
 			errorText['email'] = 'Email Required';
@@ -63,11 +65,10 @@
 				.map((r) => r.label)
 				.join(', ');
 			errorText['password'] = `Password missing requirements: ${missing}`;
-			trackingStore.trackAction('Register - Password Validation Error', {
-				field: 'password',
-				reason: 'invalid',
-				missing,
-				passwordLength: password.length.toString() || '0'
+			trackingStore.trackAction('Register - Password Validation Failed', {
+				failing_requirements: missing,
+				password_length: password.length.toString(),
+				attempt_count: timesSubmitted.toString()
 			});
 		}
 
@@ -76,7 +77,7 @@
 			trackingStore.trackAction('Registered Account Validation Error', {
 				error: JSON.stringify(errorText)
 			});
-			toastStore.show({ message: 'Error Creating Account', type: 'error' });
+			toastStore.show({ message: 'Account Validation Error', type: 'error' });
 			return;
 		}
 
