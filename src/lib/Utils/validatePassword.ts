@@ -14,11 +14,7 @@ export function validatePassword(
 		{ label: 'At least 8 characters', pass: password.length >= 8 },
 		{ label: 'Contains an uppercase letter', pass: /[A-Z]/.test(password) },
 		{ label: 'Contains a lowercase letter', pass: /[a-z]/.test(password) },
-		{ label: 'Contains a number', pass: /\d/.test(password) },
-		{
-			label: 'Contains a special character (!@#$%&*-_+()?)',
-			pass: /[!@#$%&*\-_+()?]/.test(password)
-		}
+		{ label: 'Contains a number', pass: /\d/.test(password) }
 	];
 
 	if (useConfirmPassword) {
