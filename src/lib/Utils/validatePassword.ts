@@ -19,12 +19,7 @@ export function validatePassword(
 		},
 		{ label: 'Contains an uppercase letter', errorLabel: 'Must contain at least one uppercase letter', pass: /[A-Z]/.test(password) },
 		{ label: 'Contains a lowercase letter', errorLabel: 'Must contain at least one lowercase letter', pass: /[a-z]/.test(password) },
-		{ label: 'Contains a number', errorLabel: 'Must contain at least one number', pass: /\d/.test(password) },
-		{
-			label: 'Contains a special character (!@#$%&*-_+()?)',
-			errorLabel: 'Must contain at least one special character (!@#$%&*-_+()?)',
-			pass: /[!@#$%&*\-_+()?]/.test(password)
-		}
+		{ label: 'Contains a number', errorLabel: 'Must contain at least one number', pass: /\d/.test(password) }
 	];
 
 	if (useConfirmPassword) {

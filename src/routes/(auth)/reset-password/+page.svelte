@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { authClient } from '$lib/auth-client';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
+	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 
-	const email = page.url.searchParams.get('email');
 	const token = page.url.searchParams.get('token');
-
-	console.log({ email, token });
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Reset Password');
@@ -27,50 +25,30 @@
 	async function resetPassword(e: SubmitEvent) {
 		e.preventDefault();
 
-		if (!email || !token) {
-			toastStore.show({ message: 'No Email Or token', type: 'error' });
+		if (!token) {
+			toastStore.show({ message: 'Invalid or expired reset link', type: 'error' });
 			return;
 		}
 
-		if (password !== confirmPassword) {
-			errorText = 'Passwords do not match';
+		const passwordResult = validatePassword(password, confirmPassword, true);
+
+		if (!passwordResult.isValid) {
+			errorText = 'Password missing requirements';
 			return;
 		}
 
 		isLoading = true;
-		const url = `${PUBLIC_API_URL}/auth/reset-password`;
+		errorText = null;
 
-		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json' // Set content type to JSON
-				},
-				body: JSON.stringify({
-					token,
-					email,
-					password
-				})
-			});
-			if (res.ok) {
-				toastStore.show({ message: 'Successfully reset password', type: 'success' });
-				const data = await res.json();
-				console.log(data);
-				await goto('/login');
-				isLoading = false;
-			} else {
-				const data = await res.json();
-				console.log(res, data);
-				if (data.message) {
-					errorText = data.message;
-				}
-				isLoading = false;
-			}
-		} catch (error) {
-			toastStore.show({ message: 'Error resetting password', type: 'error' });
-			console.error('There was a problem with the fetch operation:', error);
-			isLoading = false;
+		const { error } = await authClient.resetPassword({ newPassword: password, token });
+
+		isLoading = false;
+
+		if (error) {
+			errorText = error.message ?? 'Something went wrong. Please try again.';
+		} else {
+			toastStore.show({ message: 'Successfully reset password', type: 'success' });
+			await goto('/login');
 		}
 	}
 </script>

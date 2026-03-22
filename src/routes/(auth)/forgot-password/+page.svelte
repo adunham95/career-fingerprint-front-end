@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { authClient } from '$lib/auth-client';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 
@@ -26,25 +25,22 @@
 		showSuccess = false;
 		showError = false;
 		isLoading = true;
-		const url = `${PUBLIC_API_URL}/auth/request-reset`;
 
 		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					email
-				})
+			const { error } = await authClient.requestPasswordReset({
+				email,
+				redirectTo: `${window.location.origin}/reset-password`
 			});
-			isLoading = false;
-			showSuccess = true;
+
+			if (error) {
+				showError = true;
+			} else {
+				showSuccess = true;
+			}
 		} catch (error) {
-			console.error('There was a problem with the fetch operation:', error);
-			isLoading = false;
 			showError = true;
+		} finally {
+			isLoading = false;
 		}
 	}
 </script>

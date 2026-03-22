@@ -64,7 +64,7 @@
 <PageContainer className="py-6">
 	<p class="font-title text-4xl">Hello, {data.user.firstName}</p>
 	<div
-		class={`mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 ${data.user.orgAdminLinks.length > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}
+		class={`mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 ${(data?.user?.orgAdminLinks ?? []).length > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}
 	>
 		<DashboardActionButton
 			title="Add Achievement"
@@ -119,7 +119,7 @@
 			premiumLocked={!hasProFeatures}
 		/>
 
-		{#if data.user.orgAdminLinks.length === 1}
+		{#if (data?.user?.orgAdminLinks ?? []).length === 1}
 			<DashboardActionButton
 				title="Manage Organization"
 				subTitle="View and manage your organization"
@@ -134,7 +134,7 @@
 					</div>
 				{/if}
 			</DashboardActionButton>
-		{:else if data.user.orgAdminLinks.length > 1}
+		{:else if (data?.user?.orgAdminLinks ?? []).length > 1}
 			<DashboardActionButton
 				title="Manage Organizations"
 				subTitle="View and manage your organization"
