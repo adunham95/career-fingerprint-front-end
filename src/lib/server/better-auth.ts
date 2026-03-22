@@ -21,7 +21,9 @@ export async function loadUserFromSession(event: RequestEvent): Promise<CurrentU
 	console.log('eventUser', event.locals.user);
 	if (event.locals.user) return event.locals.user;
 
-	const hasBaSession = !!event.cookies.get('cf.session_token');
+	const hasBaSession =
+		!!event.cookies.get('cf.session_token') || !!event.cookies.get('__Secure-cf.session_token');
+
 	const hasLegacySession =
 		!!event.cookies.get('sessionAccessToken') || !!event.locals.tokens?.accessToken;
 
