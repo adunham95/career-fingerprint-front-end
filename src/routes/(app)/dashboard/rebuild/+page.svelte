@@ -29,7 +29,6 @@
 	const hasStarterFeatures = useFeatureGate(1, data.user);
 	const hasProFeatures = useFeatureGate(2, data.user);
 	let isAchievementOpen = $state(false);
-	let isNewMeetingOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 
 	async function createNewMeeting() {
