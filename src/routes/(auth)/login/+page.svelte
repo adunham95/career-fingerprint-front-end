@@ -38,6 +38,8 @@
 			return;
 		}
 
+		console.log(data);
+
 		trackingStore.identifyUser(String(data.user.id), data.user.email);
 		toastStore.show({ message: 'Successfully logged in', type: 'success' });
 		goto(pageData.redirectPath);
