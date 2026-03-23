@@ -63,12 +63,12 @@
 				<dt class="text-base font-normal text-gray-900">Achievements</dt>
 				<dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
 					{#if $stats.isLoading}
-						<div class="flex justify-center">
-							<Loader size="md" />
-						</div>
+						<Loader size="md" />
+					{:else if $stats.isError}
+						<span class="text-sm text-gray-400">Unavailable</span>
 					{:else}
 						<div class="text-accent font-title flex items-baseline text-4xl font-semibold">
-							{$stats.data?.totalAchievementsBracket}
+							{$stats.data?.totalAchievementsBracket ?? '--'}
 						</div>
 					{/if}
 				</dd>
@@ -92,12 +92,12 @@
 				<dt class="text-base font-normal text-gray-900">Goals</dt>
 				<dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
 					{#if $stats.isLoading}
-						<div class="flex justify-center">
-							<Loader size="md" />
-						</div>
+						<Loader size="md" />
+					{:else if $stats.isError}
+						<span class="text-sm text-gray-400">Unavailable</span>
 					{:else}
 						<div class="text-accent font-title flex items-baseline text-4xl font-semibold">
-							{$stats.data?.activeGoals}
+							{$stats.data?.activeGoals ?? '--'}
 						</div>
 					{/if}
 				</dd>
