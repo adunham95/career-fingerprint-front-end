@@ -37,7 +37,7 @@
 			const newMeeting = await $createNewMeetingMutation.mutateAsync({
 				time: new Date().toISOString()
 			});
-			goto(`cheatsheet/${newMeeting?.id}`);
+			goto(`/cheatsheet/${newMeeting?.id}`);
 		} catch (error) {
 			isLoadingNewMeeting = false;
 			toastStore.show({ message: 'Could not start the meeting. Try again.', type: 'error' });
