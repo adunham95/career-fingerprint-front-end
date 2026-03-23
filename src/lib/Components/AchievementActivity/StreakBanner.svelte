@@ -31,7 +31,7 @@
 	></div>
 
 	<!-- Content row -->
-	<div class="relative z-20 flex w-full items-center gap-5">
+	<div class="relative flex w-full items-center gap-5">
 		<!-- Streak number -->
 		<span
 			class="font-title text-primary min-w-[1ch] text-[2.1rem] leading-none font-bold tracking-tight"
