@@ -77,7 +77,7 @@
 			trackingStore.trackAction('Registered Account Validation Error', {
 				error: JSON.stringify(errorText)
 			});
-			toastStore.show({ message: 'Account Validation Error', type: 'error' });
+			toastStore.show({ message: 'Please check the highlighted fields and try again.', type: 'error' });
 			return;
 		}
 
@@ -102,7 +102,7 @@
 
 			isLoading = false;
 		} catch (error) {
-			toastStore.show({ message: 'Error Creating Account', type: 'error' });
+			toastStore.show({ message: 'Could not create your account. Check your details and try again.', type: 'error' });
 			console.error('There was a problem with the fetch operation:', error);
 			const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
 			trackingStore.trackAction('Registered Account Error', { error: errorMessage });

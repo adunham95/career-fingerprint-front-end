@@ -42,7 +42,7 @@
 
 	async function createAccount() {
 		if (!profile.email || !profile.firstName || !profile.password) {
-			toastStore.show({ message: 'Missing account elements', type: 'error' });
+			toastStore.show({ message: 'Please fill in your name, email, and password to continue.', type: 'error' });
 			return;
 		}
 

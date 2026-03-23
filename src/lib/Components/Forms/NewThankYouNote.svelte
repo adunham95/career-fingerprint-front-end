@@ -44,7 +44,7 @@
 			toastStore.show({ message: 'Sent Thank Notes', type: 'success' });
 			onSuccess?.();
 		} catch (error) {
-			toastStore.show({ message: 'Could not send thank you note', type: 'error' });
+			toastStore.show({ message: 'Could not send your thank you note. Try again.', type: 'error' });
 		}
 	}
 </script>

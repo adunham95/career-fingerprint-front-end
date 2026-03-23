@@ -48,14 +48,14 @@
 	async function loadMigrateJobApp() {
 		isMigrating = true;
 		if (!jobID || jobID === null) {
-			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+			toastStore.show({ message: 'Could not add this job to your resume. Try again.', type: 'error' });
 		}
 		try {
 			await $migrateJobApp.mutateAsync(jobID || '');
 			toastStore.show({ message: 'Added to resume', type: 'success' });
 			isMigrating = false;
 		} catch (error) {
-			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+			toastStore.show({ message: 'Could not add this job to your resume. Try again.', type: 'error' });
 			isMigrating = false;
 		}
 	}

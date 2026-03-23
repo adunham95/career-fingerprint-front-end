@@ -57,7 +57,7 @@
 	async function updateAdminRole() {
 		try {
 			if (!editOrgRolesOrgUserID) {
-				toastStore.show({ message: 'Could not update admin', type: 'error' });
+				toastStore.show({ message: 'Could not update this admin. Try again.', type: 'error' });
 				return;
 			}
 			await $updateAdminMutation.mutateAsync({ roles: orgRoles, orgUserID: editOrgRolesOrgUserID });
@@ -69,7 +69,7 @@
 			editOrgRoles = false;
 			editOrgRolesOrgUserID = null;
 		} catch (error) {
-			toastStore.show({ message: 'Could not update admin', type: 'error' });
+			toastStore.show({ message: 'Could not update this admin. Try again.', type: 'error' });
 		}
 	}
 
@@ -79,7 +79,7 @@
 			await $orgAdmins.refetch();
 			toastStore.show({ message: 'Removed Admin' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not remove admin', type: 'error' });
+			toastStore.show({ message: 'Could not remove this admin. Try again.', type: 'error' });
 		}
 	}
 
@@ -102,7 +102,7 @@
 			email = '';
 			orgRoles = ['viewer'];
 		} catch (error) {
-			toastStore.show({ message: 'Error new admin', type: 'error' });
+			toastStore.show({ message: 'Could not add the new admin. Try again.', type: 'error' });
 		}
 	}
 

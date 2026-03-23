@@ -23,7 +23,7 @@
 				}
 			}
 		} catch (error) {
-			toastStore.show({ message: 'There was an error joining the org', type: 'error' });
+			toastStore.show({ message: 'Could not join that organization. Check your invite link and try again.', type: 'error' });
 		}
 	}
 

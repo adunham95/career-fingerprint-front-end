@@ -52,17 +52,17 @@
 			joinState = 'success';
 			joinCode = '';
 		} catch (error) {
-			toastStore.show({ message: 'There was an error joining the org', type: 'error' });
+			toastStore.show({ message: 'Could not join that organization. Check your invite code and try again.', type: 'error' });
 		}
 	}
 
 	async function removeFromOrg(orgUserID: string) {
 		try {
-			let response = await $removeFromOrgMutation.mutateAsync({ orgUserID });
+			await $removeFromOrgMutation.mutateAsync({ orgUserID });
 			$orgConnectionsQuery.refetch();
 			toastStore.show({ message: 'Removed you from org', type: 'success' });
 		} catch (error) {
-			toastStore.show({ message: 'There was an error removing the error', type: 'error' });
+			toastStore.show({ message: 'Could not remove org access. Try again.', type: 'error' });
 		}
 	}
 
@@ -204,7 +204,7 @@
 		role="list"
 		class="my-4 divide-y divide-gray-100 overflow-hidden shadow-xs outline-1 outline-gray-900/5 sm:rounded-xl"
 	>
-		{#each $orgConnectionsQuery.data as connection}
+		{#each $orgConnectionsQuery.data || [] as connection}
 			<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
 				<div class="flex min-w-0 gap-x-4">
 					{#if connection?.org?.logoURL}

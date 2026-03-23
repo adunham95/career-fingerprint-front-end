@@ -30,7 +30,7 @@
 			await copyTextToClipboard($inviteLink.data?.link || '');
 			toastStore.show({ message: 'Link Copied' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not get sign up link', type: 'error' });
+			toastStore.show({ message: 'Could not copy the sign-up link. Try again.', type: 'error' });
 		}
 	}
 </script>

@@ -63,7 +63,7 @@
 					reason: 'missing_fields',
 					missing: missingFields
 				});
-				toastStore.show({ message: 'Missing account elements', type: 'error' });
+				toastStore.show({ message: 'Please fill in your name, email, and password to continue.', type: 'error' });
 				return;
 			}
 			await $createOrgAndUser.mutateAsync({

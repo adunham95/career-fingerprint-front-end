@@ -390,7 +390,7 @@
 			<Loader />
 		</div>
 	{/if}
-	{#if $myAchievements.data.length === 0}
+	{#if ($myAchievements.data?.length ?? 0) === 0 && !$myAchievements.isLoading}
 		<InfoBlock
 			title="Empty Achievements"
 			description="You don't have any achievements. Click add achievements"

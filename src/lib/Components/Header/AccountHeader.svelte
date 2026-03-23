@@ -31,7 +31,7 @@
 				goto('/');
 			}
 		} catch (error) {
-			toastStore.show({ message: 'Error logging out', type: 'error' });
+			toastStore.show({ message: 'There was a problem signing you out. Try refreshing the page.', type: 'error' });
 		}
 	}
 

@@ -107,7 +107,7 @@
 			invalidateAll();
 			toastStore.show({ message: 'Canceled Subscription', type: 'success' });
 		} catch (error) {
-			toastStore.show({ message: 'Error canceling subscription', type: 'error' });
+			toastStore.show({ message: 'Could not cancel your subscription. Try again or contact support.', type: 'error' });
 		}
 	}
 

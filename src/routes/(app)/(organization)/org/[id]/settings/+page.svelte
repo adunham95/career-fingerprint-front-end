@@ -49,7 +49,7 @@
 			$updateOrgMutation.mutateAsync({ id: data.org?.id || '', ...profile });
 			toastStore.show({ message: 'Org Updated' });
 		} catch (error) {
-			toastStore.show({ message: 'Error Updating Org', type: 'error' });
+			toastStore.show({ message: 'Could not save your changes. Try again.', type: 'error' });
 		}
 	}
 
@@ -58,7 +58,7 @@
 			await $updateDomainFunction.mutateAsync({ id, domain, orgID: data.org?.id || '' });
 			toastStore.show({ message: 'Domain Updated' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not update domain', type: 'error' });
+			toastStore.show({ message: 'Could not update that domain. Try again.', type: 'error' });
 		}
 	}
 
@@ -67,7 +67,7 @@
 			await $deleteDomainFunction.mutateAsync({ id });
 			toastStore.show({ message: 'Domain Deleted' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not delete domain', type: 'error' });
+			toastStore.show({ message: 'Could not remove that domain. Try again.', type: 'error' });
 		}
 	}
 
@@ -77,7 +77,7 @@
 			newDomain = '';
 			toastStore.show({ message: 'Domain Added' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not add domain', type: 'error' });
+			toastStore.show({ message: 'Could not add that domain. Try again.', type: 'error' });
 		}
 	}
 

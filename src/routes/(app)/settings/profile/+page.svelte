@@ -66,7 +66,7 @@
 		if (res.ok) {
 			toastStore.show({ type: 'success', message: `User saved` });
 		} else {
-			toastStore.show({ type: 'error', message: `Error updating User` });
+			toastStore.show({ type: 'error', message: 'Could not save your changes. Try again.' });
 		}
 	}
 
@@ -105,7 +105,7 @@
 			await $deleteUserMutation.mutateAsync();
 			toastStore.show({ message: 'Your account has been marked for deletion', type: 'success' });
 		} catch (error) {
-			toastStore.show({ message: 'Cant delete user', type: 'error' });
+			toastStore.show({ message: 'Could not delete your account. Try again.', type: 'error' });
 		}
 	}
 
@@ -114,7 +114,7 @@
 			await $verifyEmailMutation.mutateAsync();
 			toastStore.show({ message: 'Verification Email Sent' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not send verification email', type: 'error' });
+			toastStore.show({ message: 'Could not send the verification email. Try again in a few minutes.', type: 'error' });
 		}
 	}
 </script>

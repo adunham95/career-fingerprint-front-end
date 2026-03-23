@@ -70,7 +70,7 @@
 			toastStore.show({ message: 'Meeting Deleted', type: 'success' });
 			goto('/meetings');
 		} catch (error) {
-			toastStore.show({ message: 'Could delete meeting', type: 'error' });
+			toastStore.show({ message: 'Could not delete this meeting. Try again.', type: 'error' });
 		}
 	}
 </script>

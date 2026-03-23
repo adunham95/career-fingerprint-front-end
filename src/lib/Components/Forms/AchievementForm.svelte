@@ -148,7 +148,7 @@
 			selectedCategory = '';
 			onSuccess();
 		} catch (error) {
-			toastStore.show({ message: 'Could not save achievement', type: 'error' });
+			toastStore.show({ message: 'Could not save your achievement. Try again.', type: 'error' });
 		}
 	}
 </script>

@@ -45,7 +45,7 @@
 			goto(`cheatsheet/${newMeeting?.id}`);
 		} catch (error) {
 			isLoadingNewMeeting = false;
-			toastStore.show({ message: 'There was an error starting your meeting', type: 'error' });
+			toastStore.show({ message: 'Could not start the meeting. Try again.', type: 'error' });
 		}
 	}
 
@@ -56,7 +56,7 @@
 			goto(`/org/${orgID}`);
 		} catch (error) {
 			isLoadingInOrg = null;
-			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
+			toastStore.show({ message: 'Could not open that organization. Try again.', type: 'error' });
 		}
 	}
 </script>

@@ -27,7 +27,7 @@
 			);
 			toastStore.show({ message: 'Text Copied' });
 		} catch (error) {
-			toastStore.show({ message: 'Error Coping Text', type: 'error' });
+			toastStore.show({ message: 'Could not copy to clipboard. Try again.', type: 'error' });
 		}
 	}
 

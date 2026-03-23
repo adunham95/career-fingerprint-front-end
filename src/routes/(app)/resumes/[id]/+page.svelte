@@ -158,7 +158,7 @@
 			}
 			toastStore.show({ message: 'Added to Resume' });
 		} catch (error) {
-			toastStore.show({ message: 'Error Adding to Resume', type: 'error' });
+			toastStore.show({ message: 'Could not add that item to your resume. Try again.', type: 'error' });
 		}
 	}
 
@@ -170,7 +170,7 @@
 				toastStore.show({ message: 'Item Deleted' });
 			}
 		} catch (error) {
-			toastStore.show({ message: 'Could not delete item', type: 'error' });
+			toastStore.show({ message: 'Could not remove that item. Try again.', type: 'error' });
 		}
 	}
 
