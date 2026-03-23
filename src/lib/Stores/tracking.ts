@@ -69,6 +69,7 @@ function createTrackingStore() {
 	}
 
 	function identifyUser(userId: string, email: string) {
+		if (!isProduction) console.log('Identify User', { userId, email });
 		if (shouldTrack) safeMixpanelIdentify(userId, email);
 	}
 
