@@ -3,7 +3,7 @@
 
 	<div class="relative z-10 space-y-5">
 		<h2 class="font-title text-3xl leading-snug font-normal">
-			Log Your Wins Weekly.<br /><em class="text-primary">Your Resume<br />Writes Itself.</em>
+			Log Your Wins Weekly.<br /><em class="text-primary">Your Resume Writes Itself.</em>
 		</h2>
 		<ul class="space-y-3">
 			{#each ['Weekly email prompts keep you consistent', 'Achievements auto-formatted with STAR method', 'Visual timeline of your entire career'] as benefit}
