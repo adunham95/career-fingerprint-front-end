@@ -78,6 +78,7 @@
 	<!-- Google Tag Manager (noscript) -->
 	<noscript
 		><iframe
+			title="noscript_gtm"
 			src={`https://www.googletagmanager.com/ns.html?id=${PUBLIC_GTM_ID}`}
 			height="0"
 			width="0"
