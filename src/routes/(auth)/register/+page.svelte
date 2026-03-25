@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, preloadCode } from '$app/navigation';
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
+	import BannerError from '$lib/Components/FormElements/BannerError.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
@@ -179,11 +180,7 @@
 			</a>
 		</p>
 
-		{#if bannerError}
-			<div role="alert" class="mb-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-				{bannerError}
-			</div>
-		{/if}
+		<BannerError message={bannerError} />
 
 		<form
 			id="create-account"
