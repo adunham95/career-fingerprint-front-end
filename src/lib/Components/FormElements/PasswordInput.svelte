@@ -17,6 +17,7 @@
 		autocomplete?: FullAutoFill | null;
 		onblur?: () => void;
 		required?: boolean;
+		ariaDescribedby?: string;
 	}
 
 	let {
@@ -31,7 +32,8 @@
 		subLabel,
 		autocomplete,
 		onblur = () => null,
-		required = false
+		required = false,
+		ariaDescribedby
 	}: Props = $props();
 
 	let show = $state(false);
@@ -51,6 +53,7 @@
 		inputClassName={`pr-10 ${inputClassName}`}
 		{onblur}
 		{required}
+		aria-describedby={ariaDescribedby}
 	>
 		{#snippet afterChildren()}
 			<button
