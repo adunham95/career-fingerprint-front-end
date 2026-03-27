@@ -51,7 +51,7 @@
 		return pattern.test(value);
 	}
 
-	async function login() {
+	async function register() {
 		errorText = {};
 		bannerError = null;
 		timesSubmitted += 1;
@@ -120,7 +120,14 @@
 				bannerError = userMessage;
 			}
 			const errorMessage = apiErr?.message ?? String(err);
-			trackingStore.trackAction('Registered Account Error', { error: errorMessage });
+			trackingStore.trackAction('Registered Account Error', {
+				error: errorMessage,
+				email_domain: email.includes('@') ? email.split('@')[1] : null,
+				has_spaces: email.includes(' '),
+				has_leading_trailing_space: email !== email.trim(),
+				has_plus: email.includes('+'),
+				char_count: email.length.toString()
+			});
 			isLoading = false;
 		}
 	}
@@ -191,7 +198,7 @@
 					has_email: !!email,
 					has_password: !!password
 				});
-				login();
+				register();
 			}}
 			class="space-y-3"
 		>
