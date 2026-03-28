@@ -311,8 +311,26 @@ export async function currentUserBillingStatus(api?: ApiClient): Promise<{ strip
 	}
 }
 
+export interface UserStats {
+	totalAchievements: number;
+	totalAchievementsBracket: string | number;
+	achievementsThisWeek: number;
+	activeGoals: number;
+}
+
+export async function getUserStats(): Promise<UserStats | null> {
+	try {
+		const api = createApiClient();
+		return api.get('/users/me/stats');
+	} catch (error) {
+		console.log(error);
+		throw new Error(`Failed to get user stats`);
+	}
+}
+
 export const userKeys = {
-	inviteCode: ['invite-code'] as const
+	inviteCode: ['invite-code'] as const,
+	stats: ['user-stats'] as const
 };
 
 export const useDeleteUserMutation = () => {
@@ -382,6 +400,14 @@ export const useGetCurrentUser = () => {
 export const useGetCurrentUserBillingStatus = () => {
 	return createQuery({
 		queryKey: ['current-user-billing-status'],
-		queryFn: currentUserBillingStatus
+		queryFn: () => currentUserBillingStatus()
+	});
+};
+
+export const useGetUserStats = () => {
+	return createQuery({
+		queryKey: userKeys.stats,
+		queryFn: getUserStats,
+		staleTime: 5 * 60 * 1000
 	});
 };

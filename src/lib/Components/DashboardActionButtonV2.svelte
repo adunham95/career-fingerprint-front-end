@@ -35,9 +35,9 @@
 	}: Props = $props();
 
 	let baseStyles =
-		'relative flex w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-3.5 text-center transition hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300';
+		'relative flex w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-gray-300 bg-gray-50 px-2 py-3.5 text-center transition hover:border-gray-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400';
 
-	let lockedStyles = 'opacity-50 cursor-default hover:bg-gray-50 hover:border-gray-200';
+	let lockedStyles = 'opacity-50 cursor-default hover:bg-gray-100 hover:border-gray-300';
 </script>
 
 {#if premiumLocked}

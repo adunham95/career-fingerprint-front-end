@@ -30,11 +30,15 @@
 		isSaving = type;
 		console.log({ type });
 
-		await $updateCoverLetter.mutateAsync({
-			jobAppID: data.application?.id || '',
-			to: coverTo,
-			message: coverLetter
-		});
+		try {
+			await $updateCoverLetter.mutateAsync({
+				jobAppID: data.application?.id || '',
+				to: coverTo,
+				message: coverLetter
+			});
+		} catch {
+			// save failed silently — user can keep editing and the next keystroke will retry
+		}
 
 		isSaving = null;
 	}, 500);

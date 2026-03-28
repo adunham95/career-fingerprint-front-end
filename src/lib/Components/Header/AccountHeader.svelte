@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import FeedbackForm from '../Forms/FeedbackForm.svelte';
 	import Modal from '../Overlays/Modal.svelte';
 	import { toastStore } from '../Toasts/toast';
-	import { page } from '$app/stores';
+	import { authClient } from '$lib/auth-client';
+	import { page } from '$app/state';
 
 	interface Props {
 		appTitle?: string;
@@ -24,14 +24,22 @@
 
 	async function logout() {
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/auth/logout`, { credentials: 'include' });
-			const user = await res.json();
+			const { error } = await authClient.signOut();
 
-			if (res.ok) {
-				goto('/');
+			if (error) {
+				toastStore.show({
+					message: 'There was a problem signing you out. Try refreshing the page.',
+					type: 'error'
+				});
+				return;
 			}
-		} catch (error) {
-			toastStore.show({ message: 'Error logging out', type: 'error' });
+
+			goto('/');
+		} catch {
+			toastStore.show({
+				message: 'There was a problem signing you out. Try refreshing the page.',
+				type: 'error'
+			});
 		}
 	}
 
@@ -47,8 +55,6 @@
 		showNotification = false,
 		userID
 	}: Props = $props();
-
-	$inspect(routes);
 
 	let mobileNabOpen = $state(false);
 	let profileOpen = $state(false);
@@ -269,7 +275,7 @@
 						});
 					}}
 					class={`hover:bg-primary-300 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900 ${
-						$page.url.pathname.startsWith(route.path)
+						page.url.pathname.startsWith(route.path)
 							? 'bg-accent-200 text-accent-900'
 							: 'hover:bg-primary-300 text-gray-900 hover:text-gray-900'
 					}`}
@@ -358,7 +364,7 @@
 									});
 								}}
 								class={`block rounded-md px-3 py-2 text-base font-medium  ${
-									$page.url.pathname.startsWith(route.path)
+									page.url.pathname.startsWith(route.path)
 										? 'bg-accent-200 text-accent-900'
 										: 'text-gray-900 hover:bg-gray-100 hover:text-gray-800'
 								}`}

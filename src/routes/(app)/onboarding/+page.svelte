@@ -68,7 +68,7 @@
 			completedSteps.push('situation');
 			setCurrentStep('position');
 		} catch (error) {
-			toastStore.show({ type: 'error', message: 'Could Not Update User' });
+			toastStore.show({ type: 'error', message: 'Could not save your profile. Try again.' });
 		}
 	}
 
@@ -97,7 +97,7 @@
 			completedSteps.push('position');
 			setCurrentStep('achievement');
 		} catch (error) {
-			toastStore.show({ type: 'error', message: 'Could Not Add Item' });
+			toastStore.show({ type: 'error', message: 'Could not add that item. Try again.' });
 		}
 	}
 

@@ -33,7 +33,7 @@
 			toastStore.show({ message: 'Feedback saved' });
 			onSuccess?.();
 		} catch (error) {
-			toastStore.show({ message: 'Error saving feedback', type: 'error' });
+			toastStore.show({ message: 'Could not send your feedback. Try again.', type: 'error' });
 		}
 	}
 </script>

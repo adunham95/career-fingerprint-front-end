@@ -24,7 +24,7 @@
 			toastStore.show({ message: 'Updated Job Description' });
 			onSuccess?.();
 		} catch (error) {
-			toastStore.show({ message: 'Could not  update job description', type: 'error' });
+			toastStore.show({ message: 'Could not update the job description. Try again.', type: 'error' });
 		}
 	}
 </script>

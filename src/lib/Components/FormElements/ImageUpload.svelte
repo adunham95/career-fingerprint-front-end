@@ -27,7 +27,7 @@
 		isLoading = true;
 		let file = e?.currentTarget?.files?.[0];
 		if (!file) {
-			toastStore.show({ type: 'error', message: 'No File Selected' });
+			toastStore.show({ type: 'error', message: 'Please select a file first.' });
 			return;
 		}
 
@@ -45,11 +45,11 @@
 				console.log(data);
 				value = data.result.variants[0];
 			} else {
-				toastStore.show({ type: 'error', message: 'Upload failed' });
+				toastStore.show({ type: 'error', message: 'Upload failed. Check the file and try again.' });
 				console.error(data.errors);
 			}
 		} catch (err: unknown) {
-			toastStore.show({ type: 'error', message: 'Upload failed' });
+			toastStore.show({ type: 'error', message: 'Upload failed. Check the file and try again.' });
 			console.log(err);
 		} finally {
 			isLoading = false;

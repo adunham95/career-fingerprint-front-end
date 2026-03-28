@@ -1,22 +1,21 @@
 <script lang="ts">
 	import { goto, preloadCode } from '$app/navigation';
-	import { useRegisterUserMutation } from '$lib/API/user';
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
+	import BannerError from '$lib/Components/FormElements/BannerError.svelte';
 	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
-	import PasswordStrength from '$lib/Components/PasswordStrength.svelte';
 	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
 	import { authClient } from '$lib/auth-client';
+	import { classifyError } from '$lib/errors';
 
 	let email = $state('');
 	let password = $state('');
@@ -25,7 +24,8 @@
 	let isLoading = $state(false);
 	let accountCreated = $state(false);
 	let errorText = $state<{ [key: string]: string }>({});
-	let hasRequired = $derived(!!email);
+	let bannerError = $state<string | null>(null);
+	let hasRequired = $derived(!!email && !!password);
 	let timesSubmitted = 0;
 
 	const trackedFields = new Set<string>();
@@ -37,8 +37,6 @@
 		}
 	}
 
-	const orgID = page.url.searchParams.get('org') || undefined;
-
 	const urlParams = new URLSearchParams(page.url.search || '');
 	const redirectPath = urlParams.get('redirect') || '/onboard/achievement';
 
@@ -47,17 +45,32 @@
 		trackingStore.trackSession();
 	});
 
-	async function login() {
+	function isValidEmail(value: string): boolean {
+		if (value.includes(' ')) return false;
+		const pattern = /^\S+@\S+\.\S+$/;
+		return pattern.test(value);
+	}
+
+	async function register() {
 		errorText = {};
+		bannerError = null;
 		timesSubmitted += 1;
 		isLoading = true;
+
 		if (!email) {
-			errorText['email'] = 'Email Required';
+			errorText['email'] = 'Email is required.';
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'email',
 				reason: 'required'
 			});
+		} else if (!isValidEmail(email)) {
+			errorText['email'] = 'Please enter a valid email address.';
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'invalid_format'
+			});
 		}
+
 		const passwordResult = validatePassword(password, confirmPassword);
 		if (!passwordResult.isValid) {
 			const missing = passwordResult.requirements
@@ -77,13 +90,10 @@
 			trackingStore.trackAction('Registered Account Validation Error', {
 				error: JSON.stringify(errorText)
 			});
-			toastStore.show({ message: 'Account Validation Error', type: 'error' });
 			return;
 		}
 
 		try {
-			const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
 			const { data: newUser, error } = await authClient.signUp.email({
 				email,
 				password,
@@ -101,11 +111,23 @@
 			goto(redirectPath);
 
 			isLoading = false;
-		} catch (error) {
-			toastStore.show({ message: 'Error Creating Account', type: 'error' });
-			console.error('There was a problem with the fetch operation:', error);
-			const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-			trackingStore.trackAction('Registered Account Error', { error: errorMessage });
+		} catch (err: unknown) {
+			const apiErr = err as { code?: string; message?: string };
+			const { userMessage, field } = classifyError(apiErr?.code, apiErr?.message ?? String(err));
+			if (field) {
+				errorText[field] = userMessage;
+			} else {
+				bannerError = userMessage;
+			}
+			const errorMessage = apiErr?.message ?? String(err);
+			trackingStore.trackAction('Registered Account Error', {
+				error: errorMessage,
+				email_domain: email.includes('@') ? email.split('@')[1] : null,
+				has_spaces: email.includes(' '),
+				has_leading_trailing_space: email !== email.trim(),
+				has_plus: email.includes('+'),
+				char_count: email.length.toString()
+			});
 			isLoading = false;
 		}
 	}
@@ -165,6 +187,8 @@
 			</a>
 		</p>
 
+		<BannerError message={bannerError} />
+
 		<form
 			id="create-account"
 			onsubmit={(e) => {
@@ -174,7 +198,7 @@
 					has_email: !!email,
 					has_password: !!password
 				});
-				login();
+				register();
 			}}
 			class="space-y-3"
 		>
@@ -196,6 +220,7 @@
 				autocomplete="email"
 				required
 				errorText={errorText['email']}
+				aria-describedby="email-error"
 				onblur={() => trackFieldFilled('email', email)}
 			/>
 			<PasswordInput
@@ -204,9 +229,10 @@
 				bind:value={password}
 				required
 				autocomplete="new-password"
+				ariaDescribedby="password-error"
 				onblur={() => trackFieldFilled('password', password)}
 			/>
-			<ErrorText errorText={errorText['password']} />
+			<ErrorText id="password-error" errorText={errorText['password']} />
 			<PasswordRequirements useConfirmPassword={false} {password} />
 
 			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
@@ -251,7 +277,7 @@
 					<button
 						onclick={() => trackingStore.trackAction('Register Click')}
 						disabled={!hasRequired || isLoading}
-						class="btn btn--primary md:btn-small w-full disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
+						class="btn btn--primary md:btn-small w-full disabled:cursor-not-allowed disabled:border-gray-500 disabled:bg-gray-500 disabled:opacity-50"
 						type="submit"
 						form="create-account"
 					>

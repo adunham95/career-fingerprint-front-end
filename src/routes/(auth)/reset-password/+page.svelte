@@ -26,7 +26,7 @@
 		e.preventDefault();
 
 		if (!token) {
-			toastStore.show({ message: 'Invalid or expired reset link', type: 'error' });
+			toastStore.show({ message: 'That reset link has expired. Request a new one from the sign in page.', type: 'error' });
 			return;
 		}
 

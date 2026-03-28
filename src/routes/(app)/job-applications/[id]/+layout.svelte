@@ -27,7 +27,7 @@
 	async function loadMigrateJobApp() {
 		isMigrating = true;
 		if (!data.application?.id || data.application?.id === null) {
-			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+			toastStore.show({ message: 'Could not add this job to your resume. Try again.', type: 'error' });
 		}
 		try {
 			await $migrateJobApp.mutateAsync(data.application?.id || '');
@@ -35,7 +35,7 @@
 			isMigrating = false;
 			goto('/my-fingerprint');
 		} catch (error) {
-			toastStore.show({ message: 'Failed to add to resume', type: 'error' });
+			toastStore.show({ message: 'Could not add this job to your resume. Try again.', type: 'error' });
 			isMigrating = false;
 		}
 	}

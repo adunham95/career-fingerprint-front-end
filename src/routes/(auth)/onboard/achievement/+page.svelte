@@ -79,7 +79,7 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'unknown';
 			trackingStore.trackAction('Onboard Achievement - Save Error', { error: message });
-			toastStore.show({ message: 'Could not save achievement', type: 'error' });
+			toastStore.show({ message: 'Could not save your achievement. Try again.', type: 'error' });
 		}
 	}
 </script>

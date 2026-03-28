@@ -27,7 +27,7 @@
 			goto(`/org/${orgID}`);
 		} catch (error) {
 			isLoadingInOrg = null;
-			toastStore.show({ message: 'There was an error loading into org', type: 'error' });
+			toastStore.show({ message: 'Could not open that organization. Try again.', type: 'error' });
 		}
 	}
 </script>

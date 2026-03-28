@@ -3,6 +3,12 @@ import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { PUBLIC_MIXPANEL_ENABLED } from '$env/static/public';
 
+declare global {
+	interface Window {
+		dataLayer: Record<string, any>[];
+	}
+}
+
 interface TrackingObject {
 	pageName?: string;
 }
@@ -69,6 +75,7 @@ function createTrackingStore() {
 	}
 
 	function identifyUser(userId: string, email: string) {
+		if (!isProduction) console.log('Identify User', { userId, email });
 		if (shouldTrack) safeMixpanelIdentify(userId, email);
 	}
 
@@ -111,8 +118,12 @@ function safeMixpanelSessionReplay() {
 }
 
 function safeGoogleTagTracking(event: string, props: Record<string, any>) {
-	window.dataLayer = window.dataLayer || [];
-	window.dataLayer.push({ event: event.toLowerCase(), ...props });
+	try {
+		window.dataLayer = window.dataLayer || [];
+		window.dataLayer.push({ event: event.toLowerCase(), ...props });
+	} catch (err) {
+		console.warn('GTM tracking failed:', err);
+	}
 }
 
 export const trackingStore = createTrackingStore();

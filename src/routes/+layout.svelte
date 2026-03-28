@@ -15,14 +15,18 @@
 	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
 
 	let { children } = $props();
-	mixpanel.init(PUBLIC_MIXPANEL_TOKEN, {
-		debug: false,
-		track_pageview: false,
-		cookie_domain: '.mycareerfingerprint.com',
-		record_sessions_percent: 1,
-		record_mask_all_text: false, // show all text by default
-		record_mask_all_inputs: true // mask all inputs (this is already the default, but explicit is fine)
-	});
+	try {
+		mixpanel.init(PUBLIC_MIXPANEL_TOKEN, {
+			debug: false,
+			track_pageview: false,
+			cookie_domain: '.mycareerfingerprint.com',
+			record_sessions_percent: 1,
+			record_mask_all_text: false, // show all text by default
+			record_mask_all_inputs: true // mask all inputs (this is already the default, but explicit is fine)
+		});
+	} catch {
+		// mixpanel failed to initialize — tracking is unavailable but the app continues
+	}
 </script>
 
 <svelte:head>
@@ -74,6 +78,7 @@
 	<!-- Google Tag Manager (noscript) -->
 	<noscript
 		><iframe
+			title="noscript_gtm"
 			src={`https://www.googletagmanager.com/ns.html?id=${PUBLIC_GTM_ID}`}
 			height="0"
 			width="0"

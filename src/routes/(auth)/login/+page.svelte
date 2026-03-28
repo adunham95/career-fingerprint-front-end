@@ -4,21 +4,21 @@
 	import SplitCard from '$lib/Components/Containers/SplitCard.svelte';
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
-	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 	import AuthValueProps from '../authValueProps.svelte';
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 	import { authClient } from '$lib/auth-client';
+	import { classifyError } from '$lib/errors';
+	import BannerError from '$lib/Components/FormElements/BannerError.svelte';
 
 	const { data: pageData } = $props();
 
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
-	let showError = $state(false);
-	let errorMessage = $state('Invalid login credentials. Please try again.');
+	let bannerError = $state<string | null>(null);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Login');
@@ -26,20 +26,19 @@
 
 	async function login(e: SubmitEvent) {
 		e.preventDefault();
-		showError = false;
+		bannerError = null;
 		isLoading = true;
 
 		const { data, error } = await authClient.signIn.email({ email, password });
 
 		if (error) {
-			errorMessage = error.message ?? 'Invalid login credentials. Please try again.';
-			showError = true;
+			const { userMessage } = classifyError(error.code, error.message ?? '');
+			bannerError = userMessage;
 			isLoading = false;
 			return;
 		}
 
 		trackingStore.identifyUser(String(data.user.id), data.user.email);
-		toastStore.show({ message: 'Successfully logged in', type: 'success' });
 		goto(pageData.redirectPath);
 		isLoading = false;
 	}
@@ -53,9 +52,7 @@
 	<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Welcome back.</h3>
 	<p class="mb-6 text-sm tracking-wide text-gray-400">Pick up right where you left off.</p>
 
-	{#if showError}
-		<p class="text-error-600 mb-4 text-sm">{errorMessage}</p>
-	{/if}
+	<BannerError message={bannerError} />
 
 	<form
 		id="login-form"

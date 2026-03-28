@@ -42,7 +42,7 @@
 		}
 		try {
 			await $createMeetingNotes.mutateAsync({ note: currentNote, meetingID: data.meetingID || '' });
-			toastStore.show({ message: 'Note Save', type: 'success' });
+			toastStore.show({ message: 'Note saved', type: 'success' });
 			currentNote = '';
 		} catch (error) {
 			toastStore.show({ message: 'Could not save note', type: 'error' });
