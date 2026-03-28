@@ -61,13 +61,23 @@
 			errorText['email'] = 'Email is required.';
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'email',
-				reason: 'required'
+				reason: 'required',
+				email_domain: email.includes('@') ? email.split('@')[1] : null,
+				has_spaces: email.includes(' '),
+				has_leading_trailing_space: email !== email.trim(),
+				has_plus: email.includes('+'),
+				char_count: email.length.toString()
 			});
 		} else if (!isValidEmail(email)) {
 			errorText['email'] = 'Please enter a valid email address.';
 			trackingStore.trackAction('Register - Validation Error', {
 				field: 'email',
-				reason: 'invalid_format'
+				reason: 'invalid_format',
+				email_domain: email.includes('@') ? email.split('@')[1] : null,
+				has_spaces: email.includes(' '),
+				has_leading_trailing_space: email !== email.trim(),
+				has_plus: email.includes('+'),
+				char_count: email.length.toString()
 			});
 		}
 
