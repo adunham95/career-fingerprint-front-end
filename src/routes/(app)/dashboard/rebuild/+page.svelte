@@ -26,8 +26,11 @@
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const stats = useGetUserStats();
 
-	const hasStarterFeatures = useFeatureGate(1, data.user);
-	const hasProFeatures = useFeatureGate(2, data.user);
+	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:create', data.user);
+	const hasMeetingFeature = useFeatureGate('meeting:view', data.user);
+	const hasMeetingPrepFeature = useFeatureGate('meeting:prep', data.user);
+
 	let isAchievementOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 
@@ -119,7 +122,7 @@
 						icon={startIcon}
 						color="green"
 						actionName="Add Achievement Click"
-						premiumLocked={!hasStarterFeatures}
+						premiumLocked={!hasCreateAchievementFeature}
 						onClick={() => {
 							isAchievementOpen = true;
 						}}
@@ -132,7 +135,7 @@
 						href="/goals"
 						actionName="Goals Click"
 						color="orange"
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasGoalFeature}
 					/>
 
 					<DashboardActionButtonV2
@@ -143,7 +146,7 @@
 						disabled={isLoadingNewMeeting}
 						actionName="Start Meeting Click"
 						premiumAction={true}
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasMeetingFeature}
 						onClick={() => {
 							createNewMeeting();
 						}}
@@ -163,7 +166,7 @@
 						color="purple"
 						href="/prep"
 						premiumAction={true}
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasMeetingPrepFeature}
 					/>
 				</div>
 			</Card>

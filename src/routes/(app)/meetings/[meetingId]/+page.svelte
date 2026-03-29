@@ -96,7 +96,7 @@
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if useFeatureGate(2, data.user)}
+					{#if useFeatureGate('meeting:cheatsheet', data.user)}
 						<a
 							href={`${PUBLIC_API_URL}/notes/meeting/${data.meetingID}/pdf`}
 							type="button"
@@ -116,7 +116,7 @@
 						</div>
 					{/if}
 					{#if isUpcomingOrRecent($myMeeting.data?.time || new Date())}
-						{#if useFeatureGate(2, data.user)}
+						{#if useFeatureGate('meeting:cheatsheet', data.user)}
 							<a
 								href={`/prep/${data.meetingID}`}
 								type="button"
@@ -213,7 +213,7 @@
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
 						{#if (data.highlights || []).length === 0}
-							{#if useFeatureGate(2, data.user)}
+							{#if useFeatureGate('meeting:cheatsheet', data.user)}
 								<InfoBlock
 									title="Empty Highlights"
 									description="The highlight list is empty. Prepare for a meeting to add new highlights"

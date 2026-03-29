@@ -25,8 +25,10 @@
 	let isLoadingNewMeeting = $state(false);
 	let showSelectOrg = $state(false);
 	let isLoadingInOrg = $state<string | null>(null);
-	const hasStarterFeatures = useFeatureGate(1, data.user);
-	const hasProFeatures = useFeatureGate(2, data.user);
+	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:create', data.user);
+	const hasMeetingFeature = useFeatureGate('meeting:view', data.user);
+	const hasMeetingPrepFeature = useFeatureGate('meeting:prep', data.user);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Dashboard');
@@ -72,7 +74,7 @@
 			icon={startIcon}
 			color="green"
 			actionName="Add Achievement Click"
-			premiumLocked={!hasStarterFeatures}
+			premiumLocked={!hasCreateAchievementFeature}
 			onClick={() => {
 				isAchievementOpen = true;
 			}}
@@ -85,7 +87,7 @@
 			href="/goals"
 			actionName="Goals Click"
 			color="orange"
-			premiumLocked={!hasProFeatures}
+			premiumLocked={!hasGoalFeature}
 		/>
 
 		<DashboardActionButton
@@ -96,7 +98,7 @@
 			disabled={isLoadingNewMeeting}
 			actionName="Start Meeting Click"
 			premiumAction={true}
-			premiumLocked={!hasProFeatures}
+			premiumLocked={!hasGoalFeature}
 			onClick={() => {
 				createNewMeeting();
 			}}
@@ -116,7 +118,7 @@
 			color="purple"
 			href="/prep"
 			premiumAction={true}
-			premiumLocked={!hasProFeatures}
+			premiumLocked={!hasMeetingPrepFeature}
 		/>
 
 		{#if (data?.user?.orgAdminLinks ?? []).length === 1}
@@ -155,7 +157,7 @@
 		<div class="bg-surface-100 rounded border-3 border-gray-200 p-4 md:col-span-2">
 			<div class="flex justify-between">
 				<h1 class="font-title pb-4 text-2xl">Upcoming</h1>
-				{#if hasStarterFeatures}
+				{#if hasMeetingFeature}
 					<button
 						class="btn btn-outline--secondary flex items-center py-1"
 						onclick={() => {
@@ -168,7 +170,7 @@
 			<ol class=" divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
 				{#if ($upcomingMeetings.data || []).length > 0}
 					{#each $upcomingMeetings.data || [] as meeting}
-						<UpcomingEventRow {...meeting} disableActions={!hasProFeatures} />
+						<UpcomingEventRow {...meeting} disableActions={!hasMeetingFeature} />
 					{/each}
 				{:else}
 					<InfoBlock

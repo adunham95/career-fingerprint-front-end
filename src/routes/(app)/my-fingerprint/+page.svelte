@@ -175,7 +175,7 @@
 <PageContainer className="divide-y divide-gray-300">
 	<TwoColumn title={'My Jobs'}>
 		{#snippet subSection()}
-			{#if useFeatureGate(1, data.user)}
+			{#if useFeatureGate('jobPosition:create', data.user)}
 				<button
 					class="btn btn--primary"
 					onclick={() => {
@@ -228,7 +228,7 @@
 	</TwoColumn>
 	<TwoColumn title={'My Education'}>
 		{#snippet subSection()}
-			{#if useFeatureGate(1, data.user)}
+			{#if useFeatureGate('education:create', data.user)}
 				<button
 					class="btn btn--primary"
 					onclick={() => {
@@ -280,7 +280,7 @@
 		</div>
 	</TwoColumn>
 	<TwoColumn title={'My Skills'}>
-		{#if useFeatureGate(1, data.user)}
+		{#if useFeatureGate('skills:edit', data.user)}
 			<Card>
 				<ChipList bind:chips={chipList} onChange={saveSkills} />
 			</Card>

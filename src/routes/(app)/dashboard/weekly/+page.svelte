@@ -9,9 +9,11 @@
 
 	const { data } = $props();
 
-	const hasProFeatures = useFeatureGate(2, data.user);
-	const myGoals = useGetMyGoals({ active: true, limit: 3, page: 1 }, hasProFeatures);
-	const goalQuickUpdateCardPromise = hasProFeatures
+	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:create', data.user);
+
+	const myGoals = useGetMyGoals({ active: true, limit: 3, page: 1 }, hasGoalFeature);
+	const goalQuickUpdateCardPromise = hasGoalFeature
 		? import('$lib/Components/GoalCard/GoalQuickUpdateCard.svelte')
 		: null;
 
@@ -31,18 +33,21 @@
 <PageContainer>
 	<div class="grid grid-cols-1 gap-4 py-2 md:grid-cols-2">
 		<div>
-			<Card headline="Add New Achievement">
-				<NewAchievementForm id="check-in" />
-				<div class="flex justify-end pt-2">
-					<button
-						form="check-in"
-						type="submit"
-						class="btn btn--primary"
-						onclick={() => trackingStore.trackAction('Add Achievement Click')}
-						>Add Achievement</button
-					>
-				</div>
-			</Card>
+			{#if hasCreateAchievementFeature}
+				<Card headline="Add New Achievement">
+					<NewAchievementForm id="check-in" />
+					<div class="flex justify-end pt-2">
+						<button
+							form="check-in"
+							type="submit"
+							class="btn btn--primary"
+							onclick={() => trackingStore.trackAction('Add Achievement Click')}
+							>Add Achievement</button
+						>
+					</div>
+				</Card>{:else}
+				<div>No Feature</div>
+			{/if}
 		</div>
 		<div class="space-y-4">
 			<div class="flex items-end justify-between">
@@ -56,7 +61,7 @@
 			</div>
 
 			<!-- Goal mini-cards -->
-			{#if hasProFeatures}
+			{#if hasGoalFeature}
 				{#if goalQuickUpdateCardPromise}
 					{#await goalQuickUpdateCardPromise}
 						<div class="rounded-lg border border-gray-200 bg-white p-4 text-sm text-gray-600">
