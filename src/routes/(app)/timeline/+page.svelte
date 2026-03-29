@@ -488,5 +488,6 @@
 			isAchievementOpen = false;
 			selectedAchievement = null;
 		}}
+		user={data.user}
 	/>
 </Drawer>

@@ -35,7 +35,7 @@
 		<div>
 			{#if hasCreateAchievementFeature}
 				<Card headline="Add New Achievement">
-					<NewAchievementForm id="check-in" />
+					<NewAchievementForm id="check-in" user={data.user} />
 					<div class="flex justify-end pt-2">
 						<button
 							form="check-in"

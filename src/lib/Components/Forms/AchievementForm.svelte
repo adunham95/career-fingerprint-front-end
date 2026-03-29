@@ -9,10 +9,11 @@
 		useCreateAchievementMutation,
 		useUpdateAchievementMutation
 	} from '$lib/API/achievements';
-	import type { Achievement } from '../../../app';
+	import type { Achievement, CurrentUser } from '../../../app';
 	import SplitDateInput from '../FormElements/SplitDateInput.svelte';
 	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
 	import InfoBlock from '../InfoBlock.svelte';
+	import { useFeatureGate } from '$lib/Utils/featureGate';
 
 	interface Props {
 		id: string;
@@ -20,14 +21,18 @@
 		achievement?: Partial<Achievement> | null;
 		updateOnChange?: boolean;
 		isMocking?: boolean;
+		user?: CurrentUser | null;
 	}
 
 	let {
 		id,
 		onSuccess = () => null,
 		achievement = $bindable({}),
-		isMocking = false
+		isMocking = false,
+		user = null
 	}: Props = $props();
+
+	const canLinkAchievements = $derived(useFeatureGate('achievements:link', user));
 
 	$inspect(achievement);
 
@@ -179,69 +184,73 @@
 			bind:value={result}
 			errorText={error?.result}
 		/>
-		<p>Link To:</p>
-		<nav aria-label="Tabs" class="flex space-x-4">
-			<!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
-			<button
-				type="button"
-				onclick={() => {
-					linkType = 'job';
-					educationID = null;
-				}}
-				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'job' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
-			>
-				Job
-			</button>
-			<button
-				type="button"
-				onclick={() => {
-					linkType = 'education';
-					jobPositionID = null;
-				}}
-				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'education' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
-			>
-				Education
-			</button>
-		</nav>
-		{#if linkType === 'job'}
-			{#if ($jobs.data?.length || 0) > 0}
-				<Select
-					id="select-job"
-					label="Link To Job"
-					bind:value={jobPositionID}
-					options={[
-						{ id: null, label: 'Select a Job' },
-						...($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))
-					]}
-					errorText={error?.jobPositionID}
-				/>
-			{:else}
-				<InfoBlock icon="lightbulb" title="Missing Education">
-					Add a job in Your Fingerprint, then come back to link this achievement to it.
-					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
-				</InfoBlock>
+		{#if canLinkAchievements}
+			<p>Link To:</p>
+			<nav aria-label="Tabs" class="flex space-x-4">
+				<!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
+				<button
+					type="button"
+					onclick={() => {
+						linkType = 'job';
+						educationID = null;
+					}}
+					class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'job' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+				>
+					Job
+				</button>
+				<button
+					type="button"
+					onclick={() => {
+						linkType = 'education';
+						jobPositionID = null;
+					}}
+					class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'education' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+				>
+					Education
+				</button>
+			</nav>
+			{#if linkType === 'job'}
+				{#if ($jobs.data?.length || 0) > 0}
+					<Select
+						id="select-job"
+						label="Link To Job"
+						bind:value={jobPositionID}
+						options={[
+							{ id: null, label: 'Select a Job' },
+							...($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))
+						]}
+						errorText={error?.jobPositionID}
+					/>
+				{:else}
+					<InfoBlock icon="lightbulb" title="Missing Education">
+						Add a job in Your Fingerprint, then come back to link this achievement to it.
+						<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+					</InfoBlock>
+				{/if}
+			{:else if linkType === 'education'}
+				{#if ($education.data?.length || 0) > 0}
+					<Select
+						id="select-education"
+						label="Link To Education"
+						bind:value={educationID}
+						options={[
+							{ id: null, label: 'Select Education' },
+							...($education.data || []).map((j) => ({
+								id: j.id,
+								label: `${j.degree} | ${j.institution}`
+							}))
+						]}
+						errorText={error?.educationID}
+					/>
+				{:else}
+					<InfoBlock icon="lightbulb" title="Missing Education">
+						Add a education in Your Fingerprint, then come back to link this achievement to it.
+						<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+					</InfoBlock>
+				{/if}
 			{/if}
-		{:else if linkType === 'education'}
-			{#if ($education.data?.length || 0) > 0}
-				<Select
-					id="select-education"
-					label="Link To Education"
-					bind:value={educationID}
-					options={[
-						{ id: null, label: 'Select Education' },
-						...($education.data || []).map((j) => ({
-							id: j.id,
-							label: `${j.degree} | ${j.institution}`
-						}))
-					]}
-					errorText={error?.educationID}
-				/>
-			{:else}
-				<InfoBlock icon="lightbulb" title="Missing Education">
-					Add a education in Your Fingerprint, then come back to link this achievement to it.
-					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
-				</InfoBlock>
-			{/if}
+		{:else}
+			<p>A Premium version of needed to link achievements to jobs or eduction</p>
 		{/if}
 		<!-- TODO Figure out date details -->
 		<SplitDateInput

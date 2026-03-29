@@ -3,6 +3,7 @@
 	import NewMeetingForm from '$lib/Components/Forms/MeetingForm.svelte';
 	import Drawer from '$lib/Components/Overlays/Drawer.svelte';
 	import { trackingStore } from '$lib/Stores/tracking.js';
+	import { useFeatureGate } from '$lib/Utils/featureGate.js';
 	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
@@ -23,18 +24,20 @@
 				<h1 class="font-title text-2xl font-semibold text-gray-900">Select a meeting</h1>
 				<p class="mt-2 text-sm text-gray-700">Select a meeting to make a cheatsheet.</p>
 			</div>
-			<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-				<button
-					type="button"
-					onclick={() => {
-						isNewMeetingOpen = true;
-						trackingStore.trackAction('Create New Meeting Click');
-					}}
-					class="btn btn--primary"
-				>
-					Create New Meeting
-				</button>
-			</div>
+			{#if useFeatureGate('meeting:create', data.user)}
+				<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+					<button
+						type="button"
+						onclick={() => {
+							isNewMeetingOpen = true;
+							trackingStore.trackAction('Create New Meeting Click');
+						}}
+						class="btn btn--primary"
+					>
+						Create New Meeting
+					</button>
+				</div>
+			{/if}
 		</div>
 		<div class="-mx-4 mt-8 sm:-mx-0">
 			<table class="min-w-full divide-y divide-gray-300">

@@ -181,7 +181,7 @@
 	saveFormID="newAchievement"
 >
 	{#if isAchievementOpen}
-		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} user={data.user} />
 	{/if}
 </Drawer>
 
