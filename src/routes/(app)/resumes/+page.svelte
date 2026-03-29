@@ -19,7 +19,7 @@
 	console.log(data);
 
 	let isLoading = $state(false);
-	const featureEnabled = useFeatureGate('resume:create', data.user);
+	const featureEnabled = useFeatureGate('resume:read', data.user);
 
 	async function createNewResume(e: Event) {
 		e.preventDefault();

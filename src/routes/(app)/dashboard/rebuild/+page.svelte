@@ -27,7 +27,7 @@
 	const stats = useGetUserStats();
 
 	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
-	const hasGoalFeature = useFeatureGate('goals:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:read', data.user);
 	const hasMeetingFeature = useFeatureGate('meeting:view', data.user);
 	const hasMeetingPrepFeature = useFeatureGate('meeting:prep', data.user);
 

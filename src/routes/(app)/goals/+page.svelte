@@ -31,7 +31,7 @@
 
 	const myGoals = useGetMyGoals({ active: true });
 
-	const hasProFeatures = useFeatureGate('goals:create', data.user);
+	const hasProFeatures = useFeatureGate('goals:read', data.user);
 
 	onMount(() => {
 		trackingStore.pageViewEvent('Goals');

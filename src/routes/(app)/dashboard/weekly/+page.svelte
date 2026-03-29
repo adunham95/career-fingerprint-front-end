@@ -10,7 +10,7 @@
 	const { data } = $props();
 
 	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
-	const hasGoalFeature = useFeatureGate('goals:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:read', data.user);
 
 	const myGoals = useGetMyGoals({ active: true, limit: 3, page: 1 }, hasGoalFeature);
 	const goalQuickUpdateCardPromise = hasGoalFeature
