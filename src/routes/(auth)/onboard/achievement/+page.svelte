@@ -124,7 +124,13 @@
 	{:else}
 		<div>
 			<p class="text-base text-gray-500">Want to set up your trial membership first?</p>
-			<a href="/onboard/membership" class="text-primary hover:text-primary-700">
+			<a
+				href="/onboard/membership"
+				class="text-primary hover:text-primary-700"
+				onclick={() => {
+					trackingStore.trackAction('Onboard Achievement - Skip To Membership Click');
+				}}
+			>
 				Skip to membership
 			</a>
 		</div>
