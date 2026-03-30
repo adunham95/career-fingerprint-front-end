@@ -15,6 +15,9 @@
 	import InfoBlock from '../InfoBlock.svelte';
 	import { useFeatureGate } from '$lib/Utils/featureGate';
 	import FeatureBlock from '../FeatureBlock.svelte';
+	import Modal from '../Overlays/Modal.svelte';
+	import { ApiError } from '$lib/API/apiClient';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	interface Props {
 		id: string;
@@ -50,6 +53,8 @@
 	let selectedCategory = $state('');
 	let error = $state<{ [key: string]: string }>({});
 	let linkType = $state<'job' | 'education'>('job');
+	let showLimitModal = $state(false);
+	let limitMessage = $state('');
 
 	let education = useMyEducationQuery();
 	let jobs = useMyJobPositionsQuery();
@@ -144,14 +149,49 @@
 			educationID = null;
 			selectedCategory = '';
 			onSuccess();
-		} catch (error) {
-			toastStore.show({
-				message: error?.message || 'Could not save your achievement. Try again.',
-				type: 'error'
-			});
+		} catch (err) {
+			if (err instanceof ApiError && err.statusCode === 403) {
+				limitMessage = err.message;
+				showLimitModal = true;
+			} else {
+				toastStore.show({
+					message: err?.message || 'Could not save your achievement. Try again.',
+					type: 'error'
+				});
+			}
 		}
 	}
 </script>
+
+<Modal bind:isOpen={showLimitModal} title="You've hit your limit">
+	{#snippet children()}
+		<div class="mt-1 space-y-3">
+			<p class="text-sm text-gray-600">{limitMessage}</p>
+			<p class="text-sm text-gray-600">
+				Upgrade your plan to keep adding achievements and building your career fingerprint.
+			</p>
+		</div>
+	{/snippet}
+	{#snippet actions()}
+		<button
+			type="button"
+			onclick={() => (showLimitModal = false)}
+			class="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+		>
+			Maybe later
+		</button>
+		<a
+			href="/setting/membership/"
+			onclick={() => {
+				trackingStore.trackAction('Upgrade Membership Click - Achievement Limit');
+				showLimitModal = false;
+			}}
+			class="bg-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium text-white"
+		>
+			Upgrade plan
+		</a>
+	{/snippet}
+</Modal>
 
 <form {id} class="@container/new-achive-form" onsubmit={submitFunction}>
 	<div class="grid gap-2">
