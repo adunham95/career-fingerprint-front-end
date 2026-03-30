@@ -9,10 +9,15 @@
 		useCreateAchievementMutation,
 		useUpdateAchievementMutation
 	} from '$lib/API/achievements';
-	import type { Achievement } from '../../../app';
+	import type { Achievement, CurrentUser } from '../../../app';
 	import SplitDateInput from '../FormElements/SplitDateInput.svelte';
 	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
 	import InfoBlock from '../InfoBlock.svelte';
+	import { useFeatureGate } from '$lib/Utils/featureGate';
+	import FeatureBlock from '../FeatureBlock.svelte';
+	import Modal from '../Overlays/Modal.svelte';
+	import { ApiError } from '$lib/API/apiClient';
+	import { trackingStore } from '$lib/Stores/tracking';
 
 	interface Props {
 		id: string;
@@ -20,14 +25,18 @@
 		achievement?: Partial<Achievement> | null;
 		updateOnChange?: boolean;
 		isMocking?: boolean;
+		user?: CurrentUser | null;
 	}
 
 	let {
 		id,
 		onSuccess = () => null,
 		achievement = $bindable({}),
-		isMocking = false
+		isMocking = false,
+		user = null
 	}: Props = $props();
+
+	const canLinkAchievements = $derived(useFeatureGate('achievements:link', user));
 
 	$inspect(achievement);
 
@@ -44,6 +53,8 @@
 	let selectedCategory = $state('');
 	let error = $state<{ [key: string]: string }>({});
 	let linkType = $state<'job' | 'education'>('job');
+	let showLimitModal = $state(false);
+	let limitMessage = $state('');
 
 	let education = useMyEducationQuery();
 	let jobs = useMyJobPositionsQuery();
@@ -105,15 +116,6 @@
 			return;
 		}
 
-		// Removing the Job or Education Requirement
-		// if (!jobPositionID && !educationID) {
-		// 	error = {
-		// 		jobPositionID: 'Link Job or Education',
-		// 		educationID: 'Link Job or Education'
-		// 	};
-		// 	return;
-		// }
-
 		let achDetails = {
 			description,
 			result,
@@ -147,11 +149,49 @@
 			educationID = null;
 			selectedCategory = '';
 			onSuccess();
-		} catch (error) {
-			toastStore.show({ message: 'Could not save your achievement. Try again.', type: 'error' });
+		} catch (err) {
+			if (err instanceof ApiError && err.statusCode === 403) {
+				limitMessage = err.message;
+				showLimitModal = true;
+			} else {
+				toastStore.show({
+					message: err?.message || 'Could not save your achievement. Try again.',
+					type: 'error'
+				});
+			}
 		}
 	}
 </script>
+
+<Modal bind:isOpen={showLimitModal} title="You've hit your limit">
+	{#snippet children()}
+		<div class="mt-1 space-y-3">
+			<p class="text-sm text-gray-600">{limitMessage}</p>
+			<p class="text-sm text-gray-600">
+				Upgrade your plan to keep adding achievements and building your career fingerprint.
+			</p>
+		</div>
+	{/snippet}
+	{#snippet actions()}
+		<button
+			type="button"
+			onclick={() => (showLimitModal = false)}
+			class="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+		>
+			Maybe later
+		</button>
+		<a
+			href="/setting/membership/"
+			onclick={() => {
+				trackingStore.trackAction('Upgrade Membership Click - Achievement Limit');
+				showLimitModal = false;
+			}}
+			class="bg-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium text-white"
+		>
+			Upgrade plan
+		</a>
+	{/snippet}
+</Modal>
 
 <form {id} class="@container/new-achive-form" onsubmit={submitFunction}>
 	<div class="grid gap-2">
@@ -179,69 +219,76 @@
 			bind:value={result}
 			errorText={error?.result}
 		/>
-		<p>Link To:</p>
-		<nav aria-label="Tabs" class="flex space-x-4">
-			<!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
-			<button
-				type="button"
-				onclick={() => {
-					linkType = 'job';
-					educationID = null;
-				}}
-				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'job' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
-			>
-				Job
-			</button>
-			<button
-				type="button"
-				onclick={() => {
-					linkType = 'education';
-					jobPositionID = null;
-				}}
-				class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'education' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
-			>
-				Education
-			</button>
-		</nav>
-		{#if linkType === 'job'}
-			{#if ($jobs.data?.length || 0) > 0}
-				<Select
-					id="select-job"
-					label="Link To Job"
-					bind:value={jobPositionID}
-					options={[
-						{ id: null, label: 'Select a Job' },
-						...($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))
-					]}
-					errorText={error?.jobPositionID}
-				/>
-			{:else}
-				<InfoBlock icon="lightbulb" title="Missing Education">
-					Add a job in Your Fingerprint, then come back to link this achievement to it.
-					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
-				</InfoBlock>
+		{#if canLinkAchievements}
+			<p>Link To:</p>
+			<nav aria-label="Tabs" class="flex space-x-4">
+				<!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
+				<button
+					type="button"
+					onclick={() => {
+						linkType = 'job';
+						educationID = null;
+					}}
+					class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'job' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+				>
+					Job
+				</button>
+				<button
+					type="button"
+					onclick={() => {
+						linkType = 'education';
+						jobPositionID = null;
+					}}
+					class={`rounded-md px-3 py-2 text-sm font-medium  ${linkType === 'education' ? 'bg-primary/75' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'}`}
+				>
+					Education
+				</button>
+			</nav>
+			{#if linkType === 'job'}
+				{#if ($jobs.data?.length || 0) > 0}
+					<Select
+						id="select-job"
+						label="Link To Job"
+						bind:value={jobPositionID}
+						options={[
+							{ id: null, label: 'Select a Job' },
+							...($jobs.data || []).map((j) => ({ id: j.id, label: `${j.name} | ${j.company}` }))
+						]}
+						errorText={error?.jobPositionID}
+					/>
+				{:else}
+					<InfoBlock icon="lightbulb" title="Missing Education">
+						Add a job in Your Fingerprint, then come back to link this achievement to it.
+						<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+					</InfoBlock>
+				{/if}
+			{:else if linkType === 'education'}
+				{#if ($education.data?.length || 0) > 0}
+					<Select
+						id="select-education"
+						label="Link To Education"
+						bind:value={educationID}
+						options={[
+							{ id: null, label: 'Select Education' },
+							...($education.data || []).map((j) => ({
+								id: j.id,
+								label: `${j.degree} | ${j.institution}`
+							}))
+						]}
+						errorText={error?.educationID}
+					/>
+				{:else}
+					<InfoBlock icon="lightbulb" title="Missing Education">
+						Add a education in Your Fingerprint, then come back to link this achievement to it.
+						<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
+					</InfoBlock>
+				{/if}
 			{/if}
-		{:else if linkType === 'education'}
-			{#if ($education.data?.length || 0) > 0}
-				<Select
-					id="select-education"
-					label="Link To Education"
-					bind:value={educationID}
-					options={[
-						{ id: null, label: 'Select Education' },
-						...($education.data || []).map((j) => ({
-							id: j.id,
-							label: `${j.degree} | ${j.institution}`
-						}))
-					]}
-					errorText={error?.educationID}
-				/>
-			{:else}
-				<InfoBlock icon="lightbulb" title="Missing Education">
-					Add a education in Your Fingerprint, then come back to link this achievement to it.
-					<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
-				</InfoBlock>
-			{/if}
+		{:else}
+			<FeatureBlock
+				title="Link Achievements"
+				description="A Premium version of needed to link achievements to jobs or eduction"
+			/>
 		{/if}
 		<!-- TODO Figure out date details -->
 		<SplitDateInput

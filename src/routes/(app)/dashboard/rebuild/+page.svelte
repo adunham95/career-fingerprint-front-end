@@ -15,6 +15,7 @@
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import { onMount } from 'svelte';
 	import { useGetUserStats } from '$lib/API/user.js';
+	import TrialBanner from '$lib/Components/TrialBanner.svelte';
 	let { data } = $props();
 
 	onMount(() => {
@@ -26,8 +27,11 @@
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const stats = useGetUserStats();
 
-	const hasStarterFeatures = useFeatureGate(1, data.user);
-	const hasProFeatures = useFeatureGate(2, data.user);
+	const hasCreateAchievementFeature = useFeatureGate('achievements:create', data.user);
+	const hasGoalFeature = useFeatureGate('goals:read', data.user);
+	const hasMeetingFeature = useFeatureGate('meeting:view', data.user);
+	const hasMeetingPrepFeature = useFeatureGate('meeting:prep', data.user);
+
 	let isAchievementOpen = $state(false);
 	let isLoadingNewMeeting = $state(false);
 
@@ -53,6 +57,12 @@
 			<StreakBanner streak={$streak.data} />
 		</div>
 	</div>
+
+	<TrialBanner
+		isTrial={$stats.data?.isTrialUser}
+		trialLimit={$stats.data?.limits?.achievements}
+		currentAchievementCount={$stats.data?.totalAchievements}
+	/>
 
 	<Card className="mt-5 p-0">
 		<dl
@@ -119,7 +129,7 @@
 						icon={startIcon}
 						color="green"
 						actionName="Add Achievement Click"
-						premiumLocked={!hasStarterFeatures}
+						premiumLocked={!hasCreateAchievementFeature}
 						onClick={() => {
 							isAchievementOpen = true;
 						}}
@@ -132,7 +142,7 @@
 						href="/goals"
 						actionName="Goals Click"
 						color="orange"
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasGoalFeature}
 					/>
 
 					<DashboardActionButtonV2
@@ -143,7 +153,7 @@
 						disabled={isLoadingNewMeeting}
 						actionName="Start Meeting Click"
 						premiumAction={true}
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasMeetingFeature}
 						onClick={() => {
 							createNewMeeting();
 						}}
@@ -163,7 +173,7 @@
 						color="purple"
 						href="/prep"
 						premiumAction={true}
-						premiumLocked={!hasProFeatures}
+						premiumLocked={!hasMeetingPrepFeature}
 					/>
 				</div>
 			</Card>
@@ -178,7 +188,11 @@
 	saveFormID="newAchievement"
 >
 	{#if isAchievementOpen}
-		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} />
+		<NewAchievementForm
+			id="newAchievement"
+			onSuccess={() => (isAchievementOpen = false)}
+			user={data.user}
+		/>
 	{/if}
 </Drawer>
 

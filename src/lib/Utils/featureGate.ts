@@ -2,8 +2,8 @@ import type { CurrentUser } from '../../app';
 
 const featureGateCache = new Map<string, boolean>();
 
-export function useFeatureGate(featureLevel: number, user: CurrentUser | null) {
-	const key = `${featureLevel}-${user?.planLevel ?? 'null'}`;
+export function useFeatureGate(feature: string, user: CurrentUser | null) {
+	const key = `${feature}-${user?.id ?? 'null'}`;
 
 	if (featureGateCache.has(key)) {
 		return featureGateCache.get(key)!;
@@ -14,7 +14,7 @@ export function useFeatureGate(featureLevel: number, user: CurrentUser | null) {
 		return false;
 	}
 
-	const result = user.planLevel >= featureLevel;
+	const result = user?.subscription?.plan.features?.includes(feature) ?? false;
 	featureGateCache.set(key, result);
 
 	return result;
