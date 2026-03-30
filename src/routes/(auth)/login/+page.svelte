@@ -28,6 +28,9 @@
 		e.preventDefault();
 		bannerError = null;
 		isLoading = true;
+		setTimeout(() => {
+			isLoading = false;
+		}, 5000);
 
 		const { data, error } = await authClient.signIn.email({ email, password });
 
@@ -40,7 +43,6 @@
 
 		trackingStore.identifyUser(String(data.user.id), data.user.email);
 		goto(pageData.redirectPath);
-		isLoading = false;
 	}
 </script>
 

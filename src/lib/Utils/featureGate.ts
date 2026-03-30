@@ -14,7 +14,7 @@ export function useFeatureGate(feature: string, user: CurrentUser | null) {
 		return false;
 	}
 
-	const result = user.subscription?.features?.includes(feature) ?? false;
+	const result = user?.subscription?.plan.features?.includes(feature) ?? false;
 	featureGateCache.set(key, result);
 
 	return result;
