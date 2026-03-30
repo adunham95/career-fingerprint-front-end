@@ -14,6 +14,7 @@
 	import { buildDateWithCurrentTime } from '$lib/Utils/buildDateWCurrentTime';
 	import InfoBlock from '../InfoBlock.svelte';
 	import { useFeatureGate } from '$lib/Utils/featureGate';
+	import FeatureBlock from '../FeatureBlock.svelte';
 
 	interface Props {
 		id: string;
@@ -110,15 +111,6 @@
 			return;
 		}
 
-		// Removing the Job or Education Requirement
-		// if (!jobPositionID && !educationID) {
-		// 	error = {
-		// 		jobPositionID: 'Link Job or Education',
-		// 		educationID: 'Link Job or Education'
-		// 	};
-		// 	return;
-		// }
-
 		let achDetails = {
 			description,
 			result,
@@ -153,7 +145,10 @@
 			selectedCategory = '';
 			onSuccess();
 		} catch (error) {
-			toastStore.show({ message: 'Could not save your achievement. Try again.', type: 'error' });
+			toastStore.show({
+				message: error?.message || 'Could not save your achievement. Try again.',
+				type: 'error'
+			});
 		}
 	}
 </script>
@@ -250,7 +245,10 @@
 				{/if}
 			{/if}
 		{:else}
-			<p>A Premium version of needed to link achievements to jobs or eduction</p>
+			<FeatureBlock
+				title="Link Achievements"
+				description="A Premium version of needed to link achievements to jobs or eduction"
+			/>
 		{/if}
 		<!-- TODO Figure out date details -->
 		<SplitDateInput

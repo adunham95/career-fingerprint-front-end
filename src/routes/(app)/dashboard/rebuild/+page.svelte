@@ -15,6 +15,7 @@
 	import NewAchievementForm from '$lib/Components/Forms/AchievementForm.svelte';
 	import { onMount } from 'svelte';
 	import { useGetUserStats } from '$lib/API/user.js';
+	import TrialBanner from '$lib/Components/TrialBanner.svelte';
 	let { data } = $props();
 
 	onMount(() => {
@@ -56,6 +57,12 @@
 			<StreakBanner streak={$streak.data} />
 		</div>
 	</div>
+
+	<TrialBanner
+		isTrial={$stats.data?.isTrialUser}
+		trialLimit={$stats.data?.limits?.achievements}
+		currentAchievementCount={$stats.data?.totalAchievements}
+	/>
 
 	<Card className="mt-5 p-0">
 		<dl
@@ -181,7 +188,11 @@
 	saveFormID="newAchievement"
 >
 	{#if isAchievementOpen}
-		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} user={data.user} />
+		<NewAchievementForm
+			id="newAchievement"
+			onSuccess={() => (isAchievementOpen = false)}
+			user={data.user}
+		/>
 	{/if}
 </Drawer>
 

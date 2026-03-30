@@ -316,6 +316,8 @@ export interface UserStats {
 	totalAchievementsBracket: string | number;
 	achievementsThisWeek: number;
 	activeGoals: number;
+	isTrialUser: boolean;
+	limits: Record<string, number>;
 }
 
 export async function getUserStats(): Promise<UserStats | null> {

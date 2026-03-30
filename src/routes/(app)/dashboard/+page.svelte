@@ -34,6 +34,8 @@
 		trackingStore.pageViewEvent('Dashboard');
 	});
 
+	console.log(data);
+
 	const createNewMeetingMutation = useCreateMeetingMutation();
 	const upcomingMeetings = useUpcomingMeetings(data.meetings);
 	const loadIntoOrgMutation = useLoginOrgAdminMutation();
@@ -190,7 +192,11 @@
 	saveFormID="newAchievement"
 >
 	{#if isAchievementOpen}
-		<NewAchievementForm id="newAchievement" onSuccess={() => (isAchievementOpen = false)} user={data.user} />
+		<NewAchievementForm
+			id="newAchievement"
+			onSuccess={() => (isAchievementOpen = false)}
+			user={data.user}
+		/>
 	{/if}
 </Drawer>
 
