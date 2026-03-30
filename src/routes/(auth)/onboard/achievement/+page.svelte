@@ -5,7 +5,6 @@
 	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { onMount } from 'svelte';
-	import OnboardSteps from '../OnboardSteps.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 
@@ -30,7 +29,8 @@
 		trackingStore.pageViewEvent('Onboard Achievement');
 	});
 
-	const nextStep = '/onboard/membership';
+	// const nextStep = '/onboard/membership';
+	const nextStep = '/dashboard';
 
 	async function handleNext() {
 		trackingStore.trackAction('Next Step Click - Achievement', {
@@ -122,7 +122,7 @@
 			</div>
 		</div>
 	{:else}
-		<div>
+		<!-- <div>
 			<p class="text-base text-gray-500">Want to set up your trial membership first?</p>
 			<a
 				href="/onboard/membership"
@@ -133,8 +133,7 @@
 			>
 				Skip to membership
 			</a>
-		</div>
-		<OnboardSteps step={1} />
+		</div> -->
 		<div class="space-y-6">
 			<TextArea
 				id="ach-desc"
