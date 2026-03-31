@@ -17,6 +17,13 @@ export function classifyError(
 		return { userMessage: SECURITY_ERROR, field: null };
 	}
 
+	if (
+		code === 'INVALID_EMAIL_OR_PASSWORD' ||
+		message.toLowerCase().includes('invalid email or password')
+	) {
+		return { userMessage: 'Check your password or email', field: 'email' };
+	}
+
 	if (code === 'INVALID_EMAIL' || message.toLowerCase().includes('invalid email')) {
 		return { userMessage: 'Please enter a valid email address.', field: 'email' };
 	}

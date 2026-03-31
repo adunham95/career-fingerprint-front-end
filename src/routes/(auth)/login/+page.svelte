@@ -109,7 +109,7 @@
 				href="/register"
 				class="text-primary hover:text-primary-700 md:ml-1"
 			>
-				Start a 14-day free trial
+				Start a limited free trial
 			</a>
 		</p>
 	</div>
