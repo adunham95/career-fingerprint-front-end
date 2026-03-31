@@ -7,7 +7,7 @@
 		streak === 0
 			? 'Log an achievement this week to begin'
 			: streak < 4
-				? 'Building momentum — keep going'
+				? 'Building momentum'
 				: streak < 12
 					? 'Consistency is compounding'
 					: "You're in rare company";
@@ -20,7 +20,8 @@
 	});
 </script>
 
-<div
+<a
+	href="/dashboard/weekly"
 	class="bg-secondary relative flex h-16 w-full items-center overflow-hidden rounded-[10px] px-7 shadow-[0_2px_12px_rgba(17,58,93,0.14)]"
 >
 	<!-- Shimmer sweep -->
@@ -49,7 +50,9 @@
 			>
 				Week streak
 			</span>
-			<span class="font-paragraph text-background/50 text-[0.7rem] font-light tracking-wide">
+			<span
+				class="font-paragraph text-background/50 hidden text-[0.7rem] font-light tracking-wide sm:block"
+			>
 				{message}
 			</span>
 		</div>
@@ -67,4 +70,4 @@
 			{/each}
 		</div>
 	</div>
-</div>
+</a>

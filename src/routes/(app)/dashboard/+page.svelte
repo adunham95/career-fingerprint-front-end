@@ -65,9 +65,7 @@
 	/>
 
 	<Card className="mt-5 p-0">
-		<dl
-			class="grid grid-cols-1 divide-gray-200 overflow-hidden md:grid-cols-2 md:divide-x md:divide-y-0"
-		>
+		<dl class="grid grid-cols-2 divide-x divide-y-0 divide-gray-200 overflow-hidden">
 			<div class="px-4 py-5 sm:p-6">
 				<dt class="text-base font-normal text-gray-900">Achievements</dt>
 				<dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -120,7 +118,7 @@
 				<AchievementActivity weekData={$activity.data} />
 			</Card>
 		</div>
-		<div class="col-span-3">
+		<div class="-order-1 col-span-3">
 			<Card headline="Quick Actions">
 				<div class="grid grid-cols-2 gap-2">
 					<DashboardActionButtonV2
