@@ -257,7 +257,7 @@
 						errorText={error?.jobPositionID}
 					/>
 				{:else}
-					<InfoBlock icon="lightbulb" title="Missing Education">
+					<InfoBlock icon="lightbulb" title="Missing Job">
 						Add a job in Your Fingerprint, then come back to link this achievement to it.
 						<a class="font-bold" href="/my-fingerprint"> Go to My Fingerprint </a>
 					</InfoBlock>
