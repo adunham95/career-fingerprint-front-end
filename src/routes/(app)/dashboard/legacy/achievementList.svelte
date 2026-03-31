@@ -3,7 +3,7 @@
 	import Timeline from '$lib/Components/Calender/Timeline.svelte';
 	import InfoBlock from '$lib/Components/InfoBlock.svelte';
 	import Loader from '$lib/Components/Loader.svelte';
-	import type { Achievement } from '../../../app';
+	import type { Achievement } from '../../../../app';
 
 	let { initialData = [] }: { initialData?: Achievement[] } = $props();
 

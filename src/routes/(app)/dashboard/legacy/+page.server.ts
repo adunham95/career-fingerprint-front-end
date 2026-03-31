@@ -1,5 +1,5 @@
 import { createApiClient } from '$lib/API/apiClient';
-import type { Achievement, Meeting } from '../../../app.js';
+import type { Achievement, Meeting } from '../../../../app.js';
 
 export const load = async (event) => {
 	try {
