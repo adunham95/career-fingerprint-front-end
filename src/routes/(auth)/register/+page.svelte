@@ -185,7 +185,7 @@
 		<h3 class="font-title text-secondary mb-1 text-2xl font-normal">Create an Account</h3>
 		<p class="mb-1 text-sm tracking-wide text-gray-600">Then Create Your First Achievement</p>
 		<p class="mb-1 text-sm tracking-wide text-gray-600">
-			Start your 14-day free trial. Cancel any time.
+			Start your limited free trial. Cancel any time.
 		</p>
 		<p class="mb-5 text-sm tracking-wide text-gray-600">
 			Already have an account? <a
