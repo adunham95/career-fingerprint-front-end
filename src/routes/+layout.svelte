@@ -13,6 +13,7 @@
 	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { queryClient } from '$lib/API/queryClient';
 	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
+	import { initAmplitude } from '$lib/Utils/Amplitude';
 
 	let { children } = $props();
 	try {
@@ -24,6 +25,12 @@
 			record_mask_all_text: false, // show all text by default
 			record_mask_all_inputs: true // mask all inputs (this is already the default, but explicit is fine)
 		});
+	} catch {
+		// mixpanel failed to initialize — tracking is unavailable but the app continues
+	}
+
+	try {
+		initAmplitude();
 	} catch {
 		// mixpanel failed to initialize — tracking is unavailable but the app continues
 	}

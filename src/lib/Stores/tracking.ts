@@ -2,6 +2,7 @@ import mixpanel from 'mixpanel-browser';
 import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { PUBLIC_MIXPANEL_ENABLED } from '$env/static/public';
+import { trackAmplitude } from '$lib/Utils/Amplitude';
 
 declare global {
 	interface Window {
@@ -43,6 +44,7 @@ function createTrackingStore() {
 		if (shouldTrack) {
 			safeGoogleTagTracking(`${toSnakeCase(pageName)}_page_view`, { pageName, ...options });
 			safeMixpanelTrack(`${pageName} Page View`, { pageName, ...options });
+			trackAmplitude(`${pageName} Page View`, { pageName, ...options });
 
 			flushTimeOnPage();
 			try {
@@ -67,6 +69,7 @@ function createTrackingStore() {
 		if (shouldTrack) {
 			safeGoogleTagTracking(toSnakeCase(actionName), { pageName, ...options });
 			safeMixpanelTrack(actionName, { pageName, ...options });
+			trackAmplitude(actionName, { pageName, ...options });
 		}
 	}
 
@@ -76,7 +79,9 @@ function createTrackingStore() {
 
 	function identifyUser(userId: string, email: string) {
 		if (!isProduction) console.log('Identify User', { userId, email });
-		if (shouldTrack) safeMixpanelIdentify(userId, email);
+		if (shouldTrack) {
+			safeMixpanelIdentify(userId, email);
+		}
 	}
 
 	return {

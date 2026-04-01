@@ -40,6 +40,7 @@
 		"vite": "^6.4.1"
 	},
 	"dependencies": {
+		"@amplitude/unified": "^1.0.15",
 		"@sentry/sveltekit": "^10.23.0",
 		"@stripe/stripe-js": "^7.5.0",
 		"@sveltejs/adapter-auto": "^6.1.1",
