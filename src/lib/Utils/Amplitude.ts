@@ -47,3 +47,8 @@ export function trackAmplitude(event: string, properties?: Record<string, unknow
 	if (shouldDisableAnalytics()) return;
 	amplitude.track(event, properties);
 }
+
+export function setAmplitudeUser(userID: string) {
+	if (shouldDisableAnalytics()) return;
+	amplitude.setUserId(userID);
+}
