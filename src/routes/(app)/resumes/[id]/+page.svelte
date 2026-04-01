@@ -158,7 +158,10 @@
 			}
 			toastStore.show({ message: 'Added to Resume' });
 		} catch (error) {
-			toastStore.show({ message: 'Could not add that item to your resume. Try again.', type: 'error' });
+			toastStore.show({
+				message: 'Could not add that item to your resume. Try again.',
+				type: 'error'
+			});
 		}
 	}
 
@@ -596,7 +599,7 @@
 			<Accordion title="Skills">
 				<ChipList bind:chips={chipList} onChange={saveSkills} />
 			</Accordion>
-			{#if useFeatureGate(2, data.user)}
+			{#if useFeatureGate('resume:download', data.user)}
 				<p class="mt-4 text-gray-600">Download a PDF version this resume</p>
 				<a
 					target="_blank"

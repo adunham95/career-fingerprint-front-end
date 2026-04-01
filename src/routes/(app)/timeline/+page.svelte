@@ -58,7 +58,7 @@
 		class="align-center mt-5 mb-5 flex flex-col justify-between border-b border-gray-200 pb-5 sm:flex-row print:hidden"
 	>
 		<h1 class="text-2xl font-semibold text-gray-900">My Achievement Timeline</h1>
-		{#if useFeatureGate(1, data.user)}
+		{#if useFeatureGate('achievements:print', data.user)}
 			<div class="flex justify-end">
 				<button
 					class="btn btn-text--primary"
@@ -82,7 +82,7 @@
 					</svg>
 					<span class="sr-only">Print Timeline</span>
 				</button>
-				{#if useFeatureGate(1, data.user)}
+				{#if useFeatureGate('achievements:generate', data.user)}
 					<a
 						class="btn btn-text--primary relative mr-4 ml-2 flex justify-center"
 						target="_blank"
@@ -488,5 +488,6 @@
 			isAchievementOpen = false;
 			selectedAchievement = null;
 		}}
+		user={data.user}
 	/>
 </Drawer>

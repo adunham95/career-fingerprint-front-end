@@ -76,7 +76,7 @@
 						class={`${meetingType === 'upcoming' ? 'text-primary' : ''}`}>Upcoming</button
 					>
 				</div>
-				{#if useFeatureGate(1, data.user)}
+				{#if useFeatureGate('meeting:create', data.user)}
 					<button
 						type="button"
 						onclick={() => {

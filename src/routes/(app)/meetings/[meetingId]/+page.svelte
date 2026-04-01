@@ -96,14 +96,16 @@
 				<div
 					class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
 				>
-					{#if useFeatureGate(2, data.user)}
+					{#if useFeatureGate('meetingNotes:download', data.user)}
 						<a
 							href={`${PUBLIC_API_URL}/notes/meeting/${data.meetingID}/pdf`}
 							type="button"
 							download
 							class="btn btn--secondary relative"
 							onclick={() => {
-								trackingStore.trackAction('Start Meeting', { component: 'Meeting Details Page' });
+								trackingStore.trackAction('Download Meeting Notes', {
+									component: 'Meeting Details Page'
+								});
 							}}
 						>
 							<PremiumBadge />
@@ -116,7 +118,7 @@
 						</div>
 					{/if}
 					{#if isUpcomingOrRecent($myMeeting.data?.time || new Date())}
-						{#if useFeatureGate(2, data.user)}
+						{#if useFeatureGate('meeting:prep', data.user)}
 							<a
 								href={`/prep/${data.meetingID}`}
 								type="button"
@@ -126,6 +128,13 @@
 								><PremiumBadge />
 								Prep for Meeting
 							</a>
+						{:else}
+							<div class="btn btn--secondary relative cursor-not-allowed opacity-25">
+								<PremiumBadge />
+								Prep for Meeting
+							</div>
+						{/if}
+						{#if useFeatureGate('meeting:cheatSheet', data.user)}
 							<a
 								href={`/cheatsheet/${data.meetingID}`}
 								type="button"
@@ -138,10 +147,6 @@
 								Start Meeting
 							</a>
 						{:else}
-							<div class="btn btn--secondary relative cursor-not-allowed opacity-25">
-								<PremiumBadge />
-								Prep for Meeting
-							</div>
 							<div class="btn btn--primary relative cursor-not-allowed opacity-25">
 								<PremiumBadge />
 								Start Meeting
@@ -213,7 +218,7 @@
 				{:else if current === 'highlights'}
 					<ul class="space-y-2">
 						{#if (data.highlights || []).length === 0}
-							{#if useFeatureGate(2, data.user)}
+							{#if useFeatureGate('highlights:view', data.user)}
 								<InfoBlock
 									title="Empty Highlights"
 									description="The highlight list is empty. Prepare for a meeting to add new highlights"
