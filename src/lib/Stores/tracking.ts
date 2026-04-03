@@ -1,7 +1,5 @@
-import mixpanel from 'mixpanel-browser';
 import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { PUBLIC_MIXPANEL_ENABLED } from '$env/static/public';
 import { setAmplitudeUser, trackAmplitude } from '$lib/Utils/Amplitude';
 
 declare global {
@@ -16,26 +14,14 @@ interface TrackingObject {
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-let currentTimedPage: string | null = null;
-
-function isMixpanelReady(): boolean {
-	return !!mixpanel && typeof mixpanel.track === 'function' && (mixpanel as any).__loaded === true;
-}
-
 function toSnakeCase(str: string): string {
 	return str.replace(/\s+/g, '_').toLowerCase();
-}
-
-function flushTimeOnPage() {
-	if (!currentTimedPage) return;
-	safeMixpanelTrack('Time on Page', { pageName: currentTimedPage });
-	currentTimedPage = null;
 }
 
 function createTrackingStore() {
 	const store = writable<TrackingObject>({});
 	const { subscribe, update } = store;
-	const trackingEnabled = browser && PUBLIC_MIXPANEL_ENABLED === 'true';
+	const trackingEnabled = browser;
 	const shouldTrack = isProduction && trackingEnabled;
 
 	function pageViewEvent(pageName: string, options: { [key: string]: string | boolean } = {}) {
@@ -43,16 +29,7 @@ function createTrackingStore() {
 
 		if (shouldTrack) {
 			safeGoogleTagTracking(`${toSnakeCase(pageName)}_page_view`, { pageName, ...options });
-			safeMixpanelTrack(`${pageName} Page View`, { pageName, ...options });
 			trackAmplitude(`${pageName} Page View`, { pageName, ...options });
-
-			flushTimeOnPage();
-			try {
-				mixpanel.time_event('Time on Page');
-				currentTimedPage = pageName;
-			} catch {
-				// mixpanel not ready
-			}
 		}
 
 		update((obj) => ({ ...obj, pageName }));
@@ -68,20 +45,16 @@ function createTrackingStore() {
 
 		if (shouldTrack) {
 			safeGoogleTagTracking(toSnakeCase(actionName), { pageName, ...options });
-			safeMixpanelTrack(actionName, { pageName, ...options });
 			trackAmplitude(actionName, { pageName, ...options });
 		}
 	}
 
-	function trackSession() {
-		if (shouldTrack) safeMixpanelSessionReplay();
-	}
+	function trackSession() {}
 
 	function identifyUser(userId: string, email: string) {
 		if (!isProduction) console.log('Identify User', { userId, email });
 		if (shouldTrack) {
 			setAmplitudeUser(email);
-			safeMixpanelIdentify(userId, email);
 		}
 	}
 
@@ -90,37 +63,8 @@ function createTrackingStore() {
 		pageViewEvent,
 		trackAction,
 		identifyUser,
-		flushTimeOnPage,
 		trackSession
 	};
-}
-
-function safeMixpanelTrack(event: string, props: Record<string, any>) {
-	if (!isMixpanelReady()) return;
-	try {
-		mixpanel.track(event, props);
-	} catch (err) {
-		console.warn('Mixpanel track failed:', err);
-	}
-}
-
-function safeMixpanelIdentify(userId: string, email: string) {
-	if (!isMixpanelReady()) return;
-	try {
-		mixpanel.identify(userId);
-		mixpanel.people.set({ $email: email });
-	} catch (err) {
-		console.warn('Mixpanel identify failed:', err);
-	}
-}
-
-function safeMixpanelSessionReplay() {
-	if (!isMixpanelReady()) return;
-	try {
-		mixpanel.start_session_recording();
-	} catch (err) {
-		console.warn('Mixpanel session recording failed:', err);
-	}
 }
 
 function safeGoogleTagTracking(event: string, props: Record<string, any>) {

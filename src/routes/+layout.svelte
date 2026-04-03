@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		PUBLIC_MIXPANEL_TOKEN,
-		PUBLIC_GTM_ID,
-		PUBLIC_TWAK_WIDGET_ID,
-		PUBLIC_TWAK_ID
-	} from '$env/static/public';
-	import mixpanel from 'mixpanel-browser';
+	import { PUBLIC_GTM_ID, PUBLIC_TWAK_WIDGET_ID, PUBLIC_TWAK_ID } from '$env/static/public';
 	import ToastContainer from '$lib/Components/Toasts/ToastContainer.svelte';
 	import '../app.css';
 	import '../button-variants.css';
@@ -16,24 +10,10 @@
 	import { initAmplitude } from '$lib/Utils/Amplitude';
 
 	let { children } = $props();
-	try {
-		mixpanel.init(PUBLIC_MIXPANEL_TOKEN, {
-			debug: false,
-			track_pageview: false,
-			cookie_domain: '.mycareerfingerprint.com',
-			record_sessions_percent: 1,
-			record_mask_all_text: false, // show all text by default
-			record_mask_all_inputs: true // mask all inputs (this is already the default, but explicit is fine)
-		});
-	} catch {
-		// mixpanel failed to initialize — tracking is unavailable but the app continues
-	}
 
 	try {
 		initAmplitude();
-	} catch {
-		// mixpanel failed to initialize — tracking is unavailable but the app continues
-	}
+	} catch {}
 </script>
 
 <svelte:head>
