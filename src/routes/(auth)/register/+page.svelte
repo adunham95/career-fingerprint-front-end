@@ -56,6 +56,7 @@
 		bannerError = null;
 		timesSubmitted += 1;
 		isLoading = true;
+		email = email.trim().toLowerCase();
 
 		if (!email) {
 			errorText['email'] = 'Email is required.';
