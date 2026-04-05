@@ -6,12 +6,12 @@
 
 	const { data } = $props();
 
-	// onMount(() => {
-	// 	if (data?.user) {
-	// 		trackingStore.identifyUser(String(data.user.id), data.user.email);
-	// 	}
-	// 	goto(data?.redirectPath ?? '/dashboard');
-	// });
+	onMount(() => {
+		if (data?.user) {
+			trackingStore.identifyUser(String(data.user.id), data.user.email);
+		}
+		goto(data?.redirectPath ?? '/dashboard');
+	});
 </script>
 
 <Loader />

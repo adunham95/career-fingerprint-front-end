@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { CurrentUser } from '../../../../app.js';
 
 export const load = async (event) => {
 	const token = event.url.searchParams.get('token');
@@ -34,5 +35,23 @@ export const load = async (event) => {
 		...(isProd && process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {})
 	});
 
-	redirect(302, callbackURL);
+	// Fetch the user with the new session cookie included so we can identify them client-side
+	let user: CurrentUser | null = null;
+	try {
+		const existingCookies = event.request.headers.get('cookie') ?? '';
+		const cookieHeader = existingCookies
+			? `${existingCookies}; ${result.cookieName}=${result.signedToken}`
+			: `${result.cookieName}=${result.signedToken}`;
+
+		const userRes = await fetch(`${PUBLIC_API_URL}/auth/current-user`, {
+			headers: { cookie: cookieHeader }
+		});
+		if (userRes.ok) {
+			user = await userRes.json();
+		}
+	} catch {
+		// user stays null, amplitude identify is skipped client-side
+	}
+
+	return { user, redirectPath: callbackURL };
 };
