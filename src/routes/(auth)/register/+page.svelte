@@ -6,11 +6,9 @@
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
-	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
-	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
@@ -19,7 +17,6 @@
 
 	let email = $state('');
 	let password = $state('');
-	let confirmPassword = $state('');
 	let firstName = $state('');
 	let isLoading = $state(false);
 	let accountCreated = $state(false);
@@ -34,6 +31,26 @@
 		if (value && !trackedFields.has(field)) {
 			trackedFields.add(field);
 			trackingStore.trackAction('Register - Field Filled', { field });
+		}
+	}
+
+	function validateEmailOnBlur() {
+		const trimmed = email.trim().toLowerCase();
+		email = trimmed;
+		if (!trimmed) return;
+		if (!isValidEmail(trimmed)) {
+			errorText = { ...errorText, email: 'Please enter a valid email address.' };
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'invalid_format',
+				email_domain: trimmed.includes('@') ? trimmed.split('@')[1] : null,
+				has_spaces: trimmed.includes(' '),
+				has_plus: trimmed.includes('+'),
+				char_count: trimmed.length.toString()
+			});
+		} else {
+			const { email: _removed, ...rest } = errorText;
+			errorText = rest;
 		}
 	}
 
@@ -82,15 +99,10 @@
 			});
 		}
 
-		const passwordResult = validatePassword(password, confirmPassword);
-		if (!passwordResult.isValid) {
-			const missing = passwordResult.requirements
-				.filter((r) => !r.pass)
-				.map((r) => r.errorLabel)
-				.join(', ');
-			errorText['password'] = `Password missing requirements: ${missing}`;
+		if (password.length < 8) {
+			errorText['password'] = 'Password must be at least 8 characters.';
 			trackingStore.trackAction('Register - Password Validation Failed', {
-				failing_requirements: missing,
+				failing_requirements: 'too_short',
 				password_length: password.length.toString(),
 				attempt_count: timesSubmitted.toString()
 			});
@@ -217,7 +229,7 @@
 				id="firstName"
 				label="First Name"
 				bind:value={firstName}
-				placeholder="Your First Name"
+				placeholder="John"
 				autocomplete="given-name"
 				errorText={errorText['firstName']}
 				onblur={() => trackFieldFilled('first_name', firstName)}
@@ -225,14 +237,17 @@
 			<TextInput
 				id="email"
 				label="Email"
-				type="text"
-				placeholder="Your Email"
+				type="email"
+				placeholder="user@example.com"
 				bind:value={email}
 				autocomplete="email"
 				required
 				errorText={errorText['email']}
 				aria-describedby="email-error"
-				onblur={() => trackFieldFilled('email', email)}
+				onblur={() => {
+					trackFieldFilled('email', email);
+					validateEmailOnBlur();
+				}}
 			/>
 			<PasswordInput
 				id="password"
@@ -244,7 +259,6 @@
 				onblur={() => trackFieldFilled('password', password)}
 			/>
 			<ErrorText id="password-error" errorText={errorText['password']} />
-			<PasswordRequirements useConfirmPassword={false} {password} />
 
 			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
 				<div class="mt-2">
