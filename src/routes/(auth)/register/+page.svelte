@@ -14,6 +14,28 @@
 	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
 	import { authClient } from '$lib/auth-client';
 	import { classifyError } from '$lib/errors';
+	import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
+	import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+	import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
+
+	zxcvbnOptions.setOptions({
+		dictionary: {
+			...zxcvbnCommonPackage.dictionary,
+			...zxcvbnEnPackage.dictionary
+		},
+		graphs: zxcvbnCommonPackage.adjacencyGraphs,
+		translations: zxcvbnEnPackage.translations
+	});
+
+	const STRENGTH_MIN_SCORE = 2;
+
+	const strengthMeta: Record<number, { label: string; bars: number; color: string; textColor: string }> = {
+		0: { label: 'Too weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
+		1: { label: 'Weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
+		2: { label: 'Fair', bars: 2, color: 'bg-yellow-400', textColor: 'text-yellow-600' },
+		3: { label: 'Good', bars: 3, color: 'bg-[#00bfa6]', textColor: 'text-[#00bfa6]' },
+		4: { label: 'Strong', bars: 4, color: 'bg-[#00bfa6]', textColor: 'text-[#00bfa6]' }
+	};
 
 	let email = $state('');
 	let password = $state('');
@@ -24,6 +46,19 @@
 	let bannerError = $state<string | null>(null);
 	let hasRequired = $derived(!!email && !!password);
 	let timesSubmitted = 0;
+
+	let strengthResult = $state<ReturnType<typeof zxcvbn> | null>(null);
+	let strengthScore = $derived(strengthResult?.score ?? -1);
+	let currentStrength = $derived(strengthScore >= 0 ? strengthMeta[strengthScore] : null);
+
+	let strengthTimer: ReturnType<typeof setTimeout>;
+
+	function handlePasswordBlur() {
+		clearTimeout(strengthTimer);
+		strengthTimer = setTimeout(() => {
+			strengthResult = password ? zxcvbn(password) : null;
+		}, 150);
+	}
 
 	const trackedFields = new Set<string>();
 
@@ -103,6 +138,14 @@
 			errorText['password'] = 'Password must be at least 8 characters.';
 			trackingStore.trackAction('Register - Password Validation Failed', {
 				failing_requirements: 'too_short',
+				password_length: password.length.toString(),
+				attempt_count: timesSubmitted.toString()
+			});
+		} else if (strengthScore < STRENGTH_MIN_SCORE) {
+			errorText['password'] = 'Password is too weak. Try adding numbers, symbols, or more words.';
+			trackingStore.trackAction('Register - Password Validation Failed', {
+				failing_requirements: 'too_weak',
+				strength_score: strengthScore.toString(),
 				password_length: password.length.toString(),
 				attempt_count: timesSubmitted.toString()
 			});
@@ -256,8 +299,23 @@
 				required
 				autocomplete="new-password"
 				ariaDescribedby="password-error"
-				onblur={() => trackFieldFilled('password', password)}
+				onblur={() => {
+					trackFieldFilled('password', password);
+					handlePasswordBlur();
+				}}
 			/>
+			{#if password && currentStrength}
+				<div class="mt-1.5 space-y-1" aria-live="polite">
+					<div class="flex gap-1" role="img" aria-label="Password strength: {currentStrength.label}">
+						{#each [1, 2, 3, 4] as bar}
+							<div
+								class="h-1 flex-1 rounded-full transition-colors duration-200 {bar <= currentStrength.bars ? currentStrength.color : 'bg-gray-200'}"
+							></div>
+						{/each}
+					</div>
+					<p class="text-xs {currentStrength.textColor}">{currentStrength.label}</p>
+				</div>
+			{/if}
 			<ErrorText id="password-error" errorText={errorText['password']} />
 
 			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
