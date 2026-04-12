@@ -5,15 +5,14 @@
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import PageContainer from '$lib/Components/Containers/PageContainer.svelte';
 	import TwoColumn from '$lib/Components/Containers/TwoColumn.svelte';
-	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
 	import ImageUpload from '$lib/Components/FormElements/ImageUpload.svelte';
 	import Select from '$lib/Components/FormElements/Select.svelte';
-	import TextArea from '$lib/Components/FormElements/TextArea.svelte';
-	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast.js';
 	import { trackingStore } from '$lib/Stores/tracking.js';
 	import { onMount } from 'svelte';
-	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
+	import PasswordUpdateForm from '$lib/Components/Forms/PasswordUpdateForm.svelte';
+	import { validatePassword } from '$lib/Utils/validatePassword';
 
 	const { data } = $props();
 
@@ -74,13 +73,10 @@
 		e.preventDefault();
 		errorMessages = {};
 
-		if (newPassword !== confirmPassword) {
-			errorMessages = { password: 'Passwords do not match' };
-			return;
-		}
-
-		if (newPassword.length < 6) {
-			errorMessages = { password: 'Password must be at least 6 characters' };
+		const { isValid, requirements } = validatePassword(newPassword, confirmPassword, true);
+		if (!isValid) {
+			const failing = requirements.filter((r) => !r.pass).map((r) => r.errorLabel);
+			errorMessages = { password: failing.join(' · ') };
 			return;
 		}
 
@@ -182,36 +178,17 @@
 					changePassword(e);
 					trackingStore.trackAction('Update Account Click', { type: 'password' });
 				}}
+				class="space-y-4"
 			>
-				<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 pb-2 sm:grid-cols-6">
-					<TextInput
-						className="sm:col-span-6"
-						id="current-password"
-						label="Current Password"
-						type="password"
-						bind:value={currentPassword}
-						autocomplete="current-password"
-					/>
-					<TextInput
-						className="sm:col-span-3"
-						id="password"
-						label="New Password"
-						type="password"
-						bind:value={newPassword}
-						autocomplete="new-password"
-					/>
-					<TextInput
-						className="sm:col-span-3"
-						id="confirm-password"
-						label="Confirm Password"
-						type="password"
-						bind:value={confirmPassword}
-						autocomplete="new-password"
-					/>
-				</div>
-				<PasswordRequirements {confirmPassword} useConfirmPassword password={newPassword} />
+				<PasswordUpdateForm
+					showCurrentPassword
+					showConfirmPassword
+					bind:currentPassword
+					bind:newPassword
+					bind:confirmPassword
+					errorText={errorMessages.password}
+				/>
 			</form>
-			<ErrorText errorText={errorMessages.password} />
 			{#snippet actions()}
 				<button type="submit" form="changePassword" class="btn btn--primary">Update</button>
 			{/snippet}

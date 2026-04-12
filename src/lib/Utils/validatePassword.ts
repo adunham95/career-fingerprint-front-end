@@ -14,12 +14,9 @@ export function validatePassword(
 	const requirements: PasswordRequirement[] = [
 		{
 			label: 'At least 8 characters',
-			errorLabel: 'Must contain at least 8 characters',
+			errorLabel: 'Must be at least 8 characters',
 			pass: password.length >= 8
-		},
-		{ label: 'Contains an uppercase letter', errorLabel: 'Must contain at least one uppercase letter', pass: /[A-Z]/.test(password) },
-		{ label: 'Contains a lowercase letter', errorLabel: 'Must contain at least one lowercase letter', pass: /[a-z]/.test(password) },
-		{ label: 'Contains a number', errorLabel: 'Must contain at least one number', pass: /\d/.test(password) }
+		}
 	];
 
 	if (useConfirmPassword) {
