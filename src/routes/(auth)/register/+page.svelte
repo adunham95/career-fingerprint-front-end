@@ -6,20 +6,42 @@
 	import PasswordInput from '$lib/Components/FormElements/PasswordInput.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
-	import { validatePassword } from '$lib/Utils/validatePassword';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AuthValueProps from '../authValueProps.svelte';
-	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
 	import GoogleSignIn from '$lib/Components/Buttons/GoogleSignIn.svelte';
 	import LinkedinLogin from '$lib/Components/Buttons/LinkedinLogin.svelte';
 	import { PUBLIC_GOOGLE_LOGIN_ENABLED, PUBLIC_LINKEDIN_LOGIN_ENABLED } from '$env/static/public';
 	import { authClient } from '$lib/auth-client';
 	import { classifyError } from '$lib/errors';
+	import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
+	import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+	import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
+
+	zxcvbnOptions.setOptions({
+		dictionary: {
+			...zxcvbnCommonPackage.dictionary,
+			...zxcvbnEnPackage.dictionary
+		},
+		graphs: zxcvbnCommonPackage.adjacencyGraphs,
+		translations: zxcvbnEnPackage.translations
+	});
+
+	const STRENGTH_MIN_SCORE = 2;
+
+	const strengthMeta: Record<
+		number,
+		{ label: string; bars: number; color: string; textColor: string }
+	> = {
+		0: { label: 'Too weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
+		1: { label: 'Weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
+		2: { label: 'Fair', bars: 2, color: 'bg-yellow-400', textColor: 'text-yellow-600' },
+		3: { label: 'Good', bars: 3, color: 'bg-[#00bfa6]', textColor: 'text-[#00bfa6]' },
+		4: { label: 'Strong', bars: 4, color: 'bg-[#00bfa6]', textColor: 'text-[#00bfa6]' }
+	};
 
 	let email = $state('');
 	let password = $state('');
-	let confirmPassword = $state('');
 	let firstName = $state('');
 	let isLoading = $state(false);
 	let accountCreated = $state(false);
@@ -28,12 +50,47 @@
 	let hasRequired = $derived(!!email && !!password);
 	let timesSubmitted = 0;
 
+	let strengthResult = $state<ReturnType<typeof zxcvbn> | null>(null);
+	let strengthScore = $derived(strengthResult?.score ?? -1);
+	let currentStrength = $derived(strengthScore >= 0 ? strengthMeta[strengthScore] : null);
+
+	let strengthTimer: ReturnType<typeof setTimeout>;
+
+	function handlePasswordBlur() {
+		clearTimeout(strengthTimer);
+		strengthTimer = setTimeout(() => {
+			strengthResult = password ? zxcvbn(password) : null;
+		}, 150);
+	}
+
 	const trackedFields = new Set<string>();
 
 	function trackFieldFilled(field: string, value: string) {
 		if (value && !trackedFields.has(field)) {
 			trackedFields.add(field);
-			trackingStore.trackAction('Register - Field Filled', { field });
+			trackingStore.trackAction('Register - Field Filled', {
+				field
+			});
+		}
+	}
+
+	function validateEmailOnBlur() {
+		const trimmed = email.trim().toLowerCase();
+		email = trimmed;
+		if (!trimmed) return;
+		if (!isValidEmail(trimmed)) {
+			errorText = { ...errorText, email: 'Please enter a valid email address.' };
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'invalid_format',
+				email_domain: trimmed.includes('@') ? trimmed.split('@')[1] : null,
+				has_spaces: trimmed.includes(' '),
+				has_plus: trimmed.includes('+'),
+				char_count: trimmed.length.toString()
+			});
+		} else {
+			const { email: _removed, ...rest } = errorText;
+			errorText = rest;
 		}
 	}
 
@@ -82,15 +139,19 @@
 			});
 		}
 
-		const passwordResult = validatePassword(password, confirmPassword);
-		if (!passwordResult.isValid) {
-			const missing = passwordResult.requirements
-				.filter((r) => !r.pass)
-				.map((r) => r.errorLabel)
-				.join(', ');
-			errorText['password'] = `Password missing requirements: ${missing}`;
+		if (password.length < 8) {
+			errorText['password'] = 'Password must be at least 8 characters.';
 			trackingStore.trackAction('Register - Password Validation Failed', {
-				failing_requirements: missing,
+				failing_requirements: 'too_short',
+				password_strength: strengthResult?.toString() || '0',
+				password_length: password.length.toString(),
+				attempt_count: timesSubmitted.toString()
+			});
+		} else if (strengthScore < STRENGTH_MIN_SCORE) {
+			errorText['password'] = 'Password is too weak. Try adding numbers, symbols, or more words.';
+			trackingStore.trackAction('Register - Password Validation Failed', {
+				failing_requirements: 'too_weak',
+				strength_score: strengthScore.toString(),
 				password_length: password.length.toString(),
 				attempt_count: timesSubmitted.toString()
 			});
@@ -217,7 +278,7 @@
 				id="firstName"
 				label="First Name"
 				bind:value={firstName}
-				placeholder="Your First Name"
+				placeholder="John"
 				autocomplete="given-name"
 				errorText={errorText['firstName']}
 				onblur={() => trackFieldFilled('first_name', firstName)}
@@ -225,14 +286,17 @@
 			<TextInput
 				id="email"
 				label="Email"
-				type="text"
-				placeholder="Your Email"
+				type="email"
+				placeholder="user@example.com"
 				bind:value={email}
 				autocomplete="email"
 				required
 				errorText={errorText['email']}
 				aria-describedby="email-error"
-				onblur={() => trackFieldFilled('email', email)}
+				onblur={() => {
+					trackFieldFilled('email', email);
+					validateEmailOnBlur();
+				}}
 			/>
 			<PasswordInput
 				id="password"
@@ -241,10 +305,31 @@
 				required
 				autocomplete="new-password"
 				ariaDescribedby="password-error"
-				onblur={() => trackFieldFilled('password', password)}
+				onblur={() => {
+					trackFieldFilled('password', password);
+					handlePasswordBlur();
+				}}
 			/>
+			{#if password && currentStrength}
+				<div class="mt-1.5 space-y-1" aria-live="polite">
+					<div
+						class="flex gap-1"
+						role="img"
+						aria-label="Password strength: {currentStrength.label}"
+					>
+						{#each [1, 2, 3, 4] as bar}
+							<div
+								class="h-1 flex-1 rounded-full transition-colors duration-200 {bar <=
+								currentStrength.bars
+									? currentStrength.color
+									: 'bg-gray-200'}"
+							></div>
+						{/each}
+					</div>
+					<p class="text-xs {currentStrength.textColor}">{currentStrength.label}</p>
+				</div>
+			{/if}
 			<ErrorText id="password-error" errorText={errorText['password']} />
-			<PasswordRequirements useConfirmPassword={false} {password} />
 
 			{#if PUBLIC_LINKEDIN_LOGIN_ENABLED === 'true' || PUBLIC_GOOGLE_LOGIN_ENABLED === 'true'}
 				<div class="mt-2">
