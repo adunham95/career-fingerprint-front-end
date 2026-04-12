@@ -29,7 +29,10 @@
 
 	const STRENGTH_MIN_SCORE = 2;
 
-	const strengthMeta: Record<number, { label: string; bars: number; color: string; textColor: string }> = {
+	const strengthMeta: Record<
+		number,
+		{ label: string; bars: number; color: string; textColor: string }
+	> = {
 		0: { label: 'Too weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
 		1: { label: 'Weak', bars: 1, color: 'bg-red-400', textColor: 'text-red-500' },
 		2: { label: 'Fair', bars: 2, color: 'bg-yellow-400', textColor: 'text-yellow-600' },
@@ -65,7 +68,9 @@
 	function trackFieldFilled(field: string, value: string) {
 		if (value && !trackedFields.has(field)) {
 			trackedFields.add(field);
-			trackingStore.trackAction('Register - Field Filled', { field });
+			trackingStore.trackAction('Register - Field Filled', {
+				field
+			});
 		}
 	}
 
@@ -138,6 +143,7 @@
 			errorText['password'] = 'Password must be at least 8 characters.';
 			trackingStore.trackAction('Register - Password Validation Failed', {
 				failing_requirements: 'too_short',
+				password_strength: strengthResult?.toString() || '0',
 				password_length: password.length.toString(),
 				attempt_count: timesSubmitted.toString()
 			});
@@ -306,10 +312,17 @@
 			/>
 			{#if password && currentStrength}
 				<div class="mt-1.5 space-y-1" aria-live="polite">
-					<div class="flex gap-1" role="img" aria-label="Password strength: {currentStrength.label}">
+					<div
+						class="flex gap-1"
+						role="img"
+						aria-label="Password strength: {currentStrength.label}"
+					>
 						{#each [1, 2, 3, 4] as bar}
 							<div
-								class="h-1 flex-1 rounded-full transition-colors duration-200 {bar <= currentStrength.bars ? currentStrength.color : 'bg-gray-200'}"
+								class="h-1 flex-1 rounded-full transition-colors duration-200 {bar <=
+								currentStrength.bars
+									? currentStrength.color
+									: 'bg-gray-200'}"
 							></div>
 						{/each}
 					</div>
