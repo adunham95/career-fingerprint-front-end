@@ -220,7 +220,7 @@
 		</Card>
 	</TwoColumn>
 	{#if data.availablePlans && data.availablePlans.level > data.user.planLevel}
-		<TwoColumn title={'Upgrade'}>
+		<TwoColumn title={'Upgrade Your Account'}>
 			{#snippet subSection()}
 				{#if orderEstimate}
 					<BillingEstimate
@@ -242,7 +242,7 @@
 			<Card
 				className="md:col-span-2  rounded-2xl bg-gray-50  ring-3 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
 			>
-				<div class={`px-8`}>
+				<div>
 					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
 					<p class="text-center text-base font-semibold text-gray-600">
 						Select a billing type to get started
@@ -347,7 +347,7 @@
 				</div>
 				<form
 					id="payment-form"
-					class={`relative ${!showBillingForm ? 'hidden' : 'block'} w-full px-8 pt-4`}
+					class={`relative ${!showBillingForm ? 'hidden' : 'block'} w-full pt-4`}
 				>
 					<div id="payment-element">
 						<!-- Elements will create form elements here -->
