@@ -2,6 +2,7 @@
 	import { authClient } from '$lib/auth-client';
 	import Card from '$lib/Components/Containers/Card.svelte';
 	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import BannerError from '$lib/Components/FormElements/BannerError.svelte';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { onMount } from 'svelte';
 
@@ -14,7 +15,7 @@
 		trackingStore.pageViewEvent('Forgot Password');
 	});
 
-	async function login(e: SubmitEvent) {
+	async function requestReset(e: SubmitEvent) {
 		e.preventDefault();
 
 		if (!email) {
@@ -34,10 +35,12 @@
 
 			if (error) {
 				showError = true;
+				trackingStore.trackAction('Forgot Password Error');
 			} else {
 				showSuccess = true;
+				trackingStore.trackAction('Forgot Password Sent');
 			}
-		} catch (error) {
+		} catch {
 			showError = true;
 		} finally {
 			isLoading = false;
@@ -45,24 +48,32 @@
 	}
 </script>
 
-<Card
-	headline="Forgot Password"
-	className=" w-full max-w-[400px] mx-2"
-	contentClassName="space-y-3"
->
-	{#if showError}
-		<p>Something went wrong. Please try again.</p>
-	{/if}
+<Card headline="Forgot Password" className="w-full max-w-[400px] mx-2" contentClassName="space-y-3">
 	{#if showSuccess}
-		<p>Check your email - if you have an account, you'll receive a reset link shortly.</p>
-	{/if}
-	<form onsubmit={(e) => login(e)} class="space-y-2">
-		<TextInput id="email" label="Email" bind:value={email} autocomplete={'email webauthn'} />
-		<div class="flex w-full justify-between pt-2">
-			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
-			<button disabled={isLoading} type="submit" class="btn btn-text--primary btn-small">
-				Reset Password
-			</button>
+		<div class="rounded-md bg-green-50 p-4">
+			<p class="text-sm text-green-700">
+				Check your email. If an account exists for that address, you'll receive a reset link shortly.
+			</p>
 		</div>
-	</form>
+	{/if}
+
+	{#if !showSuccess}
+		<BannerError message={showError ? 'Something went wrong. Please try again.' : null} />
+		<form onsubmit={requestReset} class="space-y-3">
+			<TextInput
+				id="email"
+				label="Email"
+				type="email"
+				bind:value={email}
+				autocomplete="email"
+				placeholder="you@example.com"
+			/>
+			<div class="flex w-full items-center justify-between pt-2">
+				<a href="/login" class="btn btn-text--primary btn-small">Back to login</a>
+				<button disabled={isLoading || !email} type="submit" class="btn btn--primary btn-small">
+					{isLoading ? 'Sending...' : 'Send Reset Link'}
+				</button>
+			</div>
+		</form>
+	{/if}
 </Card>

@@ -10,7 +10,7 @@
 
 	import { page } from '$app/state';
 
-	const currentURL = $derived(page.url.pathname);
+	let currentURL = $derived(page.url.pathname);
 
 	function onChange(
 		e: Event & {
@@ -27,7 +27,7 @@
 			{id}
 			aria-label="Select a tab"
 			class="col-start-1 row-start-1 mt-2 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
-			value={options.find((o) => currentURL.startsWith(o.path))?.path ?? currentURL}
+			bind:value={currentURL}
 			onchange={(e) => onChange(e)}
 		>
 			{#each options as option}

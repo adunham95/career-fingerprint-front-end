@@ -54,6 +54,7 @@
 			monthlyPlan: data.availablePlans?.monthlyStripePriceID
 		});
 		if (stripe && !priceID && data.availablePlans?.monthlyStripePriceID) {
+			stripeCheckoutLoading = true;
 			updateStripe(data.availablePlans.monthlyStripePriceID);
 		}
 	});
@@ -69,7 +70,7 @@
 		});
 		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		if (!showBillingForm) {
-			trackingStore.trackAction('Onboard Membership - Billing Form Shown', { planType });
+			trackingStore.trackAction('Membership - Billing Form Shown', { planType });
 		}
 		showBillingForm = true;
 		await tick();
@@ -91,6 +92,9 @@
 				const errors = document.getElementById('error-message');
 				if (button) {
 					button.addEventListener('click', () => {
+						trackingStore.trackAction('Membership Upgrade Click', {
+							plan_type: planType
+						});
 						checkingOut = true;
 						// Clear any validation errors
 						if (errors) {
@@ -220,7 +224,7 @@
 		</Card>
 	</TwoColumn>
 	{#if data.availablePlans && data.availablePlans.level > data.user.planLevel}
-		<TwoColumn title={'Upgrade'}>
+		<TwoColumn title={'Upgrade Your Account'}>
 			{#snippet subSection()}
 				{#if orderEstimate}
 					<BillingEstimate
@@ -242,7 +246,7 @@
 			<Card
 				className="md:col-span-2  rounded-2xl bg-gray-50  ring-3 ring-gray-900/5 ring-inset lg:flex lg:flex-col lg:justify-center "
 			>
-				<div class={`px-8`}>
+				<div>
 					<p class="text-center text-lg font-semibold text-gray-600">{data.availablePlans.name}</p>
 					<p class="text-center text-base font-semibold text-gray-600">
 						Select a billing type to get started
@@ -326,7 +330,7 @@
 							onclick={() => {
 								showPromoCode = !showPromoCode;
 								if (showPromoCode) {
-									trackingStore.trackAction('Onboard Membership - Promo Code Opened', {
+									trackingStore.trackAction('Membership - Promo Code Opened', {
 										plan_type: planType
 									});
 								}
@@ -347,7 +351,7 @@
 				</div>
 				<form
 					id="payment-form"
-					class={`relative ${!showBillingForm ? 'hidden' : 'block'} w-full px-8 pt-4`}
+					class={`relative ${!showBillingForm ? 'hidden' : 'block'} w-full pt-4`}
 				>
 					<div id="payment-element">
 						<!-- Elements will create form elements here -->
@@ -363,7 +367,7 @@
 							disabled={checkingOut}
 							class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
 							onclick={() => {
-								trackingStore.trackAction('Subscribe Click');
+								trackingStore.trackAction('Membership Checkout Click');
 							}}
 						>
 							Start {data.availablePlans.name}

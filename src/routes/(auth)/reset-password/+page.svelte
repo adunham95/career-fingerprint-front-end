@@ -3,9 +3,8 @@
 	import { page } from '$app/state';
 	import { authClient } from '$lib/auth-client';
 	import Card from '$lib/Components/Containers/Card.svelte';
-	import ErrorText from '$lib/Components/FormElements/ErrorText.svelte';
-	import PasswordRequirements from '$lib/Components/FormElements/PasswordRequirements.svelte';
-	import TextInput from '$lib/Components/FormElements/TextInput.svelte';
+	import BannerError from '$lib/Components/FormElements/BannerError.svelte';
+	import PasswordUpdateForm from '$lib/Components/Forms/PasswordUpdateForm.svelte';
 	import { toastStore } from '$lib/Components/Toasts/toast';
 	import { trackingStore } from '$lib/Stores/tracking';
 	import { validatePassword } from '$lib/Utils/validatePassword';
@@ -20,53 +19,53 @@
 	let password = $state('');
 	let confirmPassword = $state('');
 	let isLoading = $state(false);
-	let errorText = $state<null | string>(null);
+	let bannerError = $state<string | null>(null);
 
 	async function resetPassword(e: SubmitEvent) {
 		e.preventDefault();
+		bannerError = null;
 
 		if (!token) {
-			toastStore.show({ message: 'That reset link has expired. Request a new one from the sign in page.', type: 'error' });
+			toastStore.show({
+				message: 'That reset link has expired. Request a new one from the sign in page.',
+				type: 'error'
+			});
 			return;
 		}
 
-		const passwordResult = validatePassword(password, confirmPassword, true);
+		const { isValid, requirements } = validatePassword(password, confirmPassword, true);
 
-		if (!passwordResult.isValid) {
-			errorText = 'Password missing requirements';
+		if (!isValid) {
+			const failing = requirements.filter((r) => !r.pass).map((r) => r.errorLabel);
+			bannerError = failing.join(' · ');
 			return;
 		}
 
 		isLoading = true;
-		errorText = null;
 
 		const { error } = await authClient.resetPassword({ newPassword: password, token });
 
 		isLoading = false;
 
 		if (error) {
-			errorText = error.message ?? 'Something went wrong. Please try again.';
+			bannerError = error.message ?? 'Something went wrong. Please try again.';
 		} else {
-			toastStore.show({ message: 'Successfully reset password', type: 'success' });
+			trackingStore.trackAction('Password Reset Success');
+			toastStore.show({ message: 'Password updated. Please sign in.', type: 'success' });
 			await goto('/login');
 		}
 	}
 </script>
 
 <Card headline="Reset Password" className=" w-full max-w-[400px] mx-2" contentClassName="space-y-3">
-	<form onsubmit={resetPassword} class="space-y-2">
-		<TextInput id="password" label="Password" bind:value={password} autocomplete="new-password" />
-		<TextInput
-			id="confirmPassword"
-			label="Confirm Password"
-			bind:value={confirmPassword}
-			autocomplete="new-password"
-		/>
-		<ErrorText {errorText} />
-		<PasswordRequirements useConfirmPassword {confirmPassword} {password} />
+	<form onsubmit={resetPassword} class="space-y-3">
+		<BannerError message={bannerError} />
+		<PasswordUpdateForm showConfirmPassword bind:newPassword={password} bind:confirmPassword />
 		<div class="flex w-full justify-between pt-2">
-			<a href="/login" class="btn btn-text--primary btn-small">Login</a>
-			<button disabled={isLoading} class="btn btn-text--primary btn-small">Reset Password</button>
+			<a href="/login" class="btn btn-text--primary btn-small">Back to login</a>
+			<button disabled={isLoading} class="btn btn--primary btn-small">
+				{isLoading ? 'Updating...' : 'Reset Password'}
+			</button>
 		</div>
 	</form>
 </Card>
