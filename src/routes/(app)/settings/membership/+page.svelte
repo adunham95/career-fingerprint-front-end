@@ -70,7 +70,7 @@
 		});
 		orderEstimate = await $orderEstimateCall.mutateAsync({ promoID, priceID: newPriceID });
 		if (!showBillingForm) {
-			trackingStore.trackAction('Onboard Membership - Billing Form Shown', { planType });
+			trackingStore.trackAction('Membership - Billing Form Shown', { planType });
 		}
 		showBillingForm = true;
 		await tick();
@@ -92,6 +92,9 @@
 				const errors = document.getElementById('error-message');
 				if (button) {
 					button.addEventListener('click', () => {
+						trackingStore.trackAction('Membership Upgrade Click', {
+							plan_type: planType
+						});
 						checkingOut = true;
 						// Clear any validation errors
 						if (errors) {
@@ -327,7 +330,7 @@
 							onclick={() => {
 								showPromoCode = !showPromoCode;
 								if (showPromoCode) {
-									trackingStore.trackAction('Onboard Membership - Promo Code Opened', {
+									trackingStore.trackAction('Membership - Promo Code Opened', {
 										plan_type: planType
 									});
 								}
@@ -364,7 +367,7 @@
 							disabled={checkingOut}
 							class={`btn btn--primary mt-2 ${priceID === null ? 'hidden' : ''}`}
 							onclick={() => {
-								trackingStore.trackAction('Subscribe Click');
+								trackingStore.trackAction('Membership Checkout Click');
 							}}
 						>
 							Start {data.availablePlans.name}
