@@ -54,6 +54,7 @@
 			monthlyPlan: data.availablePlans?.monthlyStripePriceID
 		});
 		if (stripe && !priceID && data.availablePlans?.monthlyStripePriceID) {
+			stripeCheckoutLoading = true;
 			updateStripe(data.availablePlans.monthlyStripePriceID);
 		}
 	});
