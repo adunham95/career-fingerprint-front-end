@@ -74,7 +74,7 @@
 		}
 	}
 
-	function validateEmailOnBlur() {
+	async function validateEmailOnBlur() {
 		const trimmed = email.trim().toLowerCase();
 		email = trimmed;
 		if (!trimmed) return;
@@ -87,6 +87,17 @@
 				has_spaces: trimmed.includes(' '),
 				has_plus: trimmed.includes('+'),
 				char_count: trimmed.length.toString()
+			});
+			return;
+		}
+
+		const disposable = await isDisposableEmail(trimmed);
+		if (disposable) {
+			errorText = { ...errorText, email: 'Please use a permanent email address.' };
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'disposable_email',
+				email_domain: trimmed.split('@')[1]
 			});
 		} else {
 			const { email: _removed, ...rest } = errorText;
@@ -106,6 +117,16 @@
 		if (value.includes(' ')) return false;
 		const pattern = /^\S+@\S+\.\S+$/;
 		return pattern.test(value);
+	}
+
+	async function isDisposableEmail(value: string): Promise<boolean> {
+		const res = await fetch('/api/validate-email', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ email: value })
+		});
+		const data = await res.json();
+		return data.disposable === true;
 	}
 
 	async function register() {
@@ -136,6 +157,13 @@
 				has_leading_trailing_space: email !== email.trim(),
 				has_plus: email.includes('+'),
 				char_count: email.length.toString()
+			});
+		} else if (await isDisposableEmail(email)) {
+			errorText['email'] = 'Please use a permanent email address.';
+			trackingStore.trackAction('Register - Validation Error', {
+				field: 'email',
+				reason: 'disposable_email',
+				email_domain: email.split('@')[1]
 			});
 		}
 
