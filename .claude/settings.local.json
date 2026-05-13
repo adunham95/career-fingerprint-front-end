@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(v[''name''], '':'', list\\(v.get\\(''primary'',{}\\).keys\\(\\)\\)\\) for v in d.get\\(''variations'',[]\\)]\")",
+      "Bash(find \"/home/adrian/Documents/Career Fingerprint/front-end/src/routes/\\(auth\\)/onboard\" -type f)",
+      "Bash(du -h /home/adrian/Documents/Career Fingerprint/front-end/build/client/images/*.jpg /home/adrian/Documents/Career Fingerprint/front-end/build/client/images/*.jpeg)",
+      "Bash(find \"/home/adrian/Documents/Career Fingerprint/front-end/src/routes\" -path \"*\\(auth\\)*\" -type f -name \"*.ts\")",
+      "Bash(npx prisma:*)",
+      "Bash(ls -la \"/home/adrian/Documents/Career Fingerprint/front-end/src/routes/\\(app\\)/\\(organization\\)/org/[id]/clients/[userID]/achievements/\")",
+      "Bash(ls -la '/home/adrian/Documents/Career Fingerprint/front-end/src/routes/\\(app\\)/\\(organization\\)/org/[id]/clients/[userID]/resumes/')",
+      "Bash(ls -la \"/home/adrian/Documents/Career Fingerprint/front-end/src/routes/\\(app\\)/\\(organization\\)/org/[id]/\")",
+      "Bash(ls -la \"/home/adrian/Documents/Career Fingerprint/front-end/src/routes/\\(app\\)/settings/org/\")",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
